@@ -582,7 +582,7 @@ export default function VideoProductionPage() {
 
               {/* CTAs */}
               <div className="hero-line" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-                <a href="#carousel" style={{ padding: '0.9rem 2.25rem', background: 'linear-gradient(90deg, #5de0e6, #004aad)', color: '#fff', textDecoration: 'none', fontSize: '0.875rem', fontWeight: 600, borderRadius: '8px', transition: 'opacity 0.2s', boxShadow: '0 4px 24px rgba(93,224,230,0.25)' }}
+                <a href="/services/video-production/portfolio" style={{ padding: '0.9rem 2.25rem', background: 'linear-gradient(90deg, #5de0e6, #004aad)', color: '#fff', textDecoration: 'none', fontSize: '0.875rem', fontWeight: 600, borderRadius: '8px', transition: 'opacity 0.2s', boxShadow: '0 4px 24px rgba(93,224,230,0.25)' }}
                   onMouseEnter={e => e.currentTarget.style.opacity = '0.82'}
                   onMouseLeave={e => e.currentTarget.style.opacity = '1'}>See Our Work ↓</a>
                 <a href="https://wa.me/62818160664" target="_blank" rel="noreferrer" style={{ padding: '0.9rem 2.25rem', background: 'transparent', border: '1.5px solid rgba(0,0,0,0.2)', color: 'rgba(0,0,0,0.75)', textDecoration: 'none', fontSize: '0.875rem', fontWeight: 600, borderRadius: '8px', transition: 'border-color 0.2s, color 0.2s' }}

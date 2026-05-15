@@ -50,7 +50,6 @@ function useLenis() {
    DATA  — 10 images per category card
    ───────────────────────────────────────────────────────────────────────────── */
 
-// Pool of 10 Unsplash images for each category's slideshow
 const SLIDESHOW_IMAGES = {
   social: [
     'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=800&q=80',
@@ -223,7 +222,6 @@ function InstaCard({ card, accent, categoryId }) {
         height: '100%',
       }}
     >
-      {/* IMAGE — crossfade via opacity transition */}
       <img
         key={currentSrc}
         src={currentSrc}
@@ -240,7 +238,6 @@ function InstaCard({ card, accent, categoryId }) {
         }}
       />
 
-      {/* SLIDESHOW DOT INDICATORS — only on hover */}
       {isHovered && (
         <div style={{
           position: 'absolute',
@@ -263,7 +260,6 @@ function InstaCard({ card, accent, categoryId }) {
         </div>
       )}
 
-      {/* DARK GRADIENT */}
       <div
         style={{
           position: 'absolute',
@@ -278,7 +274,6 @@ function InstaCard({ card, accent, categoryId }) {
         }}
       />
 
-      {/* TOP BAR */}
       <div
         style={{
           position: 'absolute',
@@ -317,7 +312,6 @@ function InstaCard({ card, accent, categoryId }) {
         />
       </div>
 
-      {/* BOTTOM CONTENT */}
       <div
         style={{
           position: 'absolute',
@@ -361,7 +355,6 @@ function InstaCard({ card, accent, categoryId }) {
    SEE MORE CARD — unified blue gradient across ALL categories
    ───────────────────────────────────────────────────────────────────────────── */
 function SeeMoreCard({ category }) {
-  // Always blue, regardless of category accent color
   const BLUE_FROM = '#5de0e6'
   const BLUE_TO   = '#004aad'
 
@@ -383,9 +376,8 @@ function SeeMoreCard({ category }) {
       }}
       onMouseEnter={e => (e.currentTarget.style.filter = 'brightness(1.12)')}
       onMouseLeave={e => (e.currentTarget.style.filter = 'brightness(1)')}
-      onClick={() => console.log(`Navigate to ${category}`)}
+      onClick={() => console.log(`Maps to ${category}`)}
     >
-      {/* Decorative blurred orb */}
       <div style={{
         position: 'absolute',
         width: '70%',
@@ -398,7 +390,6 @@ function SeeMoreCard({ category }) {
         pointerEvents: 'none',
       }} />
 
-      {/* Arrow icon circle */}
       <div style={{
         background: 'rgba(255,255,255,0.2)',
         backdropFilter: 'blur(10px)',
@@ -423,7 +414,6 @@ function SeeMoreCard({ category }) {
         </svg>
       </div>
 
-      {/* Labels */}
       <span style={{
         color: '#fff',
         fontWeight: 700,
@@ -457,6 +447,8 @@ function SeeMoreCard({ category }) {
 export default function OurWorkPage() {
   const lenisRef = useLenis()
   const [activeTab, setActiveTab] = useState(0)
+
+  const workContainerRef = useRef(null) // Added ref for container wrapper
 
   const heroRef      = useRef(null)
   const heroInnerRef = useRef(null)
@@ -496,33 +488,36 @@ export default function OurWorkPage() {
         anticipatePin: 1,
         id: 'hero-pin',
       })
+      
       gsap.to(heroInnerRef.current, {
         y: -80, opacity: 0, scale: 0.97, ease: 'none',
         scrollTrigger: {
-          trigger: workRef.current,
+          trigger: workContainerRef.current, // Updated target
           start: 'top 85%',
           end: 'top 10%',
           scrub: 1.2,
         },
       })
+      
       gsap.fromTo(workRef.current,
         { y: 120, clipPath: 'inset(6% 0% 0% 0% round 18px 18px 0px 0px)' },
         {
           y: 0, clipPath: 'inset(0% 0% 0% 0% round 0px 0px 0px 0px)',
           ease: 'none',
           scrollTrigger: {
-            trigger: workRef.current,
+            trigger: workContainerRef.current, // Updated target
             start: 'top 92%',
             end: 'top 5%',
             scrub: 1,
           },
         }
       )
+      
       gsap.to(trackRef.current, {
         x: () => -(trackRef.current.scrollWidth - window.innerWidth),
         ease: 'none',
         scrollTrigger: {
-          trigger: workRef.current,
+          trigger: workContainerRef.current, // Updated target
           start: 'top top',
           end: () => `+=${window.innerHeight * 1.3 * (CATEGORIES.length - 1)}`,
           pin: true,
@@ -537,6 +532,7 @@ export default function OurWorkPage() {
           },
         },
       })
+      
       gsap.fromTo(footerRef.current,
         { y: 60, clipPath: 'inset(8% 0% 0% 0% round 24px 24px 0px 0px)' },
         {
@@ -549,9 +545,20 @@ export default function OurWorkPage() {
           },
         }
       )
+      
+      ScrollTrigger.refresh()
+      
       return () => ScrollTrigger.getAll().forEach(t => t.kill())
     })
-    return () => mm.revert()
+    
+    const timer = setTimeout(() => {
+      ScrollTrigger.refresh()
+    }, 100)
+
+    return () => {
+      mm.revert()
+      clearTimeout(timer)
+    }
   }, [])
 
   const handleTabClick = useCallback((idx) => {
@@ -587,9 +594,11 @@ export default function OurWorkPage() {
             --tabbar-h: 48px;
           }
         }
+        
+        nav, header { z-index: 9999 !important; }
 
         .panel-hero   { position: relative; z-index: 1; }
-        .panel-work   { position: relative; z-index: 2; will-change: transform, clip-path; }
+        .panel-work   { position: relative; will-change: transform, clip-path; } /* z-index dipindah ke container wrapper */
         .panel-footer { position: relative; z-index: 3; will-change: transform, clip-path; }
 
         html.lenis { height: auto; }
@@ -628,7 +637,6 @@ export default function OurWorkPage() {
           .cat-header h2 { font-size: 0.95rem !important; }
         }
 
-        /* Card grid — 4×2 desktop, 2×2 mobile (last slot = see more) */
         .card-grid {
           flex: 1;
           min-height: 0;
@@ -759,133 +767,133 @@ export default function OurWorkPage() {
         </section>
 
         {/* ═══════ WORK PANEL — horizontal scroll ═══════ */}
-        <div
-          id="our-work"
-          ref={workRef}
-          className="panel-work"
-          style={{
-            width: '100%',
-            height: '100vh',
-            overflow: 'hidden',
-            background: '#fff',
-            boxShadow: '0 -32px 80px rgba(0,0,0,0.18), 0 -4px 20px rgba(0,0,0,0.12)',
-          }}
-        >
-          {/* Tab bar */}
+        {/* Container wrapper baru untuk pinning */}
+        <div ref={workContainerRef} style={{ position: 'relative', width: '100%', zIndex: 2 }}>
           <div
-            className="tab-strip"
+            id="our-work"
+            ref={workRef}
+            className="panel-work"
             style={{
-              position: 'absolute',
-              top: 'var(--navbar-h)',
-              left: 0, right: 0,
-              zIndex: 20,
-              height: 'var(--tabbar-h)',
-              background: 'rgb(255,255,255)',
-              backdropFilter: 'blur(18px)',
-              borderBottom: '1px solid rgba(0,0,0,0.07)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '0 1rem',
-              overflowX: 'auto',
+              width: '100%',
+              height: '100vh',
+              overflow: 'hidden',
+              background: '#fff',
+              boxShadow: '0 -32px 80px rgba(0,0,0,0.18), 0 -4px 20px rgba(0,0,0,0.12)',
             }}
           >
-            {CATEGORIES.map((cat, i) => (
-              <button
-                key={cat.id}
-                className="tab-btn"
-                onClick={() => handleTabClick(i)}
-                style={{
-                  fontSize: '0.8rem',
-                  fontWeight: activeTab === i ? 700 : 500,
-                  color: activeTab === i ? '#0a0a0a' : 'rgba(0,0,0,0.38)',
-                  letterSpacing: activeTab === i ? '0.01em' : '0',
-                }}
-              >
-                {cat.label}
-                <div style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  left: '1.4rem', right: '1.4rem',
-                  height: 2,
-                  borderRadius: '2px 2px 0 0',
-                  background: `linear-gradient(90deg, ${cat.accentColor}, ${cat.gradientTo})`,
-                  transform: activeTab === i ? 'scaleX(1)' : 'scaleX(0)',
-                  transformOrigin: 'left',
-                  transition: 'transform 0.38s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                }} />
-              </button>
-            ))}
-          </div>
+            {/* Tab bar */}
+            <div
+              className="tab-strip"
+              style={{
+                position: 'absolute',
+                top: 'var(--navbar-h, 65px)',
+                left: 0, right: 0,
+                zIndex: 999,
+                height: 'var(--tabbar-h, 52px)',
+                background: 'rgb(255,255,255)',
+                backdropFilter: 'blur(18px)',
+                borderBottom: '1px solid rgba(0,0,0,0.07)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '0 1rem',
+                overflowX: 'auto',
+              }}
+            >
+              {CATEGORIES.map((cat, i) => (
+                <button
+                  key={cat.id}
+                  className="tab-btn"
+                  onClick={() => handleTabClick(i)}
+                  style={{
+                    fontSize: '0.8rem',
+                    fontWeight: activeTab === i ? 700 : 500,
+                    color: activeTab === i ? '#0a0a0a' : 'rgba(0,0,0,0.38)',
+                    letterSpacing: activeTab === i ? '0.01em' : '0',
+                  }}
+                >
+                  {cat.label}
+                  <div style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: '1.4rem', right: '1.4rem',
+                    height: 2,
+                    borderRadius: '2px 2px 0 0',
+                    background: `linear-gradient(90deg, ${cat.accentColor}, ${cat.gradientTo})`,
+                    transform: activeTab === i ? 'scaleX(1)' : 'scaleX(0)',
+                    transformOrigin: 'left',
+                    transition: 'transform 0.38s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  }} />
+                </button>
+              ))}
+            </div>
 
-          {/* Horizontal track */}
-          <div
-            ref={trackRef}
-            style={{
-              display: 'flex',
-              width: `${CATEGORIES.length * 100}vw`,
-              height: '100%',
-              willChange: 'transform',
-            }}
-          >
-            {CATEGORIES.map((cat, ci) => {
-              const isMobile = typeof window !== 'undefined' ? window.innerWidth < 768 : false
-              const maxItems = isMobile ? 3 : 7  // 3 cards + 1 see more = 4 (mobile), 7 + 1 = 8 (desktop)
-              const visibleCards = cat.cards.slice(0, maxItems)
+            {/* Horizontal track */}
+            <div
+              ref={trackRef}
+              style={{
+                display: 'flex',
+                width: `${CATEGORIES.length * 100}vw`,
+                height: '100%',
+                willChange: 'transform',
+              }}
+            >
+              {CATEGORIES.map((cat, ci) => {
+                const isMobile = typeof window !== 'undefined' ? window.innerWidth < 768 : false
+                const maxItems = isMobile ? 3 : 7 
+                const visibleCards = cat.cards.slice(0, maxItems)
 
-              return (
-                <div key={cat.id} className="cat-panel-inner">
-
-                  {/* Category header */}
-                  <div className="cat-header">
-                    <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.2rem' }}>
-                        <div style={{ width: 16, height: 2, borderRadius: 2, background: `linear-gradient(90deg, ${cat.accentColor}, ${cat.gradientTo})` }} />
-                        <span style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: cat.accentColor, fontFamily: 'Inter, sans-serif' }}>
-                          {cat.shortLabel}
-                        </span>
+                return (
+                  <div key={cat.id} className="cat-panel-inner">
+                    {/* Category header */}
+                    <div className="cat-header">
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.2rem' }}>
+                          <div style={{ width: 16, height: 2, borderRadius: 2, background: `linear-gradient(90deg, ${cat.accentColor}, ${cat.gradientTo})` }} />
+                          <span style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: cat.accentColor, fontFamily: 'Inter, sans-serif' }}>
+                            {cat.shortLabel}
+                          </span>
+                        </div>
+                        <h2 style={{ fontWeight: 800, fontSize: 'clamp(1.1rem, 1.8vw, 1.45rem)', color: '#0a0a0a', letterSpacing: '-0.03em', margin: '0 0 0.2rem 0', fontFamily: 'Inter, sans-serif' }}>
+                          {cat.label}
+                        </h2>
+                        <p className="cat-desc" style={{ fontSize: '0.76rem', color: 'rgba(0,0,0,0.38)', margin: 0, fontFamily: 'Inter, sans-serif' }}>
+                          {cat.description}
+                        </p>
                       </div>
-                      <h2 style={{ fontWeight: 800, fontSize: 'clamp(1.1rem, 1.8vw, 1.45rem)', color: '#0a0a0a', letterSpacing: '-0.03em', margin: '0 0 0.2rem 0', fontFamily: 'Inter, sans-serif' }}>
-                        {cat.label}
-                      </h2>
-                      <p className="cat-desc" style={{ fontSize: '0.76rem', color: 'rgba(0,0,0,0.38)', margin: 0, fontFamily: 'Inter, sans-serif' }}>
-                        {cat.description}
-                      </p>
+                      <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                        <p style={{
+                          fontSize: 'clamp(1.6rem, 3vw, 2.2rem)', fontWeight: 800, letterSpacing: '-0.05em',
+                          margin: '0 0 0.1rem 0', lineHeight: 1,
+                          background: `linear-gradient(135deg, ${cat.accentColor}, ${cat.gradientTo})`,
+                          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+                          fontFamily: 'Inter, sans-serif',
+                        }}>
+                          {String(ci + 1).padStart(2, '0')}{' '}
+                          <span style={{ fontSize: '0.45em', opacity: 0.5 }}>/ {String(CATEGORIES.length).padStart(2, '0')}</span>
+                        </p>
+                        <p style={{ fontSize: '0.65rem', color: 'rgba(0,0,0,0.3)', margin: 0, fontFamily: 'Inter, sans-serif', letterSpacing: '0.06em' }}>
+                          {cat.stats}
+                        </p>
+                      </div>
                     </div>
-                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                      <p style={{
-                        fontSize: 'clamp(1.6rem, 3vw, 2.2rem)', fontWeight: 800, letterSpacing: '-0.05em',
-                        margin: '0 0 0.1rem 0', lineHeight: 1,
-                        background: `linear-gradient(135deg, ${cat.accentColor}, ${cat.gradientTo})`,
-                        WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-                        fontFamily: 'Inter, sans-serif',
-                      }}>
-                        {String(ci + 1).padStart(2, '0')}{' '}
-                        <span style={{ fontSize: '0.45em', opacity: 0.5 }}>/ {String(CATEGORIES.length).padStart(2, '0')}</span>
-                      </p>
-                      <p style={{ fontSize: '0.65rem', color: 'rgba(0,0,0,0.3)', margin: 0, fontFamily: 'Inter, sans-serif', letterSpacing: '0.06em' }}>
-                        {cat.stats}
-                      </p>
+
+                    {/* Card grid */}
+                    <div className="card-grid">
+                      {visibleCards.map((card) => (
+                        <InstaCard
+                          key={card.id}
+                          card={card}
+                          accent={cat.accentColor}
+                          categoryId={cat.id}
+                        />
+                      ))}
+                      <SeeMoreCard category={cat.shortLabel} />
                     </div>
                   </div>
-
-                  {/* Card grid — 7 InstaCards + 1 See More (last slot) */}
-                  <div className="card-grid">
-                    {visibleCards.map((card) => (
-                      <InstaCard
-                        key={card.id}
-                        card={card}
-                        accent={cat.accentColor}
-                        categoryId={cat.id}
-                      />
-                    ))}
-                    {/* See More — always last, always blue */}
-                    <SeeMoreCard category={cat.shortLabel} />
-                  </div>
-
-                </div>
-              )
-            })}
+                )
+              })}
+            </div>
           </div>
         </div>
 
