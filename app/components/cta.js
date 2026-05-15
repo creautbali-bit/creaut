@@ -27,7 +27,7 @@ export default function CTA() {
       style={{
         background: '#fff',
         borderTop: '1px solid var(--border)',
-        padding: 'clamp(4rem, 8vw, 7rem) 0',
+        padding: 'clamp(10rem, 8vw, 7rem) 0',
         overflow: 'hidden',
         position: 'relative',
       }}
