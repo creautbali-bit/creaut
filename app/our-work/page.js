@@ -11,11 +11,17 @@ import Footer from '../components/footer'
 gsap.registerPlugin(ScrollTrigger)
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   LENIS SMOOTH SCROLL
+   LENIS SMOOTH SCROLL (Dengan Perbaikan Reset Scroll)
    ───────────────────────────────────────────────────────────────────────────── */
 function useLenis() {
   const lenisRef = useRef(null)
+  
   useEffect(() => {
+    // Matikan fitur scroll restoration bawaan browser agar tidak otomatis kembali ke posisi bawah
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual'
+    }
+
     let lenis
     const init = async () => {
       try {
@@ -31,18 +37,31 @@ function useLenis() {
           infinite: false,
         })
         lenisRef.current = lenis
+
+        // Paksa Lenis mereset posisinya ke paling atas secara instan saat inisialisasi
+        lenis.scrollTo(0, { immediate: true })
+
         gsap.ticker.add((time) => lenis.raf(time * 1000))
         gsap.ticker.lagSmoothing(0)
         lenis.on('scroll', ScrollTrigger.update)
       } catch {}
     }
+
+    // Paksa browser native scroll ke atas
+    window.scrollTo(0, 0)
     init()
+
     return () => {
+      // Saat berpindah halaman (unmount), paksa scroll kembali ke atas sebelum Lenis dihancurkan
+      if (lenis) {
+        lenis.scrollTo(0, { immediate: true })
+      }
       gsap.ticker.remove((time) => lenis?.raf(time * 1000))
       lenis?.destroy()
       lenisRef.current = null
     }
   }, [])
+  
   return lenisRef
 }
 
@@ -106,6 +125,7 @@ const CATEGORIES = [
     id: 'social',
     label: 'Social Media Management',
     shortLabel: 'Social Media',
+    href: '/services/social-media-management',
     accentColor: '#E1306C',
     gradientTo: '#833ab4',
     description: 'Driving engagement & brand awareness across all major platforms.',
@@ -124,6 +144,7 @@ const CATEGORIES = [
     id: 'photo',
     label: 'Visual Photography',
     shortLabel: 'Photography',
+    href: '/services/visual-photography/portfolio',
     accentColor: '#5de0e6',
     gradientTo: '#004aad',
     description: 'Capturing the essence of your brand through stunning imagery.',
@@ -142,6 +163,7 @@ const CATEGORIES = [
     id: 'video',
     label: 'Video Production',
     shortLabel: 'Video',
+    href: '/services/video-production/portfolio',
     accentColor: '#004aad',
     gradientTo: '#5de0e6',
     description: 'Cinematic storytelling that elevates your brand narrative.',
@@ -160,6 +182,7 @@ const CATEGORIES = [
     id: 'branding',
     label: 'Branding',
     shortLabel: 'Branding',
+    href: '/services/branding/portfolio',
     accentColor: '#f59e0b',
     gradientTo: '#ef4444',
     description: 'Building distinctive identities that resonate and endure.',
@@ -352,14 +375,15 @@ function InstaCard({ card, accent, categoryId }) {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   SEE MORE CARD — unified blue gradient across ALL categories
+   SEE MORE CARD — unified blue gradient across ALL categories, linking via Next.js
    ───────────────────────────────────────────────────────────────────────────── */
-function SeeMoreCard({ category }) {
+function SeeMoreCard({ category, href }) {
   const BLUE_FROM = '#5de0e6'
   const BLUE_TO   = '#004aad'
 
   return (
-    <div
+    <Link
+      href={href}
       style={{
         position: 'relative',
         overflow: 'hidden',
@@ -373,10 +397,10 @@ function SeeMoreCard({ category }) {
         padding: '1rem',
         background: `linear-gradient(135deg, ${BLUE_FROM}, ${BLUE_TO})`,
         transition: 'filter 0.3s ease',
+        textDecoration: 'none',
       }}
       onMouseEnter={e => (e.currentTarget.style.filter = 'brightness(1.12)')}
       onMouseLeave={e => (e.currentTarget.style.filter = 'brightness(1)')}
-      onClick={() => console.log(`Maps to ${category}`)}
     >
       <div style={{
         position: 'absolute',
@@ -437,7 +461,7 @@ function SeeMoreCard({ category }) {
       }}>
         {category}
       </span>
-    </div>
+    </Link>
   )
 }
 
@@ -448,7 +472,7 @@ export default function OurWorkPage() {
   const lenisRef = useLenis()
   const [activeTab, setActiveTab] = useState(0)
 
-  const workContainerRef = useRef(null) // Added ref for container wrapper
+  const workContainerRef = useRef(null)
 
   const heroRef      = useRef(null)
   const heroInnerRef = useRef(null)
@@ -492,7 +516,7 @@ export default function OurWorkPage() {
       gsap.to(heroInnerRef.current, {
         y: -80, opacity: 0, scale: 0.97, ease: 'none',
         scrollTrigger: {
-          trigger: workContainerRef.current, // Updated target
+          trigger: workContainerRef.current,
           start: 'top 85%',
           end: 'top 10%',
           scrub: 1.2,
@@ -505,7 +529,7 @@ export default function OurWorkPage() {
           y: 0, clipPath: 'inset(0% 0% 0% 0% round 0px 0px 0px 0px)',
           ease: 'none',
           scrollTrigger: {
-            trigger: workContainerRef.current, // Updated target
+            trigger: workContainerRef.current,
             start: 'top 92%',
             end: 'top 5%',
             scrub: 1,
@@ -517,7 +541,7 @@ export default function OurWorkPage() {
         x: () => -(trackRef.current.scrollWidth - window.innerWidth),
         ease: 'none',
         scrollTrigger: {
-          trigger: workContainerRef.current, // Updated target
+          trigger: workContainerRef.current,
           start: 'top top',
           end: () => `+=${window.innerHeight * 1.3 * (CATEGORIES.length - 1)}`,
           pin: true,
@@ -598,7 +622,7 @@ export default function OurWorkPage() {
         nav, header { z-index: 9999 !important; }
 
         .panel-hero   { position: relative; z-index: 1; }
-        .panel-work   { position: relative; will-change: transform, clip-path; } /* z-index dipindah ke container wrapper */
+        .panel-work   { position: relative; will-change: transform, clip-path; }
         .panel-footer { position: relative; z-index: 3; will-change: transform, clip-path; }
 
         html.lenis { height: auto; }
@@ -767,7 +791,6 @@ export default function OurWorkPage() {
         </section>
 
         {/* ═══════ WORK PANEL — horizontal scroll ═══════ */}
-        {/* Container wrapper baru untuk pinning */}
         <div ref={workContainerRef} style={{ position: 'relative', width: '100%', zIndex: 2 }}>
           <div
             id="our-work"
@@ -888,7 +911,7 @@ export default function OurWorkPage() {
                           categoryId={cat.id}
                         />
                       ))}
-                      <SeeMoreCard category={cat.shortLabel} />
+                      <SeeMoreCard category={cat.shortLabel} href={cat.href} />
                     </div>
                   </div>
                 )

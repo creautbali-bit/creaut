@@ -15,7 +15,7 @@ export default function Footer() {
 
   const serviceLinks = [
     { label: 'Video Production',   href: '/services/video-production' },
-    { label: 'Social Media Mgmt',  href: '/services/social-media' },
+    { label: 'Social Media Management',  href: '/services/social-media' },
     { label: 'Visual Photography', href: '/services/visual-photography' },
     { label: 'Branding',           href: '/services/branding' },
   ]
@@ -29,7 +29,6 @@ export default function Footer() {
   const socials = [
     { label: 'IG', full: 'Instagram', href: 'https://www.instagram.com/' },
     { label: 'YT', full: 'YouTube',   href: 'https://www.youtube.com/' },
-    { label: 'LN', full: 'LinkedIn',  href: '#' },
   ]
 
   return (
