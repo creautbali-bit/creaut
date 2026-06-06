@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
+import VideoModal   from '../../../components/VideoModal'    // ← renamed from InstagramModal
+import PortfolioCard from '../../../components/PortfolioCard'
 import Navbar from '../../../components/navbar'
 import Footer from '../../../components/footer'
 import { gsap } from 'gsap'
@@ -11,8 +12,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 gsap.registerPlugin(ScrollTrigger)
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   DATA — 12 CATEGORIES
-   ───────────────────────────────────────────────────────────────────────────── */
+  TABS
+  ───────────────────────────────────────────────────────────────────────────── */
 const TABS = [
   { id: 'all',           label: 'All' },
   { id: 'fnb',           label: 'Food & Beverage' },
@@ -29,175 +30,44 @@ const TABS = [
   { id: 'corporate',     label: 'Corporate & Professional' },
 ]
 
+/* ─────────────────────────────────────────────────────────────────────────────
+  PORTFOLIO DATA
+  url format: 'https://youtube.com/shorts/VIDEO_ID'
+           or 'https://youtu.be/VIDEO_ID'
+           or 'https://www.youtube.com/watch?v=VIDEO_ID'
+  ───────────────────────────────────────────────────────────────────────────── */
 const PORTFOLIO = [
-  { id: 1, category: 'fashion', title: 'Artisan Coffee Brand Film', client: 'Advish Konveksi', likes: '16.8K', comments: '234', duration: '2:30', url: 'https://www.instagram.com/reel/DWiizGKEcxH/?utm_source=ig_web_button_share_sheet', image: '/image/advish1.jpg' },
-  { id: 2, category: 'fashion', title: 'Restaurant Promo Film', client: 'Advish Konveksi', likes: '9.2K', comments: '145', duration: '0:60', url: 'https://www.instagram.com/reel/DWqkjpVERdv/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==', image: '/image/advish2.jpg' },
-  { id: 3, category: 'fashion', title: 'Craft Beverage Commercial', client: 'Advish Konveksi', likes: '7.4K', comments: '98', duration: '0:30', url: 'https://www.instagram.com/reel/DVsyXhoicaI/?utm_source=ig_web_button_share_sheet', image: '/image/advish3.jpg' },
-  { id: 4, category: 'fashion', title: 'Luxury Batik Lookbook', client: 'Advish Konveksi', likes: '21.3K', comments: '412', duration: '1:45', url: 'https://www.instagram.com/reel/DVBIaq6ES1Z/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==', image: '/image/advish4.jpg' },
-  { id: 5, category: 'fashion', title: 'Streetwear Campaign', client: 'Advish Konveksi', likes: '14.6K', comments: '278', duration: '3:10', url: 'https://www.instagram.com/reel/DVORbN6E2wg/?igsh=MTk0ZXZka3puYTNqNQ%3D%3D', image: '/image/advish5.jpg' },
-  { id: 6, category: 'entertainment', title: 'Luxury Villa Brand Film', client: 'Bali Entertainments Agency', likes: '18.4K', comments: '321', duration: '4:00', url: 'https://www.instagram.com/reel/DUVOzZwEzx4/?igsh=ZmgwdW9haTh6a3Ex', image: '/image/ba1.jpg' },
-  { id: 7, category: 'entertainment', title: 'Boutique Hotel Promo', client: 'Bali Entertainments Agency', likes: '11.2K', comments: '198', duration: '1:00', url: 'https://www.instagram.com/reel/DT4_bXxE4vJ/?igsh=MTNweWExY3l2YjRtag==', image: '/image/ba2.jpg' },
-  { id: 8, category: 'entertainment', title: 'Skincare Product Film', client: 'Bali Entertainments Agency', likes: '13.7K', comments: '256', duration: '0:45', url: 'https://www.instagram.com/reel/DR4L3-2k5It/?igsh=MXJyaTAzc2tnamNkeg==', image: '/image/ba3.jpg' },
-  { id: 9, category: 'env', title: 'Wellness Retreat Film', client: 'Enviromas', likes: '8.9K', comments: '134', duration: '3:20', url: 'https://www.instagram.com/reel/DTw3lxMkoAn/?igsh=MTU0czVzdnl2cTQ4Zg==', image: '/image/enviro1.jpg' },
-  { id: 10, category: 'env', title: 'Clifftop Estate Showcase', client: 'Enviromas', likes: '22.1K', comments: '398', duration: '5:00', url: 'https://www.instagram.com/reel/DUuqrbWEuqR/?igsh=bTRwZ2lxYXJtZ2Fq', image: '/image/enviro2.jpg' },
-  { id: 11, category: 'env', title: 'Apartment Development Film', client: 'Amanaid', likes: '7.8K', comments: '112', duration: '2:00', url: 'https://www.instagram.com/reel/DQTYri3E0UH/?igsh=MWQ1NGNzdmF3cWl1bw%3D%3D', image: '/image/amanaid1.jpg' },
-  { id: 12, category: 'env', title: 'Off-Road Adventure Series', client: 'Amanaid', likes: '31.4K', comments: '567', duration: '6:30', url: 'https://www.instagram.com/reel/DW5f1edSwIn/?igsh=YTdheG5sczh4dG9i', image: '/image/amanaid2.jpg' },
-  { id: 13, category: 'env', title: 'Surfing Lifestyle Film', client: 'Amanaid', likes: '19.6K', comments: '342', duration: '2:15', url: 'https://www.instagram.com/reel/DVp8PY9E4A6/?igsh=czFxcG1vYmRmdWRx     ', image: '/image/amanaid3.jpg' },
-  { id: 14, category: 'auto', title: 'Ocean Conservation Doc', client: 'ATV Raka Adventure', likes: '27.3K', comments: '489', duration: '8:00', url: 'https://www.instagram.com/reel/DUkBlSdET7r/?igsh=YmphMGd6enJ5eGo1', image: '/image/raka1.jpg' },
-  { id: 15, category: 'auto', title: 'Reforestation Campaign', client: 'ATV Raka Adventure', likes: '15.2K', comments: '276', duration: '4:30', url: 'https://www.instagram.com/reel/DSj8FaaEdUa/?igsh=MWt2aGg4cTJqYmdubg==', image: '/image/raka2.jpg' },
-  { id: 16, category: 'fnb', title: 'Hospital Profile Film', client: 'My Cocotte Bali', likes: '6.4K', comments: '89', duration: '3:00', url: 'https://www.instagram.com/reel/DVAW7fXD3yJ/?igsh=ejFhZHd4ZmN4dDJs', image: '/image/mcc1.jpg' },
-  { id: 17, category: 'fnb', title: 'Online Course Promo', client: 'My Cocotte Bali', likes: '8.1K', comments: '134', duration: '1:30', url: 'https://www.instagram.com/reel/DSPIFE5Dx5q/?igsh=OXQyM2Y3MDFkbGlh', image: '/image/mcc2.jpg' },
-  { id: 18, category: 'fnb', title: 'Campus Brand Identity', client: 'My Cocotte Bali', likes: '5.3K', comments: '78', duration: '2:45', url: 'https://www.instagram.com/reel/DScQoQ5D0pc/?igsh=MXc3czg5YXRyMmlncw==', image: '/image/mcc3.jpg' },
-  { id: 19, category: 'property', title: 'Music Festival Highlight', client: 'Amartya Bali', likes: '38.7K', comments: '712', duration: '5:20', url: 'https://www.instagram.com/reel/DSMuSwMkv3r/?igsh=cnl3dG8yOW41a2li', image: '/image/amartya1.jpg' },
-  { id: 20, category: 'property', title: 'Corporate Gala Coverage', client: 'Amartya Bali', likes: '4.9K', comments: '67', duration: '3:45', url: 'https://www.instagram.com/reel/DPghplTkaAv/?igsh=MWJsc2R4am04N3Rvbw==', image: '/image/amartya2.jpg' },
-  { id: 21, category: 'property', title: 'E-Commerce Brand Film', client: 'Amartya Bali', likes: '12.4K', comments: '198', duration: '1:00', url: 'https://www.instagram.com/reel/DX_HUI1yrDG/?igsh=dXpxam90emd6a3V4', image: '/image/amartya3.jpg' },
-  { id: 22, category: 'hospitality', title: 'Annual Report Film', client: 'Uma Wellness Center', likes: '5.6K', comments: '78', duration: '4:00', url: 'https://www.instagram.com/reel/DMSM0sKRwbp/?igsh=NzFqZXUzcXppenpy', image: '/image/uma1.jpg' },
-  { id: 23, category: 'hospitality', title: 'Company Profile Film', client: 'Uma Wellness Center', likes: '9.3K', comments: '143', duration: '3:30', url: 'https://www.instagram.com/reel/DF-ITG6zjGw/?igsh=MTFzeW4xaGI5YmwwNw==', image: '/image/uma2.jpg' },
-  { id: 24, category: 'hospitality', title: 'Testimonial Series', client: 'Uma Wellness Center', likes: '6.1K', comments: '94', duration: '1:20', url: 'https://www.instagram.com/reel/DHu-A-mNmYM/?igsh=MW1yZGg2ZGEzanMycA==', image: '/image/uma3.jpg' },
+  { id: 1,  category: 'fashion',       title: '1001 Pertanyaan Konveksi',    client: 'Advish Konveksi',            duration: '2:30', url: 'https://youtube.com/shorts/REPLACE_ID', image: '/image/advish1.jpg' },
+  { id: 2,  category: 'fashion',       title: 'Fomo Olahraga',               client: 'Advish Konveksi',            duration: '0:60', url: 'https://youtube.com/shorts/REPLACE_ID', image: '/image/advish2.jpg' },
+  { id: 3,  category: 'fashion',       title: 'Panglima Konveksi',           client: 'Advish Konveksi',            duration: '0:30', url: 'https://youtube.com/shorts/REPLACE_ID', image: '/image/advish3.jpg' },
+  { id: 4,  category: 'fashion',       title: 'Wolves Generation',           client: 'Advish Konveksi',            duration: '1:45', url: 'https://youtube.com/shorts/REPLACE_ID', image: '/image/advish4.jpg' },
+  { id: 5,  category: 'fashion',       title: 'PALA SMANELA',                client: 'Advish Konveksi',            duration: '3:10', url: 'https://youtube.com/shorts/REPLACE_ID', image: '/image/advish5.jpg' },
+  { id: 6,  category: 'entertainment', title: 'Toraja Karo Dancer',          client: 'Bali Entertainments Agency', duration: '4:00', url: 'https://youtube.com/shorts/REPLACE_ID', image: '/image/ba1.jpg' },
+  { id: 7,  category: 'entertainment', title: 'Tropical Dancers',            client: 'Bali Entertainments Agency', duration: '1:00', url: 'https://youtube.com/shorts/REPLACE_ID', image: '/image/ba2.jpg' },
+  { id: 8,  category: 'entertainment', title: 'Three Afro Queens',           client: 'Bali Entertainments Agency', duration: '0:45', url: 'https://youtube.com/shorts/REPLACE_ID', image: '/image/ba3.jpg' },
+  { id: 9,  category: 'env',           title: 'Food Waste & Food Loss',      client: 'Enviromas',                  duration: '3:20', url: 'https://youtube.com/shorts/REPLACE_ID', image: '/image/enviro1.jpg' },
+  { id: 10, category: 'env',           title: 'From Waste to Value',         client: 'Enviromas',                  duration: '5:00', url: 'https://youtube.com/shorts/REPLACE_ID', image: '/image/enviro2.jpg' },
+  { id: 11, category: 'env',           title: 'IPAL Mahal?',                 client: 'Amanaid',                    duration: '2:00', url: 'https://youtube.com/shorts/REPLACE_ID', image: '/image/amanaid1.jpg' },
+  { id: 12, category: 'env',           title: 'Testimoni RS Inmedika',       client: 'Amanaid',                    duration: '6:30', url: 'https://youtube.com/shorts/REPLACE_ID', image: '/image/amanaid2.jpg' },
+  { id: 13, category: 'env',           title: 'Peran IPAL',                  client: 'Amanaid',                    duration: '2:15', url: 'https://youtube.com/shorts/REPLACE_ID', image: '/image/amanaid3.jpg' },
+  { id: 14, category: 'auto',          title: 'Liburan 50 Orang di RAKA ATV?', client: 'ATV Raka Adventure',      duration: '8:00', url: 'https://youtube.com/shorts/REPLACE_ID', image: '/image/raka1.jpg' },
+  { id: 15, category: 'auto',          title: 'Local Group di Raka ATV',     client: 'ATV Raka Adventure',         duration: '4:30', url: 'https://youtube.com/shorts/REPLACE_ID', image: '/image/raka2.jpg' },
+  { id: 16, category: 'fnb',           title: 'A Parisian Sandwich',         client: 'My Cocotte Bali',            duration: '3:00', url: 'https://youtube.com/shorts/REPLACE_ID', image: '/image/mcc1.jpg' },
+  { id: 17, category: 'fnb',           title: 'Online Course Promo',         client: 'My Cocotte Bali',            duration: '1:30', url: 'https://youtube.com/shorts/REPLACE_ID', image: '/image/mcc2.jpg' },
+  { id: 18, category: 'fnb',           title: 'Campus Brand Identity',       client: 'My Cocotte Bali',            duration: '2:45', url: 'https://youtube.com/shorts/REPLACE_ID', image: '/image/mcc3.jpg' },
+  { id: 19, category: 'property',      title: 'Music Festival Highlight',    client: 'Amartya Bali',               duration: '5:20', url: 'https://youtube.com/shorts/REPLACE_ID', image: '/image/amartya1.jpg' },
+  { id: 20, category: 'property',      title: 'Corporate Gala Coverage',     client: 'Amartya Bali',               duration: '3:45', url: 'https://youtube.com/shorts/REPLACE_ID', image: '/image/amartya2.jpg' },
+  { id: 21, category: 'property',      title: 'E-Commerce Brand Film',       client: 'Amartya Bali',               duration: '1:00', url: 'https://youtube.com/shorts/REPLACE_ID', image: '/image/amartya3.jpg' },
+  { id: 22, category: 'hospitality',   title: 'Annual Report Film',          client: 'Uma Wellness Center',        duration: '4:00', url: 'https://youtube.com/shorts/REPLACE_ID', image: '/image/uma1.jpg' },
+  { id: 23, category: 'hospitality',   title: 'Company Profile Film',        client: 'Uma Wellness Center',        duration: '3:30', url: 'https://youtube.com/shorts/REPLACE_ID', image: '/image/uma2.jpg' },
+  { id: 24, category: 'hospitality',   title: 'Testimonial Series',          client: 'Uma Wellness Center',        duration: '1:20', url: 'https://youtube.com/shorts/REPLACE_ID', image: '/image/uma3.jpg' },
 ]
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   PORTFOLIO CARD — mobile-aware
-   ───────────────────────────────────────────────────────────────────────────── */
-function PortfolioCard({ item, index }) {
-  const [hovered, setHovered] = useState(false)
-  const cardRef = useRef(null)
-  const isIG = item.platform === 'IG'
-
-  // Per-card scroll reveal
-  useEffect(() => {
-    const el = cardRef.current
-    if (!el) return
-    gsap.fromTo(el,
-      { opacity: 0, y: 40, scale: 0.96 },
-      {
-        opacity: 1, y: 0, scale: 1,
-        duration: 0.7,
-        ease: 'power3.out',
-        delay: (index % 6) * 0.07, // stagger by column position
-        scrollTrigger: {
-          trigger: el,
-          start: 'top 88%',
-          toggleActions: 'play none none none',
-        },
-      }
-    )
-    return () => ScrollTrigger.getAll().forEach(st => {
-      if (st.trigger === el) st.kill()
-    })
-  }, [index])
-
-  return (
-    <a
-      ref={cardRef}
-      href={item.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        position: 'relative',
-        display: 'block',
-        width: '100%',
-        aspectRatio: '9 / 14',
-        overflow: 'hidden',
-        background: '#0a0a0a',
-        textDecoration: 'none',
-        cursor: 'pointer',
-        borderRadius: 0,
-        outline: hovered ? '1.5px solid rgba(93,224,230,0.5)' : '1.5px solid transparent',
-        outlineOffset: '-1.5px',
-        transition: 'outline-color 0.3s ease',
-        opacity: 0, // start hidden, GSAP will reveal
-      }}
-    >
-      {/* Thumbnail */}
-      <img
-        src={item.image}
-        alt={item.title}
-        draggable={false}
-        style={{
-          position: 'absolute',
-          inset: 0,
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-        }}
-      />
-
-      {/* Base gradient */}
-      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.08) 55%, transparent 100%)', zIndex: 1 }} />
-
-      {/* Play icon — center, hover only */}
-      <div style={{
-        position: 'absolute', top: '50%', left: '50%',
-        transform: `translate(-50%, -50%) scale(${hovered ? 1 : 0.7})`,
-        zIndex: 3, width: 48, height: 48,
-        background: 'rgba(255, 255, 255, 0.12)',
-        backdropFilter: 'blur(10px)',
-        border: '1.5px solid rgba(255,255,255,0.25)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        opacity: hovered ? 1 : 0,
-        transition: 'opacity 0.3s ease, transform 0.35s cubic-bezier(0.22,1,0.36,1)',
-      }}>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-          <path d="M8 5v14l11-7z" />
-        </svg>
-      </div>
-
-      {/* Bottom content */}
-      <div style={{
-        position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 3,
-        padding: 'clamp(8px, 2vw, 14px)',
-        transform: hovered ? 'translateY(0)' : 'translateY(4px)',
-        transition: 'transform 0.4s ease',
-      }}>
-        <p style={{
-          margin: '0 0 3px',
-          fontSize: 'clamp(0.48rem, 1.1vw, 0.55rem)',
-          fontWeight: 800, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#5de0e6',
-        }}>
-          {item.client}
-        </p>
-        <h3 style={{
-          margin: '0 0 7px',
-          fontSize: 'clamp(0.7rem, 1.5vw, 0.9rem)',
-          fontWeight: 700, color: '#fff', lineHeight: 1.2, letterSpacing: '-0.02em',
-        }}>
-          {item.title}
-        </h3>
-
-        {/* Divider line */}
-        <div style={{
-          width: hovered ? '100%' : '0%', height: 1,
-          background: 'linear-gradient(90deg, #5de0e6, #004aad)',
-          marginBottom: '7px',
-          transition: 'width 0.5s cubic-bezier(0.22,1,0.36,1)',
-        }} />
-
-        {/* Stats */}
-        <div style={{
-          display: 'flex', gap: '10px',
-          opacity: hovered ? 1 : 0,
-          transform: hovered ? 'translateY(0)' : 'translateY(6px)',
-          transition: 'opacity 0.3s ease 0.05s, transform 0.35s ease 0.05s',
-        }}>
-          <span style={{ fontSize: 'clamp(0.48rem, 1.1vw, 0.6rem)', color: 'rgba(255,255,255,0.55)', fontWeight: 600 }}>♡ {item.likes}</span>
-          <span style={{ fontSize: 'clamp(0.48rem, 1.1vw, 0.6rem)', color: 'rgba(255,255,255,0.35)' }}>·</span>
-          <span style={{ fontSize: 'clamp(0.48rem, 1.1vw, 0.6rem)', color: 'rgba(255,255,255,0.55)', fontWeight: 600 }}>{item.comments} cmts</span>
-        </div>
-      </div>
-    </a>
-  )
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   TAB BAR — mobile-friendly
-   ───────────────────────────────────────────────────────────────────────────── */
+  TAB BAR
+  ───────────────────────────────────────────────────────────────────────────── */
 function TabBar({ active, onSelect, counts }) {
-  const allTabs = TABS
-  const mainTab = allTabs[0]
-  const restTabs = allTabs.slice(1)
+  const [mainTab, ...restTabs] = TABS
 
   const TabButton = ({ tab }) => {
     const isActive = active === tab.id
@@ -215,7 +85,7 @@ function TabBar({ active, onSelect, counts }) {
           whiteSpace: 'nowrap', position: 'relative',
           transition: 'color 0.2s',
           display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0,
-          minHeight: 44, // touch target
+          minHeight: 44,
         }}
         onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = '#000' }}
         onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = 'rgba(0,0,0,0.38)' }}
@@ -255,8 +125,8 @@ function TabBar({ active, onSelect, counts }) {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   CTA STRIP — mobile-adjusted
-   ───────────────────────────────────────────────────────────────────────────── */
+  CTA STRIP
+  ───────────────────────────────────────────────────────────────────────────── */
 function CTAStrip() {
   const sectionRef = useRef(null)
   const contentRef = useRef(null)
@@ -272,15 +142,12 @@ function CTAStrip() {
   }, [])
 
   return (
-    <section
-      ref={sectionRef}
-      style={{
-        background: '#fff',
-        borderTop: '1px solid rgba(0,0,0,0.06)',
-        padding: 'clamp(5rem, 10vw, 8rem) clamp(1rem, 4vw, 2rem)',
-        overflow: 'hidden', position: 'relative',
-      }}
-    >
+    <section ref={sectionRef} style={{
+      background: '#fff',
+      borderTop: '1px solid rgba(0,0,0,0.06)',
+      padding: 'clamp(5rem, 10vw, 8rem) clamp(1rem, 4vw, 2rem)',
+      overflow: 'hidden', position: 'relative',
+    }}>
       <div style={{
         position: 'absolute', top: '-40%', left: '50%',
         transform: 'translateX(-50%)',
@@ -354,11 +221,12 @@ function CTAStrip() {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   PAGE
-   ───────────────────────────────────────────────────────────────────────────── */
+  PAGE
+  ───────────────────────────────────────────────────────────────────────────── */
 export default function VideoPortfolioPage() {
-  const [activeTab, setActiveTab] = useState('all')
-  const [filteredItems, setFilteredItems] = useState(PORTFOLIO)
+  const [activeTab,      setActiveTab]      = useState('all')
+  const [filteredItems,  setFilteredItems]  = useState(PORTFOLIO)
+  const [activeIndex,    setActiveIndex]    = useState(null)  // ← index in filteredItems
 
   const heroRef     = useRef(null)
   const heroTextRef = useRef(null)
@@ -371,11 +239,13 @@ export default function VideoPortfolioPage() {
     return acc
   }, {})
 
+  /* Filter + close modal on tab change */
   useEffect(() => {
     setFilteredItems(activeTab === 'all' ? PORTFOLIO : PORTFOLIO.filter(p => p.category === activeTab))
+    setActiveIndex(null)
   }, [activeTab])
 
-  /* Hero entrance animation */
+  /* Hero entrance */
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.timeline({ defaults: { ease: 'power3.out' } })
@@ -392,7 +262,7 @@ export default function VideoPortfolioPage() {
     return () => ctx.revert()
   }, [])
 
-  /* Count row reveal on filter change */
+  /* Count row flash on filter change */
   useEffect(() => {
     if (!countRowRef.current) return
     gsap.fromTo(countRowRef.current,
@@ -408,63 +278,25 @@ export default function VideoPortfolioPage() {
         *, *::before, *::after { box-sizing: border-box; }
         ::-webkit-scrollbar { display: none; }
 
-        @keyframes grid-in {
-          from { opacity: 0; }
-          to   { opacity: 1; }
-        }
+        @keyframes grid-in { from { opacity: 0; } to { opacity: 1; } }
 
-        /* ── RESPONSIVE GRID ── */
         .portfolio-grid {
           display: grid;
           gap: 1px;
           background: rgba(0,0,0,0.06);
           animation: grid-in 0.4s ease;
-          /* Default: 6 columns (desktop) */
           grid-template-columns: repeat(6, 1fr);
         }
-
-        /* Tablet: 3 columns */
-        @media (max-width: 1024px) {
-          .portfolio-grid {
-            grid-template-columns: repeat(3, 1fr);
-          }
-        }
-
-        /* Mobile: 2 columns */
-        @media (max-width: 600px) {
-          .portfolio-grid {
-            grid-template-columns: repeat(2, 1fr);
-          }
-        }
-
-        /* Hero heading responsive */
-        @media (max-width: 600px) {
-          .hero-heading {
-            font-size: clamp(3.5rem, 20vw, 5rem) !important;
-          }
-        }
-
-        /* Platform badge — show full label on tablet+, short on mobile */
-        @media (max-width: 600px) {
-          .platform-label-full { display: none; }
-          .platform-label-short { display: inline; }
-        }
-        @media (min-width: 601px) {
-          .platform-label-full { display: inline; }
-          .platform-label-short { display: none; }
-        }
-
-        /* Stats tooltip on mobile: hide comments */
-        @media (max-width: 400px) {
-          .stat-comments { display: none; }
-        }
+        @media (max-width: 1024px) { .portfolio-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 600px)  { .portfolio-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px)  { .hero-heading   { font-size: clamp(3.5rem, 20vw, 5rem) !important; } }
       `}</style>
 
       <Navbar />
 
       <main>
 
-        {/* ── HERO ──────────────────────────────────────────────── */}
+        {/* ── HERO ─────────────────────────────────────────────────────── */}
         <section ref={heroRef} style={{
           position: 'relative', width: '100%',
           height: '100vh', minHeight: 520,
@@ -491,20 +323,15 @@ export default function VideoPortfolioPage() {
             width: '100%', maxWidth: 860, textAlign: 'center',
             display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'clamp(1rem, 3vw, 1.5rem)',
           }}>
-            {/* Breadcrumb — hide on small mobile */}
-            <div className="hero-line" style={{
-              display: 'flex', alignItems: 'center', gap: '0.4rem',
-              flexWrap: 'wrap', justifyContent: 'center',
-            }}>
+            {/* Breadcrumb */}
+            <div className="hero-line" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap', justifyContent: 'center' }}>
               <Link href="/" style={{ fontSize: 'clamp(0.6rem, 1.5vw, 0.72rem)', fontWeight: 500, color: 'rgba(0,0,0,0.4)', textDecoration: 'none', letterSpacing: '0.1em', transition: 'color 0.2s' }}
                 onMouseEnter={e => e.currentTarget.style.color = '#5de0e6'}
-                onMouseLeave={e => e.currentTarget.style.color = 'rgba(0,0,0,0.4)'}
-              >Creaut Bali</Link>
+                onMouseLeave={e => e.currentTarget.style.color = 'rgba(0,0,0,0.4)'}>Creaut Bali</Link>
               <span style={{ color: 'rgba(0,0,0,0.2)' }}>·</span>
               <Link href="/services" style={{ fontSize: 'clamp(0.6rem, 1.5vw, 0.72rem)', fontWeight: 500, color: 'rgba(0,0,0,0.4)', textDecoration: 'none', letterSpacing: '0.1em', transition: 'color 0.2s' }}
                 onMouseEnter={e => e.currentTarget.style.color = '#5de0e6'}
-                onMouseLeave={e => e.currentTarget.style.color = 'rgba(0,0,0,0.4)'}
-              >Services</Link>
+                onMouseLeave={e => e.currentTarget.style.color = 'rgba(0,0,0,0.4)'}>Services</Link>
               <span style={{ color: 'rgba(0,0,0,0.2)' }}>·</span>
               <span style={{ fontSize: 'clamp(0.6rem, 1.5vw, 0.72rem)', fontWeight: 600, color: '#5de0e6', letterSpacing: '0.1em' }}>Portfolio</span>
             </div>
@@ -531,7 +358,7 @@ export default function VideoPortfolioPage() {
               </span>
             </h1>
 
-            {/* Desc */}
+            {/* Description */}
             <p className="hero-line" style={{
               fontSize: 'clamp(0.82rem, 2vw, 1.05rem)',
               color: 'rgba(0,0,0,0.5)', lineHeight: 1.75,
@@ -548,7 +375,7 @@ export default function VideoPortfolioPage() {
           </div>
         </section>
 
-        {/* ── FILTER + GRID ─────────────────────────────────────────────────── */}
+        {/* ── FILTER + GRID ────────────────────────────────────────────── */}
         <section id="portfolio" style={{ background: '#fff', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
 
           {/* Sticky Tab Bar */}
@@ -572,26 +399,24 @@ export default function VideoPortfolioPage() {
               ) : (
                 <>
                   {/* Count row */}
-                  <div
-                    ref={countRowRef}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: '0.6rem',
-                      padding: 'clamp(1.25rem, 3vw, 1.75rem) 0 clamp(1rem, 2.5vw, 1.25rem)',
-                    }}
-                  >
+                  <div ref={countRowRef} style={{
+                    display: 'flex', alignItems: 'center', gap: '0.6rem',
+                    padding: 'clamp(1.25rem, 3vw, 1.75rem) 0 clamp(1rem, 2.5vw, 1.25rem)',
+                  }}>
                     <div style={{ width: 18, height: 1.5, background: 'linear-gradient(90deg,#5de0e6,#004aad)' }} />
                     <span style={{ fontSize: 'clamp(0.58rem, 1.5vw, 0.62rem)', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#004aad' }}>
                       {filteredItems.length} {filteredItems.length === 1 ? 'Project' : 'Projects'}
                     </span>
                   </div>
 
-                  {/* Responsive grid via CSS class */}
+                  {/* Responsive grid */}
                   <div ref={gridRef} className="portfolio-grid">
                     {filteredItems.map((item, i) => (
                       <PortfolioCard
                         key={`${activeTab}-${item.id}`}
                         item={item}
                         index={i}
+                        onPlay={setActiveIndex}   // ← passes index, not item
                       />
                     ))}
                   </div>
@@ -601,10 +426,19 @@ export default function VideoPortfolioPage() {
           </div>
         </section>
 
-        {/* ── CTA STRIP ────────────────────────────────────────────────────── */}
         <CTAStrip />
-
         <Footer />
+
+        {/* ── VIDEO MODAL ── */}
+        {activeIndex !== null && (
+          <VideoModal
+            items={filteredItems}
+            activeIndex={activeIndex}
+            onChange={setActiveIndex}
+            onClose={() => setActiveIndex(null)}
+          />
+        )}
+
       </main>
     </>
   )
