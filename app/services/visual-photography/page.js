@@ -59,12 +59,12 @@ function useLenis() {
    DATA
    ───────────────────────────────────────────────────────────────────────────── */
 const photos = [
-  { id: 1, src: '/image/pho1.jpg', category: 'Editorial',  caption: 'Golden Hour Session', layout: 'portrait'  },
-  { id: 2, src: '/image/pho3.jpg', category: 'Product',    caption: 'Skincare Campaign',   layout: 'landscape' },
-  { id: 3, src: '/image/pho4.jpg', category: 'Lifestyle',  caption: 'Bali Morning Ritual', layout: 'landscape' },
-  { id: 4, src: '/image/pho2.jpg', category: 'Editorial',  caption: 'Fashion Forward',     layout: 'portrait'  },
-  { id: 5, src: '/image/pho5.jpg', category: 'Product',    caption: 'Jewelry Collection',  layout: 'portrait'  },
-  { id: 6, src: '/image/pho6.jpg', category: 'Corporate',  caption: 'Brand Identity Shoot',layout: 'landscape' },
+  { id: 1, src: '/image/pho1.webp', category: 'Editorial',  caption: 'Golden Hour Session', layout: 'portrait'  },
+  { id: 2, src: '/image/pho3.webp', category: 'Product',    caption: 'Skincare Campaign',   layout: 'landscape' },
+  { id: 3, src: '/image/pho4.webp', category: 'Lifestyle',  caption: 'Bali Morning Ritual', layout: 'landscape' },
+  { id: 4, src: '/image/pho2.webp', category: 'Editorial',  caption: 'Fashion Forward',     layout: 'portrait'  },
+  { id: 5, src: '/image/pho5.webp', category: 'Product',    caption: 'Jewelry Collection',  layout: 'portrait'  },
+  { id: 6, src: '/image/pho6.webp', category: 'Corporate',  caption: 'Brand Identity Shoot',layout: 'landscape' },
 ]
 
 const serviceTypes = [

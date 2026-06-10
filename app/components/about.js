@@ -236,14 +236,6 @@ export default function About() {
             minHeight: 480,
           }}
         >
-          {/*
-            ── IMAGE / VIDEO SLOT ──────────────────────────────────────
-            Uncomment untuk menambah gambar atau video:
-
-            <img src="/about/team.jpg" alt="Creaut Bali Team"
-              style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover' }} />
-            ──────────────────────────────────────────────────────────── 
-          */}
 
           {/* Placeholder grid pattern */}
           <div style={{

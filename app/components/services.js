@@ -13,8 +13,6 @@ const services = [
     sub: 'Commercial · Corporate · Documentary',
     href: '/services/video-production',
     bg: '#fff',
-    // thumbnail: '/thumbnails/video-production.jpg'
-    // thumbVideo: '/thumbnails/video-production.mp4'
   },
   {
     id: 2,
@@ -22,7 +20,6 @@ const services = [
     sub: 'Strategy · Content · Community',
     href: '/services/social-media-management',
     bg: '#fff',
-    // thumbnail: '/thumbnails/social-media.jpg'
   },
   {
     id: 3,
@@ -30,7 +27,6 @@ const services = [
     sub: 'Editorial · Product · Lifestyle',
     href: '/services/visual-photography',
     bg: '#fff',
-    // thumbnail: '/thumbnails/photography.jpg'
   },
   {
     id: 4,
@@ -38,7 +34,6 @@ const services = [
     sub: 'Identity · Logo · Guidelines',
     href: '/services/branding',
     bg: '#fff',
-    // thumbnail: '/thumbnails/branding.jpg'
   },
 ]
 

@@ -720,9 +720,8 @@ export default function SocialMediaPage() {
               </p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
                 {[
-                  'Instagram', 'TikTok', 'Facebook',
-                  'YouTube', 'LinkedIn', 'Twitter / X',
-                  'Pinterest', 'Threads', 'WhatsApp Business',
+                  'Instagram', 'TikTok',
+                  'YouTube',
                 ].map(tag => (
                   <span key={tag} style={{
                     padding: '0.45rem 1rem', borderRadius: '999px',

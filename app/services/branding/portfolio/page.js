@@ -50,13 +50,13 @@ function useLenis() {
 ═══════════════════════════════════════════════════════════════════ */
 const TABS = [
   { id: 'all',       label: 'All Work' },
-  { id: 'identity',  label: 'Identity' },
-  { id: 'logo',      label: 'Logo' },
-  { id: 'rebrand',   label: 'Rebrand' },
-  { id: 'packaging', label: 'Packaging' },
-  { id: 'print',     label: 'Print' },
-  { id: 'stationery',label: 'Stationery' },
-  { id: 'guidelines',label: 'Guidelines' },
+  { id: 'Entertaint',  label: 'Dancers & Entertaint' },
+  { id: 'Personal',      label: 'Personal Branding' },
+  { id: 'Beauty',   label: 'Beauty' },
+  { id: 'Env',   label: 'Enviroment' },
+  { id: 'Adv', label: 'Adventure' },
+  { id: 'Katalog',     label: 'Katalog' },
+  { id: 'F&B',label: 'F&B' },
 ]
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -64,100 +64,100 @@ const TABS = [
    Ganti src dengan path gambar aslimu
 ═══════════════════════════════════════════════════════════════════ */
 const PORTFOLIO = [
-  { id: 1,  category: 'identity',   caption: 'AMANAID',               client: 'Brand Identity System', layout: 'portrait',  src: '/image/bra42.jpg' },
-  { id: 2,  category: 'logo',       caption: 'Amartya',               client: 'Logo Design',           layout: 'portrait',  src: '/image/bra15.jpg' },
-  { id: 3,  category: 'packaging',  caption: 'Somya',                 client: 'Packaging Design',      layout: 'portrait',  src: '/image/bra8.jpg' },
-  { id: 4,  category: 'print',      caption: 'EnviroMas',             client: 'Print Design',          layout: 'portrait',  src: '/image/bra58.jpg' },
-  { id: 5,  category: 'rebrand',    caption: 'Creaut Bali',           client: 'Rebranding',            layout: 'landscape', src: '/image/bra23.jpg' },
-  { id: 6,  category: 'stationery', caption: 'Pura Architecture',     client: 'Stationery Design',     layout: 'portrait',  src: '/image/bra31.jpg' },
-  { id: 7,  category: 'guidelines', caption: 'Nusantara Banking',     client: 'Brand Guidelines',      layout: 'portrait',  src: '/image/bra9.jpg' },
+  { id: 1,  category: 'F&B',   caption: '',               client: 'Pan&Co', layout: 'portrait',  src: '/image/bra42.webp' },
+  { id: 2,  category: 'Entertaint',       caption: '',               client: 'Logo Design',           layout: 'portrait',  src: '/image/bra15.webp' },
+  { id: 3,  category: 'Adv',  caption: '',                 client: 'Packaging Design',      layout: 'portrait',  src: '/image/bra8.webp' },
+  { id: 4,  category: 'Katalog',      caption: '',             client: 'Print Design',          layout: 'portrait',  src: '/image/bra58.webp' },
+  { id: 5,  category: 'Entertaint',    caption: '',           client: 'Rebranding',            layout: 'landscape', src: '/image/bra23.webp' },
+  { id: 6,  category: 'Personal', caption: '',     client: 'Stationery Design',     layout: 'portrait',  src: '/image/bra31.webp' },
+  { id: 7,  category: 'Adv', caption: '',     client: 'Brand Guidelines',      layout: 'portrait',  src: '/image/bra9.webp' },
   
-  { id: 8,  category: 'identity',   caption: 'Seminyak Estates',      client: 'Brand Identity System', layout: 'portrait',  src: '/image/bra50.jpg' },
-  { id: 9,  category: 'logo',       caption: 'Gerabah Studio',        client: 'Logo Design',           layout: 'portrait',  src: '/image/bra17.jpg' },
-  { id: 10, category: 'packaging',  caption: 'Emas Bali Jewels',      client: 'Packaging Design',      layout: 'landscape', src: '/image/bra61.jpg' },
-  { id: 11, category: 'print',      caption: 'Slow Living Magazine',  client: 'Print Design',          layout: 'portrait',  src: '/image/bra34.jpg' },
-  { id: 12, category: 'rebrand',    caption: 'Suku Textile House',    client: 'Rebranding',            layout: 'portrait',  src: '/image/bra52.jpg' },
-  { id: 13, category: 'stationery', caption: 'Canggu Creative Labs',  client: 'Stationery Design',     layout: 'portrait',  src: '/image/bra4.jpg' },
-  { id: 14, category: 'guidelines', caption: 'Pura Skin Lab',         client: 'Brand Guidelines',      layout: 'portrait',  src: '/image/bra28.jpg' },
+  { id: 8,  category: 'F&B',   caption: '',      client: 'Brand Katalog System', layout: 'portrait',  src: '/image/bra50.webp' },
+  { id: 9,  category: 'Entertaint',       caption: '',        client: 'Logo Design',           layout: 'portrait',  src: '/image/bra17.webp' },
+  { id: 10, category: 'Katalog',  caption: '',      client: 'Packaging Design',      layout: 'landscape', src: '/image/bra61.webp' },
+  { id: 11, category: 'F&B',      caption: '',  client: 'Print Design',          layout: 'portrait',  src: '/image/bra34.webp' },
+  { id: 12, category: 'Katalog',    caption: '',    client: 'Rebranding',            layout: 'portrait',  src: '/image/bra52.webp' },
+  { id: 13, category: 'Beauty', caption: '',  client: 'Stationery Design',     layout: 'portrait',  src: '/image/bra4.webp' },
+  { id: 14, category: 'Personal', caption: '',         client: 'Brand Guidelines',      layout: 'portrait',  src: '/image/bra28.webp' },
   
-  { id: 15, category: 'identity',   caption: 'Ubud Wellness Retreat', client: 'Brand Identity System', layout: 'landscape', src: '/image/bra11.jpg' },
-  { id: 16, category: 'logo',       caption: 'Sacred Vow Agency',     client: 'Logo Design',           layout: 'portrait',  src: '/image/bra45.jpg' },
-  { id: 17, category: 'packaging',  caption: 'Bali Scents Co.',       client: 'Packaging Design',      layout: 'portrait',  src: '/image/bra14.jpg' },
-  { id: 18, category: 'print',      caption: 'Arthaus Studio',        client: 'Print Collateral',      layout: 'portrait',  src: '/image/bra49.jpg' },
-  { id: 19, category: 'rebrand',    caption: 'Nadi Yoga Studio',      client: 'Rebranding',            layout: 'portrait',  src: '/image/bra2.jpg' },
-  { id: 20, category: 'stationery', caption: 'Segara Seafood',        client: 'Stationery Design',     layout: 'landscape', src: '/image/bra39.jpg' },
-  { id: 21, category: 'guidelines', caption: 'Banyu Surf',            client: 'Brand Guidelines',      layout: 'portrait',  src: '/image/bra55.jpg' },
+  { id: 15, category: 'Adv',   caption: '', client: 'Brand Katalog System', layout: 'landscape', src: '/image/bra11.webp' },
+  { id: 16, category: 'F&B',       caption: '',     client: 'Logo Design',           layout: 'portrait',  src: '/image/bra45.webp' },
+  { id: 17, category: 'Katalog',  caption: '',       client: 'Packaging Design',      layout: 'portrait',  src: '/image/bra14.webp' },
+  { id: 18, category: 'F&B',      caption: '',        client: 'Print Collateral',      layout: 'portrait',  src: '/image/bra49.webp' },
+  { id: 19, category: 'Beauty',    caption: '',      client: 'Rebranding',            layout: 'portrait',  src: '/image/bra2.webp' },
+  { id: 20, category: 'F&B', caption: '',        client: 'Stationery Design',     layout: 'landscape', src: '/image/bra39.webp' },
+  { id: 21, category: 'Katalog', caption: '',            client: 'Brand Guidelines',      layout: 'portrait',  src: '/image/bra55.webp' },
   
-  { id: 22, category: 'identity',   caption: 'Kopi Kintamani',        client: 'Brand Identity System', layout: 'portrait',  src: '/image/bra21.jpg' },
-  { id: 23, category: 'logo',       caption: 'Lontar Books',          client: 'Logo Design',           layout: 'portrait',  src: '/image/bra33.jpg' },
-  { id: 24, category: 'packaging',  caption: 'Rattan & Co.',          client: 'Packaging Design',      layout: 'portrait',  src: '/image/bra64.jpg' },
-  { id: 25, category: 'print',      caption: 'Alila Villas',          client: 'Print Design',          layout: 'landscape', src: '/image/bra7.jpg' },
-  { id: 26, category: 'rebrand',    caption: 'Makna Design',          client: 'Rebranding',            layout: 'portrait',  src: '/image/bra40.jpg' },
-  { id: 27, category: 'stationery', caption: 'Loka Local',            client: 'Stationery Design',     layout: 'portrait',  src: '/image/bra18.jpg' },
-  { id: 28, category: 'guidelines', caption: 'Vana Eco',              client: 'Brand Guidelines',      layout: 'portrait',  src: '/image/bra59.jpg' },
+  { id: 22, category: 'Entertaint',   caption: '',        client: 'Brand Katalog System', layout: 'portrait',  src: '/image/bra21.webp' },
+  { id: 23, category: 'F&B',       caption: '',          client: 'Logo Design',           layout: 'portrait',  src: '/image/bra33.webp' },
+  { id: 24, category: 'Env',  caption: '',          client: 'Packaging Design',      layout: 'portrait',  src: '/image/bra64.webp' },
+  { id: 25, category: 'Adv',      caption: '',          client: 'Print Design',          layout: 'landscape', src: '/image/bra7.webp' },
+  { id: 26, category: 'F&B',    caption: '',          client: 'Rebranding',            layout: 'portrait',  src: '/image/bra40.webp' },
+  { id: 27, category: 'Entertaint', caption: '',            client: 'Stationery Design',     layout: 'portrait',  src: '/image/bra18.webp' },
+  { id: 28, category: 'Katalog', caption: '',              client: 'Brand Guidelines',      layout: 'portrait',  src: '/image/bra59.webp' },
   
-  { id: 29, category: 'identity',   caption: 'Tirta Spa',             client: 'Brand Identity System', layout: 'portrait',  src: '/image/bra26.jpg' },
-  { id: 30, category: 'logo',       caption: 'Bayu Wind',             client: 'Logo Design',           layout: 'landscape', src: '/image/bra1.jpg' },
-  { id: 31, category: 'packaging',  caption: 'Gili Getaways',         client: 'Packaging Design',      layout: 'portrait',  src: '/image/bra47.jpg' },
-  { id: 32, category: 'print',      caption: 'Menjangan Dive',        client: 'Print Design',          layout: 'portrait',  src: '/image/bra36.jpg' },
-  { id: 33, category: 'rebrand',    caption: 'Koral Dining',          client: 'Rebranding',            layout: 'portrait',  src: '/image/bra13.jpg' },
-  { id: 34, category: 'stationery', caption: 'Senja Lounge',          client: 'Stationery Design',     layout: 'portrait',  src: '/image/bra53.jpg' },
-  { id: 35, category: 'guidelines', caption: 'Ombak Wear',            client: 'Brand Guidelines',      layout: 'landscape', src: '/image/bra30.jpg' },
+  { id: 29, category: 'Personal',   caption: '',             client: 'Brand Katalog System', layout: 'portrait',  src: '/image/bra26.webp' },
+  { id: 30, category: 'Beauty',       caption: '',             client: 'Logo Design',           layout: 'landscape', src: '/image/bra1.webp' },
+  { id: 31, category: 'F&B',  caption: '',         client: 'Packaging Design',      layout: 'portrait',  src: '/image/bra47.webp' },
+  { id: 32, category: 'F&B',      caption: '',        client: 'Print Design',          layout: 'portrait',  src: '/image/bra36.webp' },
+  { id: 33, category: 'Adv',    caption: '',          client: 'Rebranding',            layout: 'portrait',  src: '/image/bra13.webp' },
+  { id: 34, category: 'Katalog', caption: '',          client: 'Stationery Design',     layout: 'portrait',  src: '/image/bra53.webp' },
+  { id: 35, category: 'Personal', caption: '',            client: 'Brand Guidelines',      layout: 'landscape', src: '/image/bra30.webp' },
   
-  { id: 36, category: 'identity',   caption: 'Karang Villas',         client: 'Brand Identity System', layout: 'portrait',  src: '/image/bra48.jpg' },
-  { id: 37, category: 'logo',       caption: 'Jatiluwih Rice',        client: 'Logo Design',           layout: 'portrait',  src: '/image/bra5.jpg' },
-  { id: 38, category: 'packaging',  caption: 'Karsa Spa',             client: 'Packaging Design',      layout: 'portrait',  src: '/image/bra22.jpg' },
-  { id: 39, category: 'print',      caption: 'Agung Treks',           client: 'Print Design',          layout: 'portrait',  src: '/image/bra60.jpg' },
-  { id: 40, category: 'rebrand',    caption: 'Batur Sunrise',         client: 'Rebranding',            layout: 'landscape', src: '/image/bra37.jpg' },
-  { id: 41, category: 'stationery', caption: 'Melasti Beach Club',    client: 'Stationery Design',     layout: 'portrait',  src: '/image/bra16.jpg' },
-  { id: 42, category: 'guidelines', caption: 'Uluwatu Surf',          client: 'Brand Guidelines',      layout: 'portrait',  src: '/image/bra41.jpg' },
+  { id: 36, category: 'F&B',   caption: '',         client: 'Brand Katalog System', layout: 'portrait',  src: '/image/bra48.webp' },
+  { id: 37, category: 'Adv',       caption: '',        client: 'Logo Design',           layout: 'portrait',  src: '/image/bra5.webp' },
+  { id: 38, category: 'Entertaint',  caption: '',             client: 'Packaging Design',      layout: 'portrait',  src: '/image/bra22.webp' },
+  { id: 39, category: 'Katalog',      caption: '',           client: 'Print Design',          layout: 'portrait',  src: '/image/bra60.webp' },
+  { id: 40, category: 'F&B',    caption: '',         client: 'Rebranding',            layout: 'landscape', src: '/image/bra37.webp' },
+  { id: 41, category: 'Entertaint', caption: '',    client: 'Stationery Design',     layout: 'portrait',  src: '/image/bra16.webp' },
+  { id: 42, category: 'F&B', caption: '',          client: 'Brand Guidelines',      layout: 'portrait',  src: '/image/bra41.webp' },
   
-  { id: 43, category: 'identity',   caption: 'Jimbaran Catch',        client: 'Brand Identity System', layout: 'portrait',  src: '/image/bra29.jpg' },
-  { id: 44, category: 'logo',       caption: 'Nusa Penida Tours',     client: 'Logo Design',           layout: 'portrait',  src: '/image/bra10.jpg' },
-  { id: 45, category: 'packaging',  caption: 'Lembongan Retreat',     client: 'Packaging Design',      layout: 'landscape', src: '/image/bra54.jpg' },
-  { id: 46, category: 'print',      caption: 'Ceningan Villas',       client: 'Print Design',          layout: 'portrait',  src: '/image/bra32.jpg' },
-  { id: 47, category: 'rebrand',    caption: 'Lovina Dolphins',       client: 'Rebranding',            layout: 'portrait',  src: '/image/bra46.jpg' },
-  { id: 48, category: 'stationery', caption: 'Pemuteran Coral',       client: 'Stationery Design',     layout: 'portrait',  src: '/image/bra25.jpg' },
-  { id: 49, category: 'guidelines', caption: 'Amed Freedive',         client: 'Brand Guidelines',      layout: 'portrait',  src: '/image/bra6.jpg' },
+  { id: 43, category: 'Personal',   caption: '',        client: 'Brand Katalog System', layout: 'portrait',  src: '/image/bra29.webp' },
+  { id: 44, category: 'Adv',       caption: '',     client: 'Logo Design',           layout: 'portrait',  src: '/image/bra10.webp' },
+  { id: 45, category: 'Katalog',  caption: '',     client: 'Packaging Design',      layout: 'landscape', src: '/image/bra54.webp' },
+  { id: 46, category: 'F&B',      caption: '',       client: 'Print Design',          layout: 'portrait',  src: '/image/bra32.webp' },
+  { id: 47, category: 'F&B',    caption: '',       client: 'Rebranding',            layout: 'portrait',  src: '/image/bra46.webp' },
+  { id: 48, category: 'Entertaint', caption: '',       client: 'Stationery Design',     layout: 'portrait',  src: '/image/bra25.webp' },
+  { id: 49, category: 'Adv', caption: '',         client: 'Brand Guidelines',      layout: 'portrait',  src: '/image/bra6.webp' },
   
-  { id: 50, category: 'identity',   caption: 'Tulamben Wreck',        client: 'Brand Identity System', layout: 'landscape', src: '/image/bra57.jpg' },
-  { id: 51, category: 'logo',       caption: 'Besakih Temple',        client: 'Logo Design',           layout: 'portrait',  src: '/image/bra35.jpg' },
-  { id: 52, category: 'packaging',  caption: 'Tirta Empul',           client: 'Packaging Design',      layout: 'portrait',  src: '/image/bra20.jpg' },
-  { id: 53, category: 'print',      caption: 'Campuhan Ridge',        client: 'Print Design',          layout: 'portrait',  src: '/image/bra43.jpg' },
-  { id: 54, category: 'rebrand',    caption: 'Tegallalang Swings',    client: 'Rebranding',            layout: 'portrait',  src: '/image/bra63.jpg' },
-  { id: 55, category: 'stationery', caption: 'Monkey Forest Ubud',    client: 'Stationery Design',     layout: 'landscape', src: '/image/bra27.jpg' },
-  { id: 56, category: 'guidelines', caption: 'Goa Gajah',             client: 'Brand Guidelines',      layout: 'portrait',  src: '/image/bra12.jpg' },
+  { id: 50, category: 'Katalog',   caption: '',        client: 'Brand Katalog System', layout: 'landscape', src: '/image/bra57.webp' },
+  { id: 51, category: 'F&B',       caption: '',        client: 'Logo Design',           layout: 'portrait',  src: '/image/bra35.webp' },
+  { id: 52, category: 'Entertaint',  caption: '',           client: 'Packaging Design',      layout: 'portrait',  src: '/image/bra20.webp' },
+  { id: 53, category: 'F&B',      caption: '',        client: 'Print Design',          layout: 'portrait',  src: '/image/bra43.webp' },
+  { id: 54, category: 'rebrand',    caption: '',    client: 'Rebranding',            layout: 'portrait',  src: '/image/bra63.webp' },
+  { id: 55, category: 'stationery', caption: '',    client: 'Stationery Design',     layout: 'landscape', src: '/image/bra27.webp' },
+  { id: 56, category: 'guidelines', caption: '',             client: 'Brand Guidelines',      layout: 'portrait',  src: '/image/bra12.webp' },
   
-  { id: 57, category: 'identity',   caption: 'Sukawati Art',          client: 'Brand Identity System', layout: 'portrait',  src: '/image/bra51.jpg' },
-  { id: 58, category: 'logo',       caption: 'Sanur Sunrise',         client: 'Logo Design',           layout: 'portrait',  src: '/image/bra38.jpg' },
-  // { id: 59, category: 'packaging',  caption: 'Kuta Sunsets',          client: 'Packaging Design',      layout: 'portrait',  src: '/image/bra24.jpg' },
-  { id: 60, category: 'print',      caption: 'Legian Nights',         client: 'Print Design',          layout: 'landscape', src: '/image/bra62.jpg' },
-  { id: 61, category: 'rebrand',    caption: 'Seminyak Beach',        client: 'Rebranding',            layout: 'portrait',  src: '/image/bra19.jpg' },
-  { id: 62, category: 'stationery', caption: 'Canggu Waves',          client: 'Stationery Design',     layout: 'portrait',  src: '/image/bra73.jpg' },
-  { id: 63, category: 'guidelines', caption: 'Brawa Surf',            client: 'Brand Guidelines',      layout: 'portrait',  src: '/image/bra81.jpg' },
+  { id: 57, category: 'F&B',   caption: '',          client: 'Brand Katalog System', layout: 'portrait',  src: '/image/bra51.webp' },
+  { id: 58, category: 'logo',       caption: '',         client: 'Logo Design',           layout: 'portrait',  src: '/image/bra38.webp' },
+  // { id: 59, category: 'packaging',  caption: 'Kuta Sunsets',          client: 'Packaging Design',      layout: 'portrait',  src: '/image/bra24.webp' },
+  { id: 60, category: 'print',      caption: '',         client: 'Print Design',          layout: 'landscape', src: '/image/bra62.webp' },
+  { id: 61, category: 'rebrand',    caption: '',        client: 'Rebranding',            layout: 'portrait',  src: '/image/bra19.webp' },
+  { id: 62, category: 'stationery', caption: '',          client: 'Stationery Design',     layout: 'portrait',  src: '/image/bra73.webp' },
+  { id: 63, category: 'guidelines', caption: '',            client: 'Brand Guidelines',      layout: 'portrait',  src: '/image/bra81.webp' },
   
-  // { id: 64, category: 'identity',   caption: 'Pererenan Retreat',     client: 'Brand Identity System', layout: 'portrait',  src: '/image/bra65.jpg' },
-  { id: 65, category: 'logo',       caption: 'Seseh Villas',          client: 'Logo Design',           layout: 'landscape', src: '/image/bra77.jpg' },
-  { id: 66, category: 'packaging',  caption: 'Tanah Lot Resort',      client: 'Packaging Design',      layout: 'portrait',  src: '/image/bra68.jpg' },
-  { id: 67, category: 'print',      caption: 'Kedungu Break',         client: 'Print Design',          layout: 'portrait',  src: '/image/bra70.jpg' },
-  { id: 68, category: 'rebrand',    caption: 'Balian Surf',           client: 'Rebranding',            layout: 'portrait',  src: '/image/bra83.jpg' },
-  { id: 69, category: 'stationery', caption: 'Medewi Point',          client: 'Stationery Design',     layout: 'portrait',  src: '/image/bra67.jpg' },
-  { id: 70, category: 'guidelines', caption: 'Singaraja Heritage',    client: 'Brand Guidelines',      layout: 'landscape', src: '/image/bra79.jpg' },
+  // { id: 64, category: 'Katalog',   caption: 'Pererenan Retreat',     client: 'Brand Katalog System', layout: 'portrait',  src: '/image/bra65.webp' },
+  { id: 65, category: 'logo',       caption: '',          client: 'Logo Design',           layout: 'landscape', src: '/image/bra77.webp' },
+  { id: 66, category: 'packaging',  caption: '',      client: 'Packaging Design',      layout: 'portrait',  src: '/image/bra68.webp' },
+  { id: 67, category: 'print',      caption: '',         client: 'Print Design',          layout: 'portrait',  src: '/image/bra70.webp' },
+  { id: 68, category: 'rebrand',    caption: '',           client: 'Rebranding',            layout: 'portrait',  src: '/image/bra83.webp' },
+  { id: 69, category: 'stationery', caption: '',          client: 'Stationery Design',     layout: 'portrait',  src: '/image/bra67.webp' },
+  { id: 70, category: 'guidelines', caption: '',    client: 'Brand Guidelines',      layout: 'landscape', src: '/image/bra79.webp' },
   
-  { id: 71, category: 'identity',   caption: 'Bedugul Lakes',         client: 'Brand Identity System', layout: 'portrait',  src: '/image/bra69.jpg' },
-  { id: 72, category: 'logo',       caption: 'Munduk Moding',         client: 'Logo Design',           layout: 'portrait',  src: '/image/bra74.jpg' },
-  { id: 73, category: 'packaging',  caption: 'Lovina Sunsets',        client: 'Packaging Design',      layout: 'portrait',  src: '/image/bra82.jpg' },
-  { id: 74, category: 'print',      caption: 'Amed Corals',           client: 'Print Design',          layout: 'portrait',  src: '/image/bra72.jpg' },
-  { id: 75, category: 'rebrand',    caption: 'Candidasa Palms',       client: 'Rebranding',            layout: 'landscape', src: '/image/bra78.jpg' },
-  { id: 76, category: 'stationery', caption: 'Padangbai Piers',       client: 'Stationery Design',     layout: 'portrait',  src: '/image/bra75.jpg' },
-  // { id: 77, category: 'guidelines', caption: 'Sidemen Valleys',       client: 'Brand Guidelines',      layout: 'portrait',  src: '/image/bra66.jpg' },
+  { id: 71, category: 'Env',   caption: '',         client: 'Brand Katalog System', layout: 'portrait',  src: '/image/bra69.webp' },
+  { id: 72, category: 'Env',       caption: '',         client: 'Logo Design',           layout: 'portrait',  src: '/image/bra74.webp' },
+  { id: 73, category: 'Env',  caption: '',        client: 'Packaging Design',      layout: 'portrait',  src: '/image/bra82.webp' },
+  { id: 74, category: 'Env',      caption: '',           client: 'Print Design',          layout: 'portrait',  src: '/image/bra72.webp' },
+  { id: 75, category: 'Env',    caption: '',       client: 'Rebranding',            layout: 'landscape', src: '/image/bra78.webp' },
+  { id: 76, category: 'Env', caption: '',       client: 'Stationery Design',     layout: 'portrait',  src: '/image/bra75.webp' },
+  // { id: 77, category: 'guidelines', caption: 'Sidemen Valleys',       client: 'Brand Guidelines',      layout: 'portrait',  src: '/image/bra66.webp' },
 
-  { id: 78, category: 'identity',   caption: 'Kintamani Views',       client: 'Brand Identity System', layout: 'portrait',  src: '/image/bra76.jpg' },
-  { id: 79, category: 'logo',       caption: 'Besakih Slopes',        client: 'Logo Design',           layout: 'portrait',  src: '/image/bra71.jpg' },
-  { id: 80, category: 'packaging',  caption: 'Mount Agung Treks',     client: 'Packaging Design',      layout: 'landscape', src: '/image/bra80.jpg' },
-  { id: 81, category: 'print',      caption: 'Batur Hot Springs',     client: 'Print Design',          layout: 'portrait',  src: '/image/bra3.jpg' },
-  { id: 82, category: 'rebrand',    caption: 'Trunyan Village',       client: 'Rebranding',            layout: 'portrait',  src: '/image/bra44.jpg' },
-  { id: 83, category: 'stationery', caption: 'Organic Waste Solutions', client: 'Stationery Design',   layout: 'portrait',  src: '/image/bra56.jpg' }
+  { id: 78, category: 'Env',   caption: '',       client: 'Brand Identity System', layout: 'portrait',  src: '/image/bra76.webp' },
+  { id: 79, category: 'Env',       caption: '',        client: 'Logo Design',           layout: 'portrait',  src: '/image/bra71.webp' },
+  { id: 80, category: 'packaging',  caption: '',     client: 'Packaging Design',      layout: 'landscape', src: '/image/bra80.webp' },
+  { id: 81, category: 'Beauty',      caption: '',     client: 'Print Design',          layout: 'portrait',  src: '/image/bra3.webp' },
+  { id: 82, category: 'F&B',    caption: '',       client: 'Rebranding',            layout: 'portrait',  src: '/image/bra44.webp' },
+  { id: 83, category: 'Katalog', caption: '', client: 'Stationery Design',   layout: 'portrait',  src: '/image/bra56.webp' }
 ]
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -209,12 +209,12 @@ function Lightbox({ items, index, onClose, onNav }) {
       {/* Top bar */}
       <div style={{ width: '100%', maxWidth: 860, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
         <div>
-          <p style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(93,224,230,0.85)', margin: '0 0 0.2rem 0' }}>
+          {/* <p style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(93,224,230,0.85)', margin: '0 0 0.2rem 0' }}>
             {item.caption}
           </p>
           <p style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.3)', margin: 0, letterSpacing: '0.1em' }}>
             {String(index + 1).padStart(2,'0')} / {String(items.length).padStart(2,'0')} · {item.client}
-          </p>
+          </p> */}
         </div>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
           <button
@@ -426,7 +426,7 @@ function PortfolioCard({ item, onOpen }) {
       }} />
 
       {/* Caption */}
-      <div style={{
+      {/* <div style={{
         position: 'absolute',
         bottom: 'clamp(1rem, 2vw, 1.4rem)',
         left: 'clamp(1rem, 2vw, 1.4rem)',
@@ -451,10 +451,10 @@ function PortfolioCard({ item, onOpen }) {
           fontWeight: 700, color: '#fff', margin: 0,
           letterSpacing: '-0.02em', lineHeight: 1.2,
         }}>{item.caption}</p>
-      </div>
+      </div> */}
 
       {/* Category badge */}
-      <div style={{
+      {/* <div style={{
         position: 'absolute',
         top: 'clamp(0.7rem, 1.5vw, 1rem)',
         left: 'clamp(0.7rem, 1.5vw, 1rem)',
@@ -471,7 +471,7 @@ function PortfolioCard({ item, onOpen }) {
           textTransform: 'uppercase',
           color: 'rgba(255,255,255,0.8)',
         }}>{item.category}</span>
-      </div>
+      </div> */}
 
       {/* Zoom icon */}
       <div style={{

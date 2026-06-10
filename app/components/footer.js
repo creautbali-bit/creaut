@@ -1,11 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 export default function Footer() {
   const year = new Date().getFullYear()
   const [isMobile, setIsMobile] = useState(false)
+  const footerRef = useRef(null)
 
+  // ── Responsive ──────────────────────────────────────────────────────────────
   useEffect(() => {
     const update = () => setIsMobile(window.innerWidth < 768)
     update()
@@ -13,11 +15,62 @@ export default function Footer() {
     return () => window.removeEventListener('resize', update)
   }, [])
 
+  // ── Parallax: scroll-driven rise effect ───────────────────────────
+  // Direct DOM mutation via RAF → zero re-renders, butter-smooth.
+  //
+  // What happens:
+  //  • Footer starts at translateY(+80px) — slightly "buried" below its natural pos.
+  //  • As the user scrolls it into view, it rises to translateY(0) using an
+  //    easeOutCubic curve.
+  //  • marginTop: -3rem creates a permanent overlap with the section above,
+  //    so the footer visually "covers" that section as it rises.
+  //
+  // ⚠️  Parent requirement: the section immediately above this footer should have
+  //      position: relative  (or any positioned value) so z-index stacking works.
+  //      Example:  <section style={{ position: 'relative', zIndex: 1 }}>…</section>
+  // ────────────────────────────────────────────────────────────────────────────
+  useEffect(() => {
+    const el = footerRef.current
+    if (!el) return
+    let rafId = null
+
+    // easeOutCubic: fast start, gentle landing — feels physical, not mechanical
+    const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3)
+
+    const tick = () => {
+      const rect = el.getBoundingClientRect()
+      const wh = window.innerHeight
+
+      // progress: 0 = footer top just crossed viewport bottom
+      //           1 = footer top is 55% from the viewport bottom
+      const raw = Math.min(1, Math.max(0, (wh - rect.top) / (wh * 0.55)))
+      const p = easeOutCubic(raw)
+
+      const ty = (80 * (1 - p)).toFixed(2)
+
+      el.style.transform = `translateY(${ty}px)`
+    }
+
+    const onScroll = () => {
+      if (rafId) cancelAnimationFrame(rafId)
+      rafId = requestAnimationFrame(tick)
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    tick() // run once on mount to set initial state
+
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      if (rafId) cancelAnimationFrame(rafId)
+    }
+  }, [])
+
+  // ── Data ─────────────────────────────────────────────────────────────────────
   const serviceLinks = [
-    { label: 'Video Production',   href: '/services/video-production' },
-    { label: 'Social Media Management',  href: '/services/social-media' },
-    { label: 'Visual Photography', href: '/services/visual-photography' },
-    { label: 'Branding',           href: '/services/branding' },
+    { label: 'Video Production',      href: '/services/video-production' },
+    { label: 'Social Media Management', href: '/services/social-media' },
+    { label: 'Visual Photography',    href: '/services/visual-photography' },
+    { label: 'Branding',              href: '/services/branding' },
   ]
 
   const companyLinks = [
@@ -31,14 +84,42 @@ export default function Footer() {
     { label: 'YT', full: 'YouTube',   href: 'https://www.youtube.com/' },
   ]
 
+  // ── Render ───────────────────────────────────────────────────────────────────
   return (
-    <footer style={{ background: '#fff', borderTop: '1px solid rgba(0,0,0,0.08)' }}>
+    <footer
+      ref={footerRef}
+      style={{
+        background: '#fff',
+        // Rounded top corners → card emerging from page feel
+        borderRadius: '28px 28px 0 0',
+        // Overlap the section above by 3rem so the "cover" effect is visible
+        marginTop: '-3rem',
+        position: 'relative',
+        zIndex: 10,
+        // Hint to browser: only transform will change
+        willChange: 'transform',
+      }}
+    >
 
-      {/* Main grid */}
+      {/* ── Drag-handle pill ── visual cue that something is "sliding up" */}
       <div style={{
-        padding: 'clamp(3rem, 6vw, 5rem) clamp(1.5rem, 5vw, 4rem) 2.5rem',
+        display: 'flex',
+        justifyContent: 'center',
+        paddingTop: '0.9rem',
+        paddingBottom: '0.1rem',
+      }}>
+        <div style={{
+          width: 38,
+          height: 4,
+          borderRadius: 2,
+          background: 'rgba(0,0,0,0.10)',
+        }} />
+      </div>
+
+      {/* ── Main grid ── */}
+      <div style={{
+        padding: 'clamp(2.5rem, 5vw, 4rem) clamp(1.5rem, 5vw, 4rem) 2.5rem',
         display: 'grid',
-        /* Desktop: 3 kolom | Mobile: 1 kolom */
         gridTemplateColumns: isMobile ? '1fr' : '1.6fr 1fr 1fr',
         gap: isMobile ? '2.5rem' : 'clamp(2rem, 5vw, 4rem)',
       }}>
@@ -70,7 +151,12 @@ export default function Footer() {
           {/* Socials */}
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             {socials.map(s => (
-              <a key={s.label} href={s.href} target="_blank" rel="noreferrer" title={s.full}
+              <a
+                key={s.label}
+                href={s.href}
+                target="_blank"
+                rel="noreferrer"
+                title={s.full}
                 style={{
                   width: 34, height: 34,
                   border: '1.5px solid rgba(0,0,0,0.12)',
@@ -108,10 +194,9 @@ export default function Footer() {
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             {serviceLinks.map(link => (
               <li key={link.label} style={{ marginBottom: '0.6rem' }}>
-                <a href={link.href} style={{
-                  fontSize: '0.875rem', color: '#666',
-                  textDecoration: 'none', transition: 'color 0.2s',
-                }}
+                <a
+                  href={link.href}
+                  style={{ fontSize: '0.875rem', color: '#666', textDecoration: 'none', transition: 'color 0.2s' }}
                   onMouseEnter={e => e.currentTarget.style.color = '#0a0a0a'}
                   onMouseLeave={e => e.currentTarget.style.color = '#666'}
                 >
@@ -134,10 +219,9 @@ export default function Footer() {
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             {companyLinks.map(link => (
               <li key={link.label} style={{ marginBottom: '0.6rem' }}>
-                <a href={link.href} style={{
-                  fontSize: '0.875rem', color: '#666',
-                  textDecoration: 'none', transition: 'color 0.2s',
-                }}
+                <a
+                  href={link.href}
+                  style={{ fontSize: '0.875rem', color: '#666', textDecoration: 'none', transition: 'color 0.2s' }}
                   onMouseEnter={e => e.currentTarget.style.color = '#0a0a0a'}
                   onMouseLeave={e => e.currentTarget.style.color = '#666'}
                 >
@@ -171,10 +255,10 @@ export default function Footer() {
             alignItems: 'center',
           }}>
             {['Privacy Policy', 'Terms of Use', 'FAQ'].map(item => (
-              <a key={item} href="#" style={{
-                fontSize: '0.72rem', color: '#bbb',
-                textDecoration: 'none', transition: 'color 0.2s',
-              }}
+              <a
+                key={item}
+                href="#"
+                style={{ fontSize: '0.72rem', color: '#bbb', textDecoration: 'none', transition: 'color 0.2s' }}
                 onMouseEnter={e => e.currentTarget.style.color = '#0a0a0a'}
                 onMouseLeave={e => e.currentTarget.style.color = '#bbb'}
               >

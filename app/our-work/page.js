@@ -10,14 +10,10 @@ import Footer from '../components/footer'
 
 gsap.registerPlugin(ScrollTrigger)
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   LENIS SMOOTH SCROLL (Dengan Perbaikan Reset Scroll)
-   ───────────────────────────────────────────────────────────────────────────── */
 function useLenis() {
   const lenisRef = useRef(null)
   
   useEffect(() => {
-    // Matikan fitur scroll restoration bawaan browser agar tidak otomatis kembali ke posisi bawah
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual'
     }
@@ -37,22 +33,17 @@ function useLenis() {
           infinite: false,
         })
         lenisRef.current = lenis
-
-        // Paksa Lenis mereset posisinya ke paling atas secara instan saat inisialisasi
         lenis.scrollTo(0, { immediate: true })
-
         gsap.ticker.add((time) => lenis.raf(time * 1000))
         gsap.ticker.lagSmoothing(0)
         lenis.on('scroll', ScrollTrigger.update)
       } catch {}
     }
 
-    // Paksa browser native scroll ke atas
     window.scrollTo(0, 0)
     init()
 
     return () => {
-      // Saat berpindah halaman (unmount), paksa scroll kembali ke atas sebelum Lenis dihancurkan
       if (lenis) {
         lenis.scrollTo(0, { immediate: true })
       }
@@ -63,61 +54,6 @@ function useLenis() {
   }, [])
   
   return lenisRef
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   DATA  — 10 images per category card
-   ───────────────────────────────────────────────────────────────────────────── */
-
-const SLIDESHOW_IMAGES = {
-  social: [
-    'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=800&q=80',
-    'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=800&q=80',
-    'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80',
-    'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&q=80',
-    'https://images.unsplash.com/photo-1512314889357-e157c22f938d?w=800&q=80',
-    'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&q=80',
-    'https://images.unsplash.com/photo-1611944212129-29977ae1398c?w=800&q=80',
-    'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&q=80',
-    'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800&q=80',
-    'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&q=80',
-  ],
-  photo: [
-    'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=800&q=80',
-    'https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?w=800&q=80',
-    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',
-    'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80',
-    'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
-    'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=800&q=80',
-    'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80',
-    'https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800&q=80',
-    'https://images.unsplash.com/photo-1470770903676-69b98201ea1c?w=800&q=80',
-    'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800&q=80',
-  ],
-  video: [
-    'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=800&q=80',
-    'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&q=80',
-    'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=800&q=80',
-    'https://images.unsplash.com/photo-1536240478700-b869ad10e128?w=800&q=80',
-    'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=800&q=80',
-    'https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=800&q=80',
-    'https://images.unsplash.com/photo-1601506521793-dc748fc80b67?w=800&q=80',
-    'https://images.unsplash.com/photo-1578022761797-b8636ac1773c?w=800&q=80',
-    'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=800&q=80',
-    'https://images.unsplash.com/photo-1524712245354-2c4e5e7121c0?w=800&q=80',
-  ],
-  branding: [
-    'https://images.unsplash.com/photo-1572044162444-ad60f128bdea?w=800&q=80',
-    'https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=800&q=80',
-    'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&q=80',
-    'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800&q=80',
-    'https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=800&q=80',
-    'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&q=80',
-    'https://images.unsplash.com/photo-1542744094-24638eff58bb?w=800&q=80',
-    'https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&q=80',
-    'https://images.unsplash.com/photo-1493421419110-74f4e85ba126?w=800&q=80',
-    'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=800&q=80',
-  ],
 }
 
 const CATEGORIES = [
@@ -131,14 +67,98 @@ const CATEGORIES = [
     description: 'Driving engagement & brand awareness across all major platforms.',
     stats: '120+ campaigns',
     cards: [
-      { id: 1, src: 'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=800&q=80', caption: 'Brand Awareness Campaign', platform: 'IG', likes: '12.4K', comments: '234' },
-      { id: 2, src: 'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=800&q=80', caption: 'Content Calendar Strategy', platform: 'FB', likes: '5.2K', comments: '97' },
-      { id: 3, src: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80', caption: 'Analytics & Growth Report', platform: 'IG', likes: '9.1K', comments: '145' },
-      { id: 4, src: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&q=80', caption: 'Influencer Collaboration', platform: 'TT', likes: '21K', comments: '412' },
-      { id: 5, src: 'https://images.unsplash.com/photo-1512314889357-e157c22f938d?w=800&q=80', caption: 'Instagram Story Series', platform: 'IG', likes: '7.3K', comments: '88' },
-      { id: 6, src: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&q=80', caption: 'Reels Production', platform: 'IG', likes: '33K', comments: '567' },
-      { id: 7, src: 'https://images.unsplash.com/photo-1611944212129-29977ae1398c?w=800&q=80', caption: 'Community Management', platform: 'TW', likes: '4.9K', comments: '76' },
-    ]
+      {
+        id: 1, caption: 'Brand Awareness Campaign',
+        src: 'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=800&q=80',
+        images: [
+          'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=800&q=80',
+          'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=800&q=80',
+          'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80',
+          'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&q=80',
+          'https://images.unsplash.com/photo-1512314889357-e157c22f938d?w=800&q=80',
+          'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&q=80',
+          'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&q=80',
+        ],
+      },
+      {
+        id: 2, caption: 'Content Calendar Strategy',
+        src: 'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=800&q=80',
+        images: [
+          'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=800&q=80',
+          'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&q=80',
+          'https://images.unsplash.com/photo-1542626991-cbc4e32524cc?w=800&q=80',
+          'https://images.unsplash.com/photo-1553484771-371a605b060b?w=800&q=80',
+          'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&q=80',
+          'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&q=80',
+          'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?w=800&q=80',
+        ],
+      },
+      {
+        id: 3, caption: 'Analytics & Growth Report',
+        src: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80',
+        images: [
+          'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80',
+          'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80',
+          'https://images.unsplash.com/photo-1543286386-713bdd548da4?w=800&q=80',
+          'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800&q=80',
+          'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=800&q=80',
+          'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800&q=80',
+          'https://images.unsplash.com/photo-1487611272516-5b43c1a69e7f?w=800&q=80',
+        ],
+      },
+      {
+        id: 4, caption: 'Influencer Collaboration',
+        src: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=80',
+        images: [
+          'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=80',
+          'https://images.unsplash.com/photo-1602233158242-3ba0ac4d2167?w=800&q=80',
+          'https://images.unsplash.com/photo-1543269664-56d93b45f48a?w=800&q=80',
+          'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&q=80',
+          'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&q=80',
+          'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=800&q=80',
+          'https://images.unsplash.com/photo-1511985117068-0da62e6bf038?w=800&q=80',
+        ],
+      },
+      {
+        id: 5, caption: 'Instagram Story Series',
+        src: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&q=80',
+        images: [
+          'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&q=80',
+          'https://images.unsplash.com/photo-1512314889357-e157c22f938d?w=800&q=80',
+          'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=800&q=80',
+          'https://images.unsplash.com/photo-1611944212129-29977ae1398c?w=800&q=80',
+          'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800&q=80',
+          'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&q=80',
+          'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&q=80',
+        ],
+      },
+      {
+        id: 6, caption: 'Reels Production',
+        src: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=800&q=80',
+        images: [
+          'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=800&q=80',
+          'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&q=80',
+          'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=800&q=80',
+          'https://images.unsplash.com/photo-1536240478700-b869ad10e128?w=800&q=80',
+          'https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=800&q=80',
+          'https://images.unsplash.com/photo-1601506521793-dc748fc80b67?w=800&q=80',
+          'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=800&q=80',
+        ],
+      },
+      {
+        id: 7, caption: 'Community Management',
+        src: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80',
+        images: [
+          'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80',
+          'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&q=80',
+          'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=800&q=80',
+          'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=800&q=80',
+          'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&q=80',
+          'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=80',
+          'https://images.unsplash.com/photo-1543269664-56d93b45f48a?w=800&q=80',
+        ],
+      },
+    ],
   },
   {
     id: 'photo',
@@ -150,14 +170,91 @@ const CATEGORIES = [
     description: 'Capturing the essence of your brand through stunning imagery.',
     stats: '200+ shoots',
     cards: [
-      { id: 1, src: 'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=800&q=80', caption: 'Product Still Life', platform: 'IG', likes: '14.2K', comments: '198' },
-      { id: 2, src: 'https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?w=800&q=80', caption: 'Portrait Session', platform: 'IG', likes: '22.1K', comments: '341' },
-      { id: 3, src: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80', caption: 'Aerial Landscape', platform: 'IG', likes: '41K', comments: '892' },
-      { id: 4, src: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80', caption: 'Food Photography', platform: 'IG', likes: '18.7K', comments: '267' },
-      { id: 5, src: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80', caption: 'Fashion Editorial', platform: 'IG', likes: '25K', comments: '445' },
-      { id: 6, src: 'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=800&q=80', caption: 'Architectural Study', platform: 'IG', likes: '11.3K', comments: '178' },
-      { id: 7, src: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80', caption: 'Travel & Lifestyle', platform: 'IG', likes: '29K', comments: '512' },
-    ]
+      {
+        id: 1, caption: 'Entertainments',
+        src: 'image/raka1.webp',
+        images: [
+          'https://images.unsplash.com/photo-1540039155733-5bb30b4f332e?w=800&q=80',
+          'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=800&q=80',
+          'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=80',
+          'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&q=80',
+          'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&q=80',
+          'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=800&q=80',
+          'https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=800&q=80',
+        ],
+      },
+      {
+        id: 2, caption: 'Personal Branding',
+        src: 'image/pho7.webp',
+        images: [
+          'image/pho8.webp',
+          'image/pho9.webp',
+          'image/pho10.webp',
+          'image/pho11.webp',
+          'image/pho12.webp',
+          'image/pho13.webp',
+        ],
+      },
+      {
+        id: 3, caption: 'Katalog',
+        src: 'image/pho14.webp',
+        images: [
+          'image/pho14.webp',
+          'image/pho15.webp',
+          'image/pho16.webp',
+        ],
+      },
+      {
+        id: 4, caption: 'F&B',
+        src: 'image/pho17.webp',
+        images: [
+          'image/pho17.webp',
+          'image/pho18.webp',
+          'image/pho19.webp',
+          'image/pho23.webp',
+          'image/pho24.webp',
+        ],
+      },
+      {
+        id: 5, caption: 'Beauty',
+        src: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
+        images: [
+          'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
+          'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=800&q=80',
+          'https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=800&q=80',
+          'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=800&q=80',
+          'https://images.unsplash.com/photo-1501746877-14782df58970?w=800&q=80',
+          'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=800&q=80',
+          'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&q=80',
+        ],
+      },
+      {
+        id: 6, caption: 'Environment',
+        src: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80',
+        images: [
+          'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80',
+          'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800&q=80',
+          'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80',
+          'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&q=80',
+          'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',
+          'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80',
+          'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=800&q=80',
+        ],
+      },
+      {
+        id: 7, caption: 'Adventure',
+        src: 'https://images.unsplash.com/photo-1527631746610-bca00a040d60?w=800&q=80',
+        images: [
+          'https://images.unsplash.com/photo-1527631746610-bca00a040d60?w=800&q=80',
+          'https://images.unsplash.com/photo-1551632811-561732d1e306?w=800&q=80',
+          'https://images.unsplash.com/photo-1528543606781-2f6e8759bc48?w=800&q=80',
+          'https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?w=800&q=80',
+          'https://images.unsplash.com/photo-1522163182402-834f871fd851?w=800&q=80',
+          'https://images.unsplash.com/photo-1502791451862-7bd8c1df43a7?w=800&q=80',
+          'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=800&q=80',
+        ],
+      },
+    ],
   },
   {
     id: 'video',
@@ -169,14 +266,79 @@ const CATEGORIES = [
     description: 'Cinematic storytelling that elevates your brand narrative.',
     stats: '80+ productions',
     cards: [
-      { id: 1, src: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=800&q=80', caption: 'Commercial Shoot', platform: 'YT', likes: '16.8K', comments: '234' },
-      { id: 2, src: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&q=80', caption: 'Behind The Scenes', platform: 'IG', likes: '9.2K', comments: '145' },
-      { id: 3, src: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=800&q=80', caption: 'Director on Set', platform: 'IG', likes: '7.4K', comments: '98' },
-      { id: 4, src: 'https://images.unsplash.com/photo-1536240478700-b869ad10e128?w=800&q=80', caption: 'Color Grading Session', platform: 'YT', likes: '12.1K', comments: '187' },
-      { id: 5, src: 'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=800&q=80', caption: 'Camera Setup', platform: 'IG', likes: '5.8K', comments: '76' },
-      { id: 6, src: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=800&q=80', caption: 'Corporate Film', platform: 'YT', likes: '8.3K', comments: '112' },
-      { id: 7, src: 'https://images.unsplash.com/photo-1601506521793-dc748fc80b67?w=800&q=80', caption: 'Documentary Feature', platform: 'YT', likes: '19.5K', comments: '328' },
-    ]
+      {
+        id: 1, caption: 'Entertainments',
+        src: 'image/ba1.webp',
+        images: [
+          'image/ba2.webp',
+          'image/ba3.webp',
+          'image/ba1.webp',
+          'image/ba2.webp',
+          'image/ba3.webp',
+          'image/ba1.webp',
+          'image/ba2.webp',
+        ],
+      },
+      {
+        id: 2, caption: 'Food & Beverage',
+        src: 'image/mcc1.webp',
+        images: [
+          'image/mcc2.webp',
+          'image/mcc3.webp',
+          'image/mcc1.webp',
+          'image/mcc2.webp',
+          'image/mcc3.webp',
+        ],
+      },
+      {
+        id: 3, caption: 'Fashion & Clothing',
+        src: 'image/advish1.webp',
+        images: [
+          'image/advish2.webp',
+          'image/advish3.webp',
+          'image/advish4.webp',
+          'image/advish5.webp',
+        ],
+      },
+      {
+        id: 4, caption: 'Property & Real Estate',
+        src: 'image/amartya1.webp',
+        images: [
+          'image/amartya2.webp',
+          'image/amartya3.webp',
+          'image/amartya1.webp',
+          'image/amartya2.webp',
+          'image/amartya3.webp',
+        ],
+      },
+      {
+        id: 5, caption: 'Hospitality',
+        src: 'image/uma1.webp',
+        images: [
+          'image/uma1.webp',
+          'image/uma2.webp',
+          'image/uma3.webp',
+          'image/uma1.webp',
+          'image/uma2.webp',
+          'image/uma3.webp',
+        ],
+      },
+      {
+        id: 6, caption: 'Environment',
+        src: 'image/amanaid1.webp',
+        images: [
+          'image/amanaid2.webp',
+          'image/amanaid3.webp',
+        ],
+      },
+      {
+        id: 7, caption: 'Adventure',
+        src: 'image/raka1.webp',
+        images: [
+          'image/raka2.webp',
+        ],
+      },
+    ],
   },
   {
     id: 'branding',
@@ -188,25 +350,106 @@ const CATEGORIES = [
     description: 'Building distinctive identities that resonate and endure.',
     stats: '50+ brands',
     cards: [
-      { id: 1, src: 'https://images.unsplash.com/photo-1572044162444-ad60f128bdea?w=800&q=80', caption: 'Brand Identity System', platform: 'BH', likes: '11.7K', comments: '189' },
-      { id: 2, src: 'https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=800&q=80', caption: 'Logo Design', platform: 'BH', likes: '8.4K', comments: '134' },
-      { id: 3, src: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&q=80', caption: 'Brand Guidelines', platform: 'BH', likes: '6.2K', comments: '87' },
-      { id: 4, src: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800&q=80', caption: 'Packaging Design', platform: 'BH', likes: '15.3K', comments: '234' },
-      { id: 5, src: 'https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=800&q=80', caption: 'Brand Collaterals', platform: 'BH', likes: '7.8K', comments: '112' },
-      { id: 6, src: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&q=80', caption: 'Visual Identity', platform: 'BH', likes: '9.1K', comments: '145' },
-      { id: 7, src: 'https://images.unsplash.com/photo-1542744094-24638eff58bb?w=800&q=80', caption: 'Brand Strategy', platform: 'BH', likes: '13.4K', comments: '201' },
-    ]
+      {
+        id: 1, caption: 'Entertainments',
+        src: 'https://images.unsplash.com/photo-1572044162444-ad60f128bdea?w=800&q=80',
+        images: [
+          'https://images.unsplash.com/photo-1572044162444-ad60f128bdea?w=800&q=80',
+          'https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=800&q=80',
+          'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&q=80',
+          'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800&q=80',
+          'https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=800&q=80',
+          'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&q=80',
+          'https://images.unsplash.com/photo-1542744094-24638eff58bb?w=800&q=80',
+        ],
+      },
+      {
+        id: 2, caption: 'Personal Branding',
+        src: 'https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=800&q=80',
+        images: [
+          'https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=800&q=80',
+          'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&q=80',
+          'https://images.unsplash.com/photo-1572044162444-ad60f128bdea?w=800&q=80',
+          'https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&q=80',
+          'https://images.unsplash.com/photo-1493421419110-74f4e85ba126?w=800&q=80',
+          'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800&q=80',
+          'https://images.unsplash.com/photo-1542744094-24638eff58bb?w=800&q=80',
+        ],
+      },
+      {
+        id: 3, caption: 'Katalog',
+        src: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&q=80',
+        images: [
+          'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&q=80',
+          'https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=800&q=80',
+          'https://images.unsplash.com/photo-1572044162444-ad60f128bdea?w=800&q=80',
+          'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&q=80',
+          'https://images.unsplash.com/photo-1542744094-24638eff58bb?w=800&q=80',
+          'https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=800&q=80',
+          'https://images.unsplash.com/photo-1493421419110-74f4e85ba126?w=800&q=80',
+        ],
+      },
+      {
+        id: 4, caption: 'F&B',
+        src: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800&q=80',
+        images: [
+          'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800&q=80',
+          'https://images.unsplash.com/photo-1572044162444-ad60f128bdea?w=800&q=80',
+          'https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=800&q=80',
+          'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&q=80',
+          'https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=800&q=80',
+          'https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&q=80',
+          'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&q=80',
+        ],
+      },
+      {
+        id: 5, caption: 'Beauty',
+        src: 'https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=800&q=80',
+        images: [
+          'https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=800&q=80',
+          'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800&q=80',
+          'https://images.unsplash.com/photo-1493421419110-74f4e85ba126?w=800&q=80',
+          'https://images.unsplash.com/photo-1542744094-24638eff58bb?w=800&q=80',
+          'https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&q=80',
+          'https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=800&q=80',
+          'https://images.unsplash.com/photo-1572044162444-ad60f128bdea?w=800&q=80',
+        ],
+      },
+      {
+        id: 6, caption: 'Environment',
+        src: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&q=80',
+        images: [
+          'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&q=80',
+          'https://images.unsplash.com/photo-1542744094-24638eff58bb?w=800&q=80',
+          'https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&q=80',
+          'https://images.unsplash.com/photo-1572044162444-ad60f128bdea?w=800&q=80',
+          'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&q=80',
+          'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800&q=80',
+          'https://images.unsplash.com/photo-1493421419110-74f4e85ba126?w=800&q=80',
+        ],
+      },
+      {
+        id: 7, caption: 'Adventure',
+        src: 'https://images.unsplash.com/photo-1542744094-24638eff58bb?w=800&q=80',
+        images: [
+          'https://images.unsplash.com/photo-1542744094-24638eff58bb?w=800&q=80',
+          'https://images.unsplash.com/photo-1493421419110-74f4e85ba126?w=800&q=80',
+          'https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&q=80',
+          'https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=800&q=80',
+          'https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=800&q=80',
+          'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&q=80',
+          'https://images.unsplash.com/photo-1572044162444-ad60f128bdea?w=800&q=80',
+        ],
+      },
+    ],
   },
 ]
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   INSTAGRAM-STYLE CARD  — with hover slideshow (10 images, 1s each)
-   ───────────────────────────────────────────────────────────────────────────── */
-function InstaCard({ card, accent, categoryId }) {
+function InstaCard({ card, accent }) {
   const [isHovered, setIsHovered] = useState(false)
   const [slideIndex, setSlideIndex] = useState(0)
   const intervalRef = useRef(null)
-  const slideshowImages = SLIDESHOW_IMAGES[categoryId] || [card.src]
+  const slideshowImages = card.images || [card.src]
 
   const startSlideshow = () => {
     setIsHovered(true)
@@ -242,7 +485,8 @@ function InstaCard({ card, accent, categoryId }) {
         overflow: 'hidden',
         cursor: 'pointer',
         background: '#111',
-        height: '100%',
+        width: '100%',
+        aspectRatio: '9 / 16',
       }}
     >
       <img
@@ -256,8 +500,7 @@ function InstaCard({ card, accent, categoryId }) {
           objectFit: 'cover',
           display: 'block',
           transform: 'scale(1.03)',
-          transition: 'opacity 0.25s ease, transform 0.8s ease',
-          animation: isHovered ? 'fadeInSlide 0.25s ease' : 'none',
+          transition: 'transform 0.8s ease',
         }}
       />
 
@@ -348,25 +591,10 @@ function InstaCard({ card, accent, categoryId }) {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#fff', fontSize: '0.72rem', fontWeight: 600, fontFamily: 'Inter, sans-serif' }}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="#fff">
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-            </svg>
-            {card.likes}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#fff', fontSize: '0.72rem', fontWeight: 600, fontFamily: 'Inter, sans-serif' }}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
-            {card.comments}
-          </div>
         </div>
         <div>
           <p style={{ color: '#fff', fontSize: '0.78rem', fontWeight: 600, lineHeight: 1.4, margin: 0, fontFamily: 'Inter, sans-serif', letterSpacing: '-0.01em' }}>
             {card.caption}
-          </p>
-          <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: '0.65rem', marginTop: '0.25rem', marginBottom: 0, fontFamily: 'Inter, sans-serif' }}>
-            View insights →
           </p>
         </div>
       </div>
@@ -374,9 +602,6 @@ function InstaCard({ card, accent, categoryId }) {
   )
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   SEE MORE CARD — unified blue gradient across ALL categories, linking via Next.js
-   ───────────────────────────────────────────────────────────────────────────── */
 function SeeMoreCard({ category, href }) {
   const BLUE_FROM = '#5de0e6'
   const BLUE_TO   = '#004aad'
@@ -384,11 +609,13 @@ function SeeMoreCard({ category, href }) {
   return (
     <Link
       href={href}
+      className="see-more-card"
       style={{
         position: 'relative',
         overflow: 'hidden',
         cursor: 'pointer',
-        height: '100%',
+        width: '100%',
+        aspectRatio: '9 / 16',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -465,9 +692,6 @@ function SeeMoreCard({ category, href }) {
   )
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   PAGE
-   ───────────────────────────────────────────────────────────────────────────── */
 export default function OurWorkPage() {
   const lenisRef = useLenis()
   const [activeTab, setActiveTab] = useState(0)
@@ -482,7 +706,6 @@ export default function OurWorkPage() {
   const trackRef     = useRef(null)
   const footerRef    = useRef(null)
 
-  /* ── Hero entrance curtain ── */
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       gsap.timeline({ defaults: { ease: 'power3.out' } })
@@ -499,7 +722,6 @@ export default function OurWorkPage() {
     return () => ctx.revert()
   }, [])
 
-  /* ── Scroll orchestration ── */
   useLayoutEffect(() => {
     const mm = gsap.matchMedia()
     mm.add('(min-width: 1px)', () => {
@@ -640,6 +862,7 @@ export default function OurWorkPage() {
           flex-direction: column;
           padding: calc(var(--navbar-h) + var(--tabbar-h) + 1rem) 1.75rem 1.4rem 1.75rem;
           gap: 0.85rem;
+          overflow: hidden;
         }
         @media (max-width: 768px) {
           .cat-panel-inner {
@@ -662,19 +885,23 @@ export default function OurWorkPage() {
         }
 
         .card-grid {
-          flex: 1;
-          min-height: 0;
           display: grid;
           gap: 5px;
           grid-template-columns: repeat(4, 1fr);
-          grid-template-rows: 1fr 1fr;
+          overflow: hidden;
+          align-items: start;
         }
 
         @media (max-width: 768px) {
           .card-grid {
             grid-template-columns: repeat(2, 1fr);
-            grid-template-rows: 1fr 1fr;
             overflow: hidden !important;
+          }
+          .see-more-card {
+            grid-column: span 2 !important;
+            aspect-ratio: unset !important;
+            height: 72px !important;
+            border-radius: 10px;
           }
           .hide-on-mobile { display: none !important; }
         }
@@ -703,7 +930,6 @@ export default function OurWorkPage() {
 
       <main style={{ overflow: 'hidden' }}>
 
-        {/* ═══════ HERO PANEL ═══════ */}
         <section
           ref={heroRef}
           className="panel-hero"
@@ -790,7 +1016,6 @@ export default function OurWorkPage() {
           </div>
         </section>
 
-        {/* ═══════ WORK PANEL — horizontal scroll ═══════ */}
         <div ref={workContainerRef} style={{ position: 'relative', width: '100%', zIndex: 2 }}>
           <div
             id="our-work"
@@ -804,7 +1029,6 @@ export default function OurWorkPage() {
               boxShadow: '0 -32px 80px rgba(0,0,0,0.18), 0 -4px 20px rgba(0,0,0,0.12)',
             }}
           >
-            {/* Tab bar */}
             <div
               className="tab-strip"
               style={{
@@ -851,7 +1075,6 @@ export default function OurWorkPage() {
               ))}
             </div>
 
-            {/* Horizontal track */}
             <div
               ref={trackRef}
               style={{
@@ -863,12 +1086,11 @@ export default function OurWorkPage() {
             >
               {CATEGORIES.map((cat, ci) => {
                 const isMobile = typeof window !== 'undefined' ? window.innerWidth < 768 : false
-                const maxItems = isMobile ? 3 : 7 
+                const maxItems = isMobile ? 2 : 3
                 const visibleCards = cat.cards.slice(0, maxItems)
 
                 return (
                   <div key={cat.id} className="cat-panel-inner">
-                    {/* Category header */}
                     <div className="cat-header">
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.2rem' }}>
@@ -901,14 +1123,12 @@ export default function OurWorkPage() {
                       </div>
                     </div>
 
-                    {/* Card grid */}
                     <div className="card-grid">
                       {visibleCards.map((card) => (
                         <InstaCard
                           key={card.id}
                           card={card}
                           accent={cat.accentColor}
-                          categoryId={cat.id}
                         />
                       ))}
                       <SeeMoreCard category={cat.shortLabel} href={cat.href} />
