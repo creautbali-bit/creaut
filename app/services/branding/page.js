@@ -9,9 +9,6 @@ import Footer from '../../components/footer'
 
 gsap.registerPlugin(ScrollTrigger)
 
-/* ═══════════════════════════════════════════════════════════════════
-   LENIS SMOOTH SCROLL — wired into GSAP RAF
-═══════════════════════════════════════════════════════════════════ */
 function useLenis() {
   const lenisRef = useRef(null)
 
@@ -37,9 +34,7 @@ function useLenis() {
         gsap.ticker.add((time) => lenis.raf(time * 1000))
         gsap.ticker.lagSmoothing(0)
         lenis.on('scroll', ScrollTrigger.update)
-      } catch {
-        // Lenis not available — native scroll fallback
-      }
+      } catch {}
     }
 
     init()
@@ -54,11 +49,6 @@ function useLenis() {
   return lenisRef
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   BRANDING PORTFOLIO PHOTOS
-   layout: 'portrait'  → 1 kolom, aspect-ratio 4/5 (1080×1350)
-           'landscape' → span 2 kolom, aspect-ratio 8/5 (supaya tinggi sejajar)
-═══════════════════════════════════════════════════════════════════ */
 const photos = [
   {
     id: 1,
@@ -131,11 +121,10 @@ const serviceTypes = [
   },
 ]
 
-/* ── LIGHTBOX ───────────────────────────────────────────────────── */
 function Lightbox({ photos, index, onClose, onNav }) {
   const lightboxRef = useRef(null)
-  const imgRef      = useRef(null)
-  const photo       = photos[index]
+  const imgRef = useRef(null)
+  const photo = photos[index]
 
   useEffect(() => {
     gsap.fromTo(lightboxRef.current, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power2.out' })
@@ -149,9 +138,9 @@ function Lightbox({ photos, index, onClose, onNav }) {
 
   useEffect(() => {
     const handler = (e) => {
-      if (e.key === 'Escape')     onClose()
+      if (e.key === 'Escape') onClose()
       if (e.key === 'ArrowRight') onNav(1)
-      if (e.key === 'ArrowLeft')  onNav(-1)
+      if (e.key === 'ArrowLeft') onNav(-1)
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
@@ -160,7 +149,7 @@ function Lightbox({ photos, index, onClose, onNav }) {
   const enterFullscreen = () => {
     const el = imgRef.current
     if (!el) return
-    if (el.requestFullscreen)            el.requestFullscreen()
+    if (el.requestFullscreen) el.requestFullscreen()
     else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen()
   }
 
@@ -217,7 +206,6 @@ function Lightbox({ photos, index, onClose, onNav }) {
         >›</button>
       </div>
 
-      {/* Thumbnail strip — portrait thumbs for portrait photos */}
       <div style={{ width: '100%', maxWidth: 1100, display: 'flex', gap: '4px', overflowX: 'auto', flexShrink: 0, scrollbarWidth: 'none', alignItems: 'flex-end' }}>
         {photos.map((p, i) => (
           <button key={p.id} onClick={() => onNav(i - index)} style={{
@@ -239,20 +227,17 @@ function Lightbox({ photos, index, onClose, onNav }) {
   )
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   PHOTO GRID — FIXED HEIGHT PER ROW
-═══════════════════════════════════════════════════════════════════ */
 function PhotoGrid({ onOpenLightbox }) {
   const [hoveredId, setHoveredId] = useState(null)
-  const [cols, setCols]           = useState(3)
-  const gridRef                   = useRef(null)
+  const [cols, setCols] = useState(3)
+  const gridRef = useRef(null)
 
   useEffect(() => {
     const update = () => {
       const w = window.innerWidth
-      if (w < 540)      setCols(1)
+      if (w < 540) setCols(1)
       else if (w < 900) setCols(2)
-      else              setCols(3)
+      else setCols(3)
     }
     update()
     window.addEventListener('resize', update)
@@ -275,8 +260,6 @@ function PhotoGrid({ onOpenLightbox }) {
     return {}
   }
 
-  // FIXED: Portrait tetap 4/5. 
-  // Landscape (span 2) diset ke 8/5 agar secara matematis sejajar dengan tinggi 4/5 (span 1) dalam satu row.
   const getAspect = (photo) => {
     if (cols === 1) return photo.layout === 'landscape' ? '4/3' : '4/5'
     return photo.layout === 'landscape' ? '8/5' : '4/5'
@@ -289,7 +272,7 @@ function PhotoGrid({ onOpenLightbox }) {
         display: 'grid',
         gridTemplateColumns: `repeat(${cols}, 1fr)`,
         gap: '4px',
-        alignItems: 'stretch', // Memastikan seluruh baris mengisi rata atas-bawah
+        alignItems: 'stretch',
       }}
     >
       {photos.map((photo, i) => (
@@ -303,7 +286,7 @@ function PhotoGrid({ onOpenLightbox }) {
             position: 'relative',
             overflow: 'hidden',
             cursor: 'zoom-in',
-            height: '100%', // FIXED: Menutupi ruang bolong jika rasio bergeser beberapa pixel
+            height: '100%',
             aspectRatio: getAspect(photo),
             background: '#ddd',
             ...getSpan(photo),
@@ -321,7 +304,6 @@ function PhotoGrid({ onOpenLightbox }) {
             }}
           />
 
-          {/* Hover overlay */}
           <div style={{
             position: 'absolute', inset: 0,
             background: 'linear-gradient(135deg, rgba(93,224,230,0.14) 0%, rgba(0,74,173,0.34) 100%)',
@@ -329,7 +311,6 @@ function PhotoGrid({ onOpenLightbox }) {
             transition: 'opacity 0.4s ease',
           }} />
 
-          {/* Bottom scrim */}
           <div style={{
             position: 'absolute', bottom: 0, left: 0, right: 0,
             height: '50%',
@@ -338,7 +319,6 @@ function PhotoGrid({ onOpenLightbox }) {
             transition: 'opacity 0.4s ease',
           }} />
 
-          {/* Caption */}
           <div style={{
             position: 'absolute', bottom: '1.25rem', left: '1.5rem',
             opacity: hoveredId === photo.id ? 1 : 0,
@@ -354,7 +334,6 @@ function PhotoGrid({ onOpenLightbox }) {
             </p>
           </div>
 
-          {/* Zoom icon */}
           <div style={{
             position: 'absolute', top: '1rem', right: '1rem',
             opacity: hoveredId === photo.id ? 1 : 0,
@@ -370,7 +349,6 @@ function PhotoGrid({ onOpenLightbox }) {
   )
 }
 
-/* ── SERVICE CARD ───────────────────────────────────────────────── */
 function ServiceCard({ service, index }) {
   const [hovered, setHovered] = useState(false)
   return (
@@ -397,19 +375,18 @@ function ServiceCard({ service, index }) {
   )
 }
 
-/* ── PAGE ───────────────────────────────────────────────────────── */
 export default function BrandingPage() {
   useLenis()
 
-  const heroRef      = useRef(null)
-  const heroTextRef  = useRef(null)
+  const heroRef = useRef(null)
+  const heroTextRef = useRef(null)
   const heroInnerRef = useRef(null)
-  const overlayRef   = useRef(null)
-  const gridRef      = useRef(null)
-  const descRef      = useRef(null)
-  const servicesRef  = useRef(null)
-  const ctaRef       = useRef(null)
-  const footerRef    = useRef(null)
+  const overlayRef = useRef(null)
+  const gridRef = useRef(null)
+  const descRef = useRef(null)
+  const servicesRef = useRef(null)
+  const ctaRef = useRef(null)
+  const footerRef = useRef(null)
 
   const [lightboxIdx, setLightboxIdx] = useState(null)
 
@@ -420,7 +397,6 @@ export default function BrandingPage() {
     })
   }, [])
 
-  /* ── Hero entrance curtain ── */
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       gsap.timeline({ defaults: { ease: 'power3.out' } })
@@ -437,13 +413,11 @@ export default function BrandingPage() {
     return () => ctx.revert()
   }, [])
 
-  /* ── Cinematic stacked scroll orchestration ── */
   useLayoutEffect(() => {
     const mm = gsap.matchMedia()
 
     mm.add('(min-width: 1px)', () => {
 
-      /* 1. HERO — pin + parallax fade as grid climbs over */
       ScrollTrigger.create({
         trigger: heroRef.current,
         start: 'top top',
@@ -464,7 +438,6 @@ export default function BrandingPage() {
         },
       })
 
-      /* 2. PHOTO GRID — slides up to cover hero */
       gsap.fromTo(gridRef.current,
         { y: 120, clipPath: 'inset(6% 0% 0% 0% round 18px 18px 0px 0px)' },
         {
@@ -478,7 +451,6 @@ export default function BrandingPage() {
         }
       )
 
-      /* 3. DESCRIPTION — rises over grid */
       gsap.fromTo(descRef.current,
         { y: 90, clipPath: 'inset(5% 0% 0% 0% round 16px 16px 0px 0px)' },
         {
@@ -499,7 +471,6 @@ export default function BrandingPage() {
         onEnter: () => gsap.to(descItems, { opacity: 1, y: 0, duration: 0.8, stagger: 0.1, ease: 'power3.out' }),
       })
 
-      /* 4. SERVICES — rises over description */
       gsap.fromTo(servicesRef.current,
         { y: 80, clipPath: 'inset(4% 0% 0% 0% round 16px 16px 0px 0px)' },
         {
@@ -520,7 +491,6 @@ export default function BrandingPage() {
         onEnter: () => gsap.to(cards, { opacity: 1, y: 0, duration: 0.65, stagger: 0.08, ease: 'power3.out' }),
       })
 
-      /* 5. CTA — dramatic overlay */
       gsap.fromTo(ctaRef.current,
         { y: 70, clipPath: 'inset(5% 0% 0% 0% round 20px 20px 0px 0px)' },
         {
@@ -541,7 +511,6 @@ export default function BrandingPage() {
         onEnter: () => gsap.to(ctaItems, { opacity: 1, y: 0, duration: 0.75, stagger: 0.12, ease: 'power3.out' }),
       })
 
-      /* 6. FOOTER — rises from below */
       gsap.fromTo(footerRef.current,
         { y: 60, clipPath: 'inset(8% 0% 0% 0% round 24px 24px 0px 0px)' },
         {
@@ -593,8 +562,6 @@ export default function BrandingPage() {
       )}
 
       <main style={{ overflow: 'hidden' }}>
-
-        {/* ── HERO PANEL ──────────────────────────────────────── */}
         <section
           ref={heroRef}
           className="panel-hero"
@@ -631,7 +598,6 @@ export default function BrandingPage() {
               textAlign: 'center',
               display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem',
             }}>
-              {/* Breadcrumb */}
               <div className="hero-line" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                 <Link href="/" style={{ fontSize: '0.72rem', fontWeight: 500, color: 'rgba(0,0,0,0.4)', textDecoration: 'none', letterSpacing: '0.1em', transition: 'color 0.2s' }}
                   onMouseEnter={e => e.currentTarget.style.color = '#5de0e6'}
@@ -643,7 +609,6 @@ export default function BrandingPage() {
                 <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#5de0e6', letterSpacing: '0.1em' }}>Branding</span>
               </div>
 
-              {/* Label */}
               <div className="hero-line" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 <div style={{ width: 28, height: 2, borderRadius: 2, background: 'linear-gradient(90deg, #5de0e6, #004aad)' }} />
                 <span style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.4)' }}>
@@ -652,7 +617,6 @@ export default function BrandingPage() {
                 <div style={{ width: 28, height: 2, borderRadius: 2, background: 'linear-gradient(90deg, #004aad, #5de0e6)' }} />
               </div>
 
-              {/* Heading */}
               <h1 className="hero-line" style={{
                 fontWeight: 800,
                 fontSize: 'clamp(4rem, 11vw, 10rem)',
@@ -667,7 +631,6 @@ export default function BrandingPage() {
                 }}>Brand</span>ing
               </h1>
 
-              {/* Desc */}
               <p className="hero-line" style={{
                 fontSize: 'clamp(0.875rem, 1.5vw, 1.05rem)',
                 color: 'rgba(0,0,0,0.5)',
@@ -676,7 +639,6 @@ export default function BrandingPage() {
                 We build brands that people remember. From discovery to delivery — strategy, identity, and everything in between.
               </p>
 
-              {/* CTAs */}
               <div className="hero-line" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                 <a href="/services/branding/portfolio" style={{
                   padding: '0.9rem 2.25rem',
@@ -703,14 +665,12 @@ export default function BrandingPage() {
             </div>
           </div>
 
-          {/* Scroll hint */}
           <div style={{ position: 'absolute', bottom: '2.5rem', left: '50%', transform: 'translateX(-50%)', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
             <span style={{ fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.25)' }}>Scroll</span>
             <div style={{ width: 1, height: 40, background: 'linear-gradient(180deg, rgba(93,224,230,0.6), transparent)', borderRadius: 1 }} />
           </div>
         </section>
 
-        {/* ── PHOTO GRID PANEL — slides up to cover hero ──────── */}
         <div
           id="grid"
           ref={gridRef}
@@ -721,7 +681,6 @@ export default function BrandingPage() {
             boxShadow: '0 -32px 80px rgba(0,0,0,0.12), 0 -4px 20px rgba(0,0,0,0.08)',
           }}
         >
-          {/* Section label */}
           <div style={{
             padding: '0 clamp(1.5rem, 5vw, 4rem)',
             maxWidth: 1100, margin: '0 auto 1.5rem auto',
@@ -731,11 +690,9 @@ export default function BrandingPage() {
             <span style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#004aad' }}>Portfolio</span>
           </div>
 
-          {/* Full-bleed grid */}
           <PhotoGrid onOpenLightbox={setLightboxIdx} />
         </div>
 
-        {/* ── DESCRIPTION PANEL — overlaps grid ───────────────── */}
         <section
           ref={descRef}
           className="panel-desc"
@@ -795,7 +752,6 @@ export default function BrandingPage() {
           </div>
         </section>
 
-        {/* ── SERVICE TYPES PANEL — overlaps description ──────── */}
         <section
           ref={servicesRef}
           className="panel-services"
@@ -821,7 +777,6 @@ export default function BrandingPage() {
           </div>
         </section>
 
-        {/* ── CTA PANEL — overlaps services ───────────────────── */}
         <section
           ref={ctaRef}
           className="panel-cta"
@@ -874,7 +829,6 @@ export default function BrandingPage() {
           </div>
         </section>
 
-        {/* ── FOOTER PANEL — rises from below ─────────────────── */}
         <div
           ref={footerRef}
           className="panel-footer"

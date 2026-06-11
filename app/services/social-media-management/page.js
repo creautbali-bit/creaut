@@ -9,9 +9,6 @@ import Footer from '../../components/footer'
 
 gsap.registerPlugin(ScrollTrigger)
 
-/* ═══════════════════════════════════════════════════════════════════
-   LENIS SMOOTH SCROLL — wired into GSAP RAF
-═══════════════════════════════════════════════════════════════════ */
 function useLenis() {
   const lenisRef = useRef(null)
 
@@ -38,9 +35,7 @@ function useLenis() {
         gsap.ticker.add((time) => lenis.raf(time * 1000))
         gsap.ticker.lagSmoothing(0)
         lenis.on('scroll', ScrollTrigger.update)
-      } catch {
-        // Lenis not available — native scroll fallback
-      }
+      } catch {}
     }
 
     init()
@@ -55,9 +50,6 @@ function useLenis() {
   return lenisRef
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   MASONRY GRID PHOTOS
-═══════════════════════════════════════════════════════════════════ */
 const gridPhotos = [
   {
     id: 1,
@@ -91,7 +83,6 @@ const gridPhotos = [
   },
 ]
 
-/* ── SERVICE TYPES ───────────────────────────────────────────────── */
 const serviceTypes = [
   {
     title: 'Content Strategy',
@@ -119,11 +110,10 @@ const serviceTypes = [
   },
 ]
 
-/* ── LIGHTBOX ──────────────────────────────────────────────────── */
 function Lightbox({ photos, index, onClose, onNav }) {
   const lightboxRef = useRef(null)
-  const imgRef      = useRef(null)
-  const photo       = photos[index]
+  const imgRef = useRef(null)
+  const photo = photos[index]
 
   useEffect(() => {
     gsap.fromTo(lightboxRef.current, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power2.out' })
@@ -139,7 +129,7 @@ function Lightbox({ photos, index, onClose, onNav }) {
     const handler = (e) => {
       if (e.key === 'Escape') onClose()
       if (e.key === 'ArrowRight') onNav(1)
-      if (e.key === 'ArrowLeft')  onNav(-1)
+      if (e.key === 'ArrowLeft') onNav(-1)
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
@@ -148,7 +138,7 @@ function Lightbox({ photos, index, onClose, onNav }) {
   const enterFullscreen = () => {
     const el = imgRef.current
     if (!el) return
-    if (el.requestFullscreen)            el.requestFullscreen()
+    if (el.requestFullscreen) el.requestFullscreen()
     else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen()
   }
 
@@ -170,7 +160,6 @@ function Lightbox({ photos, index, onClose, onNav }) {
         padding: 'clamp(1.5rem, 5vw, 4rem)', gap: '1rem',
       }}
     >
-      {/* Top bar */}
       <div style={{ width: '100%', maxWidth: 1100, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
         <div>
           <p style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(93,224,230,0.85)', margin: '0 0 0.2rem 0' }}>
@@ -192,7 +181,6 @@ function Lightbox({ photos, index, onClose, onNav }) {
         </div>
       </div>
 
-      {/* Image + arrows */}
       <div style={{ position: 'relative', width: '100%', maxWidth: 1100, display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 1 }}>
         <button onClick={() => onNav(-1)} style={{ ...btnBase, flexShrink: 0, width: 44, height: 44, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', border: '1.5px solid rgba(255,255,255,0.15)', color: '#fff', fontSize: '1.3rem' }}
           onMouseEnter={e => e.currentTarget.style.background = 'linear-gradient(135deg,#5de0e6,#004aad)'}
@@ -209,7 +197,6 @@ function Lightbox({ photos, index, onClose, onNav }) {
         >›</button>
       </div>
 
-      {/* Thumbnail strip */}
       <div style={{ width: '100%', maxWidth: 1100, display: 'flex', gap: '4px', overflowX: 'auto', flexShrink: 0, scrollbarWidth: 'none' }}>
         {photos.map((p, i) => (
           <button key={p.id} onClick={() => onNav(i - index)} style={{
@@ -229,7 +216,6 @@ function Lightbox({ photos, index, onClose, onNav }) {
   )
 }
 
-/* ── SERVICE CARD ───────────────────────────────────────────────── */
 function ServiceCard({ service, index }) {
   const [hovered, setHovered] = useState(false)
 
@@ -272,23 +258,21 @@ function ServiceCard({ service, index }) {
   )
 }
 
-/* ── PAGE ───────────────────────────────────────────────────────── */
 export default function SocialMediaPage() {
-  // Activate Lenis smooth scroll
   useLenis()
 
-  const heroRef      = useRef(null)
-  const heroTextRef  = useRef(null)
+  const heroRef = useRef(null)
+  const heroTextRef = useRef(null)
   const heroInnerRef = useRef(null)
-  const overlayRef   = useRef(null)
-  const gridRef      = useRef(null)
-  const descRef      = useRef(null)
-  const servicesRef  = useRef(null)
-  const ctaRef       = useRef(null)
-  const footerRef    = useRef(null)
+  const overlayRef = useRef(null)
+  const gridRef = useRef(null)
+  const descRef = useRef(null)
+  const servicesRef = useRef(null)
+  const ctaRef = useRef(null)
+  const footerRef = useRef(null)
 
   const [lightboxIdx, setLightboxIdx] = useState(null)
-  const [hoveredId, setHoveredId]     = useState(null)
+  const [hoveredId, setHoveredId] = useState(null)
 
   const lightboxNav = useCallback((delta) => {
     setLightboxIdx(prev => {
@@ -297,7 +281,6 @@ export default function SocialMediaPage() {
     })
   }, [])
 
-  /* ── Hero entrance curtain ── */
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       gsap.timeline({ defaults: { ease: 'power3.out' } })
@@ -314,13 +297,11 @@ export default function SocialMediaPage() {
     return () => ctx.revert()
   }, [])
 
-  /* ── Cinematic stacked scroll orchestration ── */
   useLayoutEffect(() => {
     const mm = gsap.matchMedia()
 
     mm.add('(min-width: 1px)', () => {
 
-      /* ── 1. HERO — pin + parallax fade as grid climbs over ── */
       ScrollTrigger.create({
         trigger: heroRef.current,
         start: 'top top',
@@ -341,7 +322,6 @@ export default function SocialMediaPage() {
         },
       })
 
-      /* ── 2. PHOTO GRID — slides up to cover hero ── */
       gsap.fromTo(gridRef.current,
         { y: 120, clipPath: 'inset(6% 0% 0% 0% round 18px 18px 0px 0px)' },
         {
@@ -355,7 +335,6 @@ export default function SocialMediaPage() {
         }
       )
 
-      /* ── 3. DESCRIPTION — rises over grid ── */
       gsap.fromTo(descRef.current,
         { y: 90, clipPath: 'inset(5% 0% 0% 0% round 16px 16px 0px 0px)' },
         {
@@ -376,7 +355,6 @@ export default function SocialMediaPage() {
         onEnter: () => gsap.to(descItems, { opacity: 1, y: 0, duration: 0.8, stagger: 0.1, ease: 'power3.out' }),
       })
 
-      /* ── 4. SERVICES — rises over description ── */
       gsap.fromTo(servicesRef.current,
         { y: 80, clipPath: 'inset(4% 0% 0% 0% round 16px 16px 0px 0px)' },
         {
@@ -397,7 +375,6 @@ export default function SocialMediaPage() {
         onEnter: () => gsap.to(cards, { opacity: 1, y: 0, duration: 0.65, stagger: 0.08, ease: 'power3.out' }),
       })
 
-      /* ── 5. CTA — dramatic overlay ── */
       gsap.fromTo(ctaRef.current,
         { y: 70, clipPath: 'inset(5% 0% 0% 0% round 20px 20px 0px 0px)' },
         {
@@ -418,7 +395,6 @@ export default function SocialMediaPage() {
         onEnter: () => gsap.to(ctaItems, { opacity: 1, y: 0, duration: 0.75, stagger: 0.12, ease: 'power3.out' }),
       })
 
-      /* ── 6. FOOTER — rises from below ── */
       gsap.fromTo(footerRef.current,
         { y: 60, clipPath: 'inset(8% 0% 0% 0% round 24px 24px 0px 0px)' },
         {
@@ -460,7 +436,6 @@ export default function SocialMediaPage() {
 
       <Navbar />
 
-      {/* Lightbox */}
       {lightboxIdx !== null && (
         <Lightbox
           photos={gridPhotos}
@@ -472,7 +447,6 @@ export default function SocialMediaPage() {
 
       <main style={{ overflow: 'hidden' }}>
 
-        {/* ── HERO PANEL ────────────────────────────────────────────────── */}
         <section
           ref={heroRef}
           className="panel-hero"
@@ -482,7 +456,6 @@ export default function SocialMediaPage() {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}
         >
-          {/* BG */}
           <div style={{
             position: 'absolute', inset: 0, zIndex: 0,
             background: 'linear-gradient(160deg, #0a0a0a 0%, #0d1117 45%, #111827 100%)',
@@ -492,14 +465,12 @@ export default function SocialMediaPage() {
             `,
           }} />
 
-          {/* Entrance curtain */}
           <div ref={overlayRef} style={{
             position: 'absolute', inset: 0, zIndex: 10,
             background: 'linear-gradient(135deg, #5de0e6, #004aad)',
             transformOrigin: 'top', pointerEvents: 'none',
           }} />
 
-          {/* Inner — gets parallax-faded on scroll */}
           <div ref={heroInnerRef} style={{
             position: 'relative', zIndex: 2,
             width: '100%', height: '100%',
@@ -512,7 +483,6 @@ export default function SocialMediaPage() {
               textAlign: 'center',
               display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem',
             }}>
-              {/* Breadcrumb */}
               <div className="hero-line" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                 <Link href="/" style={{ fontSize: '0.72rem', fontWeight: 500, color: 'rgba(0, 0, 0, 0.4)', textDecoration: 'none', letterSpacing: '0.1em', transition: 'color 0.2s' }}
                   onMouseEnter={e => e.currentTarget.style.color = '#5de0e6'}
@@ -524,7 +494,6 @@ export default function SocialMediaPage() {
                 <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#5de0e6', letterSpacing: '0.1em' }}>Social Media Management</span>
               </div>
 
-              {/* Label */}
               <div className="hero-line" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 <div style={{ width: 28, height: 2, borderRadius: 2, background: 'linear-gradient(90deg, #5de0e6, #004aad)' }} />
                 <span style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(0, 0, 0, 0.4)' }}>
@@ -533,7 +502,6 @@ export default function SocialMediaPage() {
                 <div style={{ width: 28, height: 2, borderRadius: 2, background: 'linear-gradient(90deg, #004aad, #5de0e6)' }} />
               </div>
 
-              {/* Heading */}
               <h1 className="hero-line" style={{
                 fontWeight: 800,
                 fontSize: 'clamp(3rem, 9vw, 8rem)',
@@ -549,7 +517,6 @@ export default function SocialMediaPage() {
                 }}>Media</span>
               </h1>
 
-              {/* Desc */}
               <p className="hero-line" style={{
                 fontSize: 'clamp(0.875rem, 1.5vw, 1.05rem)',
                 color: 'rgba(0, 0, 0, 0.5)',
@@ -557,46 +524,15 @@ export default function SocialMediaPage() {
               }}>
                 We grow your social media presence with compelling content, consistent strategy, and community engagement that turns followers into customers.
               </p>
-
-              {/* CTA */}
-              {/* <div className="hero-line" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-                <a href="#grid" style={{
-                  padding: '0.9rem 2.25rem',
-                  background: 'linear-gradient(90deg, #5de0e6, #004aad)',
-                  color: '#fff', textDecoration: 'none',
-                  fontSize: '0.875rem', fontWeight: 600,
-                  borderRadius: '8px', transition: 'opacity 0.2s',
-                  boxShadow: '0 4px 24px rgba(93,224,230,0.25)',
-                }}
-                  onMouseEnter={e => e.currentTarget.style.opacity = '0.82'}
-                  onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-                >
-                  See Our Work ↓
-                </a>
-                <a href="https://wa.me/62818160664" target="_blank" rel="noreferrer" style={{
-                  padding: '0.9rem 2.25rem', background: 'transparent',
-                  border: '1.5px solid rgba(255,255,255,0.2)',
-                  color: 'rgba(255,255,255,0.75)', textDecoration: 'none',
-                  fontSize: '0.875rem', fontWeight: 600,
-                  borderRadius: '8px', transition: 'border-color 0.2s, color 0.2s',
-                }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#5de0e6'; e.currentTarget.style.color = '#5de0e6' }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; e.currentTarget.style.color = 'rgba(255,255,255,0.75)' }}
-                >
-                  Get a Proposal ↗
-                </a>
-              </div> */}
             </div>
           </div>
 
-          {/* Scroll hint */}
           <div style={{ position: 'absolute', bottom: '2.5rem', left: '50%', transform: 'translateX(-50%)', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
             <span style={{ fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)' }}>Scroll</span>
             <div style={{ width: 1, height: 40, background: 'linear-gradient(180deg, rgba(93,224,230,0.6), transparent)', borderRadius: 1 }} />
           </div>
         </section>
 
-        {/* ── MASONRY PHOTO GRID PANEL — slides up to cover hero ────────── */}
         <div
           id="grid"
           ref={gridRef}
@@ -680,7 +616,6 @@ export default function SocialMediaPage() {
           </div>
         </div>
 
-        {/* ── DESCRIPTION PANEL — overlaps grid ─────────────────────────── */}
         <section
           ref={descRef}
           className="panel-desc"
@@ -693,7 +628,6 @@ export default function SocialMediaPage() {
         >
           <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '3rem', alignItems: 'center' }}>
 
-            {/* Left */}
             <div>
               <div className="reveal" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
                 <div style={{ width: 28, height: 2, borderRadius: 2, background: 'linear-gradient(90deg, #5de0e6, #004aad)' }} />
@@ -713,7 +647,6 @@ export default function SocialMediaPage() {
               </p>
             </div>
 
-            {/* Right — platform tags */}
             <div className="reveal">
               <p style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.35)', marginBottom: '1rem' }}>
                 Platforms We Manage
@@ -742,7 +675,6 @@ export default function SocialMediaPage() {
           </div>
         </section>
 
-        {/* ── SERVICES PANEL — overlaps description ─────────────────────── */}
         <section
           ref={servicesRef}
           className="panel-services"
@@ -777,7 +709,6 @@ export default function SocialMediaPage() {
           </div>
         </section>
 
-        {/* ── CTA PANEL — overlaps services ─────────────────────────────── */}
         <section
           ref={ctaRef}
           className="panel-cta"
@@ -791,7 +722,6 @@ export default function SocialMediaPage() {
             position: 'relative', overflow: 'hidden',
           }}
         >
-          {/* Atmospheric glow */}
           <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse at 60% 50%, rgba(93,224,230,0.05) 0%, transparent 65%), radial-gradient(ellipse at 20% 80%, rgba(0,74,173,0.05) 0%, transparent 55%)' }} />
 
           <div className="cta-reveal" style={{ position: 'relative' }}>
@@ -835,7 +765,6 @@ export default function SocialMediaPage() {
           </div>
         </section>
 
-        {/* ── FOOTER PANEL — rises from below ───────────────────────────── */}
         <div
           ref={footerRef}
           className="panel-footer"

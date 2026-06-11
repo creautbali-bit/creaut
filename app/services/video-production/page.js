@@ -9,9 +9,6 @@ import Footer from '../../components/footer'
 
 gsap.registerPlugin(ScrollTrigger)
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   LENIS SMOOTH SCROLL — initialised once, ticker wired into GSAP RAF
-   ───────────────────────────────────────────────────────────────────────────── */
 function useLenis() {
   const lenisRef = useRef(null)
 
@@ -36,15 +33,11 @@ function useLenis() {
 
         lenisRef.current = lenis
 
-        // Wire Lenis into GSAP ticker for ScrollTrigger compatibility
         gsap.ticker.add((time) => lenis.raf(time * 1000))
         gsap.ticker.lagSmoothing(0)
 
-        // Keep ScrollTrigger in sync
         lenis.on('scroll', ScrollTrigger.update)
-      } catch {
-        // Lenis not available — fall back to native scroll gracefully
-      }
+      } catch {}
     }
 
     init()
@@ -59,9 +52,6 @@ function useLenis() {
   return lenisRef
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   DATA
-   ───────────────────────────────────────────────────────────────────────────── */
 const carouselImages = [
   { id: 1, src: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=1600&q=85', caption: 'On Set — Commercial Shoot' },
   { id: 2, src: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=1600&q=85', caption: 'Behind The Scene — Product Film' },
@@ -82,9 +72,6 @@ const serviceTypes = [
   { title: 'Safety Videos', desc: 'Clear and powerful messages using dramatic reconstructions, motion graphics, and memorable stories.' },
 ]
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   LIGHTBOX  (unchanged from original)
-   ───────────────────────────────────────────────────────────────────────────── */
 function Lightbox({ images, index, onClose, onNav }) {
   const lightboxRef = useRef(null)
   const imgRef = useRef(null)
@@ -177,9 +164,6 @@ function Lightbox({ images, index, onClose, onNav }) {
   )
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   CAROUSEL  (functionality unchanged; subtle scroll parallax added via refs)
-   ───────────────────────────────────────────────────────────────────────────── */
 function Carousel() {
   const [current, setCurrent] = useState(0)
   const [lightboxIdx, setLightboxIdx] = useState(null)
@@ -225,7 +209,6 @@ function Carousel() {
       )}
 
       <div style={{ background: '#0a0a0a', userSelect: 'none' }}>
-        {/* Main image track */}
         <div style={{ position: 'relative', width: '100%', overflow: 'hidden' }}>
           <div ref={trackRef} style={{ display: 'flex', width: `${total * 100}%` }}>
             {carouselImages.map((img, i) => (
@@ -241,7 +224,6 @@ function Carousel() {
                 <p style={{ position: 'absolute', top: '1.25rem', right: '1.5rem', fontSize: '0.65rem', fontWeight: 600, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', margin: 0, pointerEvents: 'none' }}>
                   {String(i + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
                 </p>
-                {/* Zoom hint */}
                 <div style={{ position: 'absolute', inset: 0, zIndex: 2, background: 'rgba(93,224,230,0.08)', opacity: 0, transition: 'opacity 0.25s', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}
                   ref={el => {
                     if (!el) return
@@ -257,7 +239,6 @@ function Carousel() {
             ))}
           </div>
 
-          {/* Arrows */}
           {[{ dir: -1, label: '‹', side: 'left' }, { dir: 1, label: '›', side: 'right' }].map(({ dir, label, side }) => (
             <button key={side} onClick={() => { goTo(current + dir); resetTimer() }}
               style={{ position: 'absolute', top: '50%', [side]: '1.25rem', transform: 'translateY(-50%)', zIndex: 5, width: 44, height: 44, borderRadius: '50%', border: '1.5px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)', color: '#fff', fontSize: '1.4rem', lineHeight: 1, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
@@ -268,7 +249,6 @@ function Carousel() {
           ))}
         </div>
 
-        {/* Thumbnail strip */}
         <div ref={thumbsRef} style={{ display: 'flex', gap: '3px', overflowX: 'auto', padding: '3px', background: '#ffffff', scrollbarWidth: 'none' }}>
           {carouselImages.map((img, i) => (
             <button key={img.id} onClick={() => { goTo(i); resetTimer() }}
@@ -284,9 +264,6 @@ function Carousel() {
   )
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   SERVICE TYPE CARD  (unchanged)
-   ───────────────────────────────────────────────────────────────────────────── */
 function ServiceTypeCard({ service, index }) {
   const [hovered, setHovered] = useState(false)
   return (
@@ -304,26 +281,21 @@ function ServiceTypeCard({ service, index }) {
   )
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   PAGE  — cinematic stacked scroll orchestration
-   ───────────────────────────────────────────────────────────────────────────── */
 export default function VideoProductionPage() {
   useLenis()
 
-  /* Section refs */
-  const wrapperRef    = useRef(null)   // full page wrapper
-  const heroRef       = useRef(null)
-  const heroTextRef   = useRef(null)
-  const heroInnerRef  = useRef(null)   // inner content for parallax
-  const overlayRef    = useRef(null)   // curtain
+  const wrapperRef = useRef(null)
+  const heroRef = useRef(null)
+  const heroTextRef = useRef(null)
+  const heroInnerRef = useRef(null)
+  const overlayRef = useRef(null)
 
-  const carouselRef   = useRef(null)
-  const descRef       = useRef(null)
-  const servicesRef   = useRef(null)
-  const ctaRef        = useRef(null)
-  const footerRef     = useRef(null)
+  const carouselRef = useRef(null)
+  const descRef = useRef(null)
+  const servicesRef = useRef(null)
+  const ctaRef = useRef(null)
+  const footerRef = useRef(null)
 
-  /* ── Hero entrance curtain ── */
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       gsap.timeline({ defaults: { ease: 'power3.out' } })
@@ -340,12 +312,10 @@ export default function VideoProductionPage() {
     return () => ctx.revert()
   }, [])
 
-  /* ── Cinematic scroll orchestration ── */
   useLayoutEffect(() => {
     const mm = gsap.matchMedia()
 
     mm.add('(min-width: 1px)', () => {
-      /* ── 1. HERO PIN + scale-fade as carousel climbs over it ── */
       ScrollTrigger.create({
         trigger: heroRef.current,
         start: 'top top',
@@ -356,7 +326,6 @@ export default function VideoProductionPage() {
         id: 'hero-pin',
       })
 
-      /* Hero inner parallax + fade while carousel overlays */
       gsap.to(heroInnerRef.current, {
         y: -80,
         opacity: 0,
@@ -370,7 +339,6 @@ export default function VideoProductionPage() {
         },
       })
 
-      /* ── 2. CAROUSEL — slides up to cover hero (stacked panel) ── */
       gsap.fromTo(carouselRef.current,
         { y: 120, clipPath: 'inset(6% 0% 0% 0% round 18px 18px 0px 0px)' },
         {
@@ -386,7 +354,6 @@ export default function VideoProductionPage() {
         }
       )
 
-      /* ── 3. DESCRIPTION — panel rise over carousel ── */
       gsap.fromTo(descRef.current,
         { y: 90, clipPath: 'inset(5% 0% 0% 0% round 16px 16px 0px 0px)' },
         {
@@ -402,7 +369,6 @@ export default function VideoProductionPage() {
         }
       )
 
-      /* Desc text stagger reveal */
       const descItems = descRef.current.querySelectorAll('.reveal')
       gsap.set(descItems, { opacity: 0, y: 32 })
       ScrollTrigger.create({
@@ -411,7 +377,6 @@ export default function VideoProductionPage() {
         onEnter: () => gsap.to(descItems, { opacity: 1, y: 0, duration: 0.8, stagger: 0.1, ease: 'power3.out' }),
       })
 
-      /* ── 4. SERVICES — panel rise over description ── */
       gsap.fromTo(servicesRef.current,
         { y: 80, clipPath: 'inset(4% 0% 0% 0% round 16px 16px 0px 0px)' },
         {
@@ -427,7 +392,6 @@ export default function VideoProductionPage() {
         }
       )
 
-      /* Service cards stagger */
       const cards = servicesRef.current.querySelectorAll('.service-card')
       gsap.set(cards, { opacity: 0, y: 30 })
       ScrollTrigger.create({
@@ -436,7 +400,6 @@ export default function VideoProductionPage() {
         onEnter: () => gsap.to(cards, { opacity: 1, y: 0, duration: 0.65, stagger: 0.08, ease: 'power3.out' }),
       })
 
-      /* ── 5. CTA — dramatic overlay ── */
       gsap.fromTo(ctaRef.current,
         { y: 70, clipPath: 'inset(5% 0% 0% 0% round 20px 20px 0px 0px)' },
         {
@@ -452,7 +415,6 @@ export default function VideoProductionPage() {
         }
       )
 
-      /* CTA internal reveal */
       const ctaItems = ctaRef.current.querySelectorAll('.cta-reveal')
       gsap.set(ctaItems, { opacity: 0, y: 28 })
       ScrollTrigger.create({
@@ -461,7 +423,6 @@ export default function VideoProductionPage() {
         onEnter: () => gsap.to(ctaItems, { opacity: 1, y: 0, duration: 0.75, stagger: 0.12, ease: 'power3.out' }),
       })
 
-      /* ── 6. FOOTER — rises from below ── */
       gsap.fromTo(footerRef.current,
         { y: 60, clipPath: 'inset(8% 0% 0% 0% round 24px 24px 0px 0px)' },
         {
@@ -485,12 +446,10 @@ export default function VideoProductionPage() {
 
   return (
     <>
-      {/* Global cinematic base styles */}
       <style>{`
         html { scroll-behavior: auto !important; }
         *,*::before,*::after { box-sizing: border-box; }
 
-        /* Stacking context for each cinematic panel */
         .panel-hero      { position: relative; z-index: 1; }
         .panel-carousel  { position: relative; z-index: 2; will-change: transform, clip-path; }
         .panel-desc      { position: relative; z-index: 3; will-change: transform, clip-path; }
@@ -498,14 +457,12 @@ export default function VideoProductionPage() {
         .panel-cta       { position: relative; z-index: 5; will-change: transform, clip-path; }
         .panel-footer    { position: relative; z-index: 6; will-change: transform, clip-path; }
 
-        /* Lenis */
         html.lenis { height: auto; }
         .lenis.lenis-smooth { scroll-behavior: auto; }
         .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
         .lenis.lenis-stopped { overflow: hidden; }
         .lenis.lenis-scrolling iframe { pointer-events: none; }
 
-        /* Thumb strip scrollbar hide */
         .thumb-strip::-webkit-scrollbar { display: none; }
       `}</style>
 
@@ -513,7 +470,6 @@ export default function VideoProductionPage() {
 
       <main ref={wrapperRef} style={{ overflow: 'hidden' }}>
 
-        {/* ── HERO PANEL ─────────────────────────────────────────────────── */}
         <section
           ref={heroRef}
           className="panel-hero"
@@ -523,7 +479,6 @@ export default function VideoProductionPage() {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}
         >
-          {/* BG gradient atmosphere */}
           <div style={{
             position: 'absolute', inset: 0, zIndex: 0,
             background: '#ffffff',
@@ -533,14 +488,12 @@ export default function VideoProductionPage() {
             `,
           }} />
 
-          {/* Entrance curtain */}
           <div ref={overlayRef} style={{
             position: 'absolute', inset: 0, zIndex: 10,
             background: 'linear-gradient(135deg, #5de0e6, #004aad)',
             transformOrigin: 'top', pointerEvents: 'none',
           }} />
 
-          {/* ── Hero inner — this gets parallax-faded on scroll ── */}
           <div ref={heroInnerRef} style={{
             position: 'relative', zIndex: 2,
             width: '100%', height: '100%',
@@ -552,7 +505,6 @@ export default function VideoProductionPage() {
               width: '100%', maxWidth: 860, textAlign: 'center',
               display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem',
             }}>
-              {/* Breadcrumb */}
               <div className="hero-line" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                 <Link href="/" style={{ fontSize: '0.72rem', fontWeight: 500, color: 'rgba(0,0,0,0.4)', textDecoration: 'none', letterSpacing: '0.1em', transition: 'color 0.2s' }}
                   onMouseEnter={e => e.currentTarget.style.color = '#5de0e6'}
@@ -563,7 +515,6 @@ export default function VideoProductionPage() {
                 <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#5de0e6', letterSpacing: '0.1em' }}>Video Production</span>
               </div>
 
-              {/* Label */}
               <div className="hero-line" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 <div style={{ width: 28, height: 2, borderRadius: 2, background: 'linear-gradient(90deg, #5de0e6, #004aad)' }} />
                 <span style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.4)' }}>
@@ -572,7 +523,6 @@ export default function VideoProductionPage() {
                 <div style={{ width: 28, height: 2, borderRadius: 2, background: 'linear-gradient(90deg, #004aad, #5de0e6)' }} />
               </div>
 
-              {/* Heading */}
               <h1 className="hero-line" style={{ fontWeight: 800, fontSize: 'clamp(3.5rem, 10vw, 9rem)', color: '#000000', letterSpacing: '-0.04em', lineHeight: 0.9, margin: 0 }}>
                 Video<br />
                 <span style={{ background: 'linear-gradient(90deg, #5de0e6, #004aad)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
@@ -580,7 +530,6 @@ export default function VideoProductionPage() {
                 </span>
               </h1>
 
-              {/* CTAs */}
               <div className="hero-line" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                 <a href="/services/video-production/portfolio" style={{ padding: '0.9rem 2.25rem', background: 'linear-gradient(90deg, #5de0e6, #004aad)', color: '#fff', textDecoration: 'none', fontSize: '0.875rem', fontWeight: 600, borderRadius: '8px', transition: 'opacity 0.2s', boxShadow: '0 4px 24px rgba(93,224,230,0.25)' }}
                   onMouseEnter={e => e.currentTarget.style.opacity = '0.82'}
@@ -592,27 +541,23 @@ export default function VideoProductionPage() {
             </div>
           </div>
 
-          {/* Scroll hint */}
           <div style={{ position: 'absolute', bottom: '2.5rem', left: '50%', transform: 'translateX(-50%)', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
             <span style={{ fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.25)' }}>Scroll</span>
             <div style={{ width: 1, height: 40, background: 'linear-gradient(180deg, rgba(93,224,230,0.6), transparent)', borderRadius: 1 }} />
           </div>
         </section>
 
-        {/* ── CAROUSEL PANEL — overlaps hero ──────────────────────────────── */}
         <div
           id="carousel"
           ref={carouselRef}
           className="panel-carousel"
           style={{
-            /* The top shadow gives the "layer on top" depth illusion */
             boxShadow: '0 -32px 80px rgba(0,0,0,0.18), 0 -4px 20px rgba(0,0,0,0.12)',
           }}
         >
           <Carousel />
         </div>
 
-        {/* ── DESCRIPTION PANEL — overlaps carousel ──────────────────────── */}
         <section
           ref={descRef}
           className="panel-desc"
@@ -625,7 +570,6 @@ export default function VideoProductionPage() {
         >
           <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '3rem', alignItems: 'center' }}>
 
-            {/* Left copy */}
             <div>
               <div className="reveal" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
                 <div style={{ width: 28, height: 2, borderRadius: 2, background: 'linear-gradient(90deg, #5de0e6, #004aad)' }} />
@@ -645,7 +589,6 @@ export default function VideoProductionPage() {
               </p>
             </div>
 
-            {/* Capability tags */}
             <div className="reveal">
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
                 {['Filming', 'Drone', 'Editing', 'Motion Graphics', 'Color Grading', 'Sound Design', 'Visual Effects', 'Studio', 'Kit Hire', 'Script Writing', 'Storyboard', 'Direction'].map(tag => (
@@ -660,7 +603,6 @@ export default function VideoProductionPage() {
           </div>
         </section>
 
-        {/* ── SERVICES PANEL — overlaps description ───────────────────────── */}
         <section
           ref={servicesRef}
           className="panel-services"
@@ -687,7 +629,6 @@ export default function VideoProductionPage() {
           </div>
         </section>
 
-        {/* ── CTA PANEL — overlaps services ───────────────────────────────── */}
         <section
           ref={ctaRef}
           className="panel-cta"
@@ -697,13 +638,11 @@ export default function VideoProductionPage() {
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             flexWrap: 'wrap', gap: '1.5rem',
             boxShadow: '0 -24px 60px rgba(0,0,0,0.08), 0 -3px 12px rgba(0,0,0,0.06)',
-            /* Subtle top gradient separator */
             borderTop: '1px solid rgba(93,224,230,0.18)',
             position: 'relative',
             overflow: 'hidden',
           }}
         >
-          {/* Atmospheric background glow */}
           <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse at 60% 50%, rgba(93,224,230,0.05) 0%, transparent 65%), radial-gradient(ellipse at 20% 80%, rgba(0,74,173,0.05) 0%, transparent 55%)' }} />
 
           <div className="cta-reveal" style={{ position: 'relative' }}>
@@ -728,7 +667,6 @@ export default function VideoProductionPage() {
           </div>
         </section>
 
-        {/* ── FOOTER PANEL — rises from below ─────────────────────────────── */}
         <div ref={footerRef} className="panel-footer"
           style={{ boxShadow: '0 -20px 50px rgba(0,0,0,0.10)' }}>
           <Footer />

@@ -32,7 +32,6 @@ export default function CTA() {
         position: 'relative',
       }}
     >
-      {/* Soft gradient glow */}
       <div style={{
         position: 'absolute',
         top: '-40%', left: '50%',
@@ -44,8 +43,6 @@ export default function CTA() {
 
       <div className="container" style={{ position: 'relative', zIndex: 1 }}>
         <div ref={contentRef} style={{ maxWidth: 640, margin: '0 auto', textAlign: 'center' }}>
-
-          {/* Badge */}
           <div className="cta-item" style={{
             display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
             border: '1px solid var(--border-strong)', borderRadius: '999px',
@@ -62,7 +59,6 @@ export default function CTA() {
             </span>
           </div>
 
-          {/* Headline */}
           <h2 className="cta-item" style={{
             fontSize: 'clamp(2rem, 5.5vw, 4.5rem)',
             fontWeight: 800,
@@ -89,7 +85,6 @@ export default function CTA() {
             Tell us about your project. We're always excited for new creative challenges.
           </p>
 
-          {/* Buttons */}
           <div className="cta-item" style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <a
               href="https://wa.me/6287780594231"
@@ -128,7 +123,6 @@ export default function CTA() {
             </a>
           </div>
 
-          {/* Contact info */}
           <div className="cta-item" style={{
             marginTop: '4rem', paddingTop: '2.5rem',
             borderTop: '1px solid var(--border)',
@@ -136,9 +130,9 @@ export default function CTA() {
             gap: 'clamp(1.5rem, 4vw, 3rem)', flexWrap: 'wrap',
           }}>
             {[
-              { label: 'Email',     value: 'creautbali@gmail.com',  href: 'mailto:creautbali@gmail.com' },
-              { label: 'WhatsApp',  value: '+62 877-8059-4231',     href: 'https://wa.me/6287780594231' },
-              { label: 'Location',  value: 'Bali, Indonesia',       href: 'https://www.google.com/maps/dir/?api=1&destination=Creaut+Bali' },
+              { label: 'Email', value: 'creautbali@gmail.com', href: 'mailto:creautbali@gmail.com' },
+              { label: 'WhatsApp', value: '+62 877-8059-4231', href: 'https://wa.me/6287780594231' },
+              { label: 'Location', value: 'Bali, Indonesia', href: 'https://www.google.com/maps/dir/?api=1&destination=Creaut+Bali' },
             ].map(item => (
               <div key={item.label} style={{ textAlign: 'center' }}>
                 <p style={{
@@ -160,7 +154,6 @@ export default function CTA() {
               </div>
             ))}
           </div>
-
         </div>
       </div>
     </section>

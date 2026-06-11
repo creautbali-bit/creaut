@@ -11,61 +11,74 @@ gsap.registerPlugin(ScrollTrigger)
 
 function useLenis() {
   const lenisRef = useRef(null)
+
   useEffect(() => {
     let lenis
+
     const init = async () => {
       try {
         const LenisModule = await import('@studio-freight/lenis')
         const Lenis = LenisModule.default ?? LenisModule.Lenis
-        lenis = new Lenis({ duration: 1.35, easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smoothWheel: true, wheelMultiplier: 0.9 })
+        lenis = new Lenis({
+          duration: 1.35,
+          easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          smoothWheel: true,
+          wheelMultiplier: 0.9
+        })
         lenisRef.current = lenis
+
         gsap.ticker.add(time => lenis.raf(time * 1000))
         gsap.ticker.lagSmoothing(0)
         lenis.on('scroll', ScrollTrigger.update)
-      } catch { /* native fallback */ }
+      } catch {}
     }
+
     init()
-    return () => { gsap.ticker.remove(time => lenis?.raf(time * 1000)); lenis?.destroy() }
+
+    return () => {
+      gsap.ticker.remove(time => lenis?.raf(time * 1000))
+      lenis?.destroy()
+      lenisRef.current = null
+    }
   }, [])
+
   return lenisRef
 }
 
 const TABS = [
-  { id: 'all',        label: 'All Work' },
+  { id: 'all', label: 'All Work' },
   { id: 'Entertaint', label: 'Dancers & Entertaint' },
-  { id: 'Personal',   label: 'Personal Branding' },
-  { id: 'Beauty',     label: 'Beauty' },
-  { id: 'Env',        label: 'Enviroment' },
-  { id: 'Adv',        label: 'Adventure' },
-  { id: 'Katalog',    label: 'Katalog' },
-  { id: 'F&B',        label: 'F&B' },
+  { id: 'Personal', label: 'Personal Branding' },
+  { id: 'Beauty', label: 'Beauty' },
+  { id: 'Adv', label: 'Adventure' },
+  { id: 'Katalog', label: 'Katalog' },
+  { id: 'F&B', label: 'F&B' },
 ]
 
 const PORTFOLIO = [
-  { id: 1,  category: 'editorial',  caption: 'Golden Hour Session',    client: 'Creaut Editorial',  layout: 'portrait',  src: '/image/pho14.webp' },
-  { id: 2,  category: 'product',    caption: 'Skincare Campaign',      client: 'Beauty Brand Co.',  layout: 'landscape', src: '/image/pho3.webp' },
-  { id: 3,  category: 'lifestyle',  caption: 'Bali Morning Ritual',    client: 'Wellness Studio',   layout: 'landscape', src: '/image/pho19.webp' },
-  { id: 4,  category: 'editorial',  caption: 'Fashion Forward',        client: 'Vogue Indonesia',   layout: 'portrait',  src: '/image/pho7.webp' },
-  { id: 5,  category: 'product',    caption: 'Jewelry Collection',     client: 'Sela Jewels',       layout: 'portrait',  src: '/image/pho22.webp' },
-  { id: 6,  category: 'corporate',  caption: 'Brand Identity Shoot',   client: 'Finhub Corp',       layout: 'landscape', src: '/image/pho11.webp' },
-  { id: 7,  category: 'event',      caption: 'Sunset Gala Highlights', client: 'Amanusa Resort',    layout: 'landscape', src: '/image/pho24.webp' },
-  { id: 8,  category: 'studio',     caption: 'Monochrome Series',      client: 'Arthaus Studio',    layout: 'portrait',  src: '/image/pho5.webp' },
-  { id: 9,  category: 'keyvisual',  caption: 'Fragrance Campaign',     client: 'Bali Scents Co.',   layout: 'landscape', src: '/image/pho17.webp' },
-  { id: 10, category: 'lifestyle',  caption: 'Rice Field Morning',     client: 'Slow Living Mag',   layout: 'portrait',  src: '/image/pho9.webp' },
-  { id: 11, category: 'editorial',  caption: 'Batik Haute Couture',    client: 'Suku Textile',      layout: 'portrait',  src: '/image/pho21.webp' },
-  { id: 12, category: 'product',    caption: 'Organic Tea Ritual',     client: 'Bumi Herb Co.',     layout: 'landscape', src: '/image/pho2.webp' },
-  { id: 13, category: 'corporate',  caption: 'Executive Portraits',    client: 'PT. Nusantara',     layout: 'portrait',  src: '/image/pho16.webp' },
-  { id: 14, category: 'event',      caption: 'Cultural Ceremony',      client: 'Bali Arts Board',   layout: 'landscape', src: '/image/pho8.webp' },
-  { id: 15, category: 'studio',     caption: 'Ikat Fashion Story',     client: 'Tenun House',       layout: 'portrait',  src: '/image/pho23.webp' },
-  { id: 16, category: 'keyvisual',  caption: 'Villa Launch Campaign',  client: 'Seminyak Estates',  layout: 'landscape', src: '/image/pho4.webp' },
-  { id: 17, category: 'lifestyle',  caption: 'Surf & Soul',            client: 'Canggu Co.',        layout: 'portrait',  src: '/image/pho18.webp' },
-  { id: 18, category: 'editorial',  caption: 'Linen Summer Edit',      client: 'Kain Magazine',     layout: 'landscape', src: '/image/pho10.webp' },
-  { id: 19, category: 'product',    caption: 'Artisan Pottery',        client: 'Gerabah Studio',    layout: 'portrait',  src: '/image/pho1.webp' },
-  { id: 20, category: 'corporate',  caption: 'Annual Report Cover',    client: 'BankBali Group',    layout: 'landscape', src: '/image/pho20.webp' },
-  { id: 21, category: 'event',      caption: 'Wedding at Tanah Lot',   client: 'Sacred Vow Agency', layout: 'portrait',  src: '/image/pho6.webp' },
-  { id: 22, category: 'studio',     caption: 'Jewellery Close-ups',    client: 'Emas Bali',         layout: 'landscape', src: '/image/pho13.webp' },
-  { id: 23, category: 'keyvisual',  caption: 'Skincare Hero Shot',     client: 'Pura Skin Lab',     layout: 'portrait',  src: '/image/pho15.webp' },
-  { id: 24, category: 'lifestyle',  caption: 'Ubud Forest Retreat',    client: 'Satu Wellness',     layout: 'landscape', src: '/image/pho12.webp' },
+  { id: 1,  category: 'Personal', caption: '', client: '', src: '/image/photo1.webp' },
+  { id: 2,  category: 'Personal', caption: '', client: '', src: '/image/photo2.webp' },
+  { id: 3,  category: 'Personal', caption: '', client: '', src: '/image/photo3.webp' },
+  { id: 4,  category: 'Personal',  caption: '', client: '', src: '/image/photo4.webp' },
+  { id: 5,  category: 'Katalog',    caption: '', client: '', src: '/image/photo5.webp' },
+  { id: 6,  category: 'Katalog',  caption: '', client: '', src: '/image/photo6.webp' },
+  { id: 7,  category: 'F&B',      caption: '', client: '', src: '/image/photo7.webp' },
+  { id: 8,  category: 'F&B',     caption: '', client: '', src: '/image/photo8.webp' },
+  { id: 9,  category: 'F&B',  caption: '', client: '', src: '/image/photo9.webp' },
+  { id: 10, category: 'F&B',  caption: '', client: '', src: '/image/photo10.webp' },
+  { id: 11, category: 'editorial',  caption: '', client: '', src: '/image/photo11.webp' },
+  { id: 12, category: 'Adv',    caption: '', client: '', src: '/image/photo12.webp' },
+  { id: 13, category: 'Adv',  caption: '', client: '', src: '/image/photo13.webp' },
+  { id: 14, category: 'Adv',      caption: '', client: '', src: '/image/photo14.webp' },
+  { id: 15, category: 'Beauty',     caption: '', client: '', src: '/image/photo15.webp' },
+  { id: 16, category: 'Beauty',  caption: '', client: '', src: '/image/photo16.webp' },
+  { id: 17, category: 'Beauty',  caption: '', client: '', src: '/image/photo17.webp' },
+  { id: 18, category: 'Beauty',  caption: '', client: '', src: '/image/photo18.webp' },
+  { id: 19, category: 'Entertaint',    caption: '', client: '', src: '/image/photo19.webp' },
+  { id: 20, category: 'Entertaint',  caption: '', client: '', src: '/image/photo20.webp' },
+  { id: 21, category: 'Entertaint',      caption: '', client: '', src: '/image/photo21.webp' },
+  { id: 22, category: 'Entertaint',     caption: '', client: '', src: '/image/photo22.webp' },
+  { id: 23, category: 'Entertaint',  caption: '', client: '', src: '/image/photo23.webp' },
 ]
 
 const CATEGORY_COUNTS = PORTFOLIO.reduce((acc, item) => {
@@ -75,8 +88,8 @@ const CATEGORY_COUNTS = PORTFOLIO.reduce((acc, item) => {
 
 function Lightbox({ items, index, onClose, onNav }) {
   const overlayRef = useRef(null)
-  const imgRef     = useRef(null)
-  const item       = items[index]
+  const imgRef = useRef(null)
+  const item = items[index]
 
   useEffect(() => {
     gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power2.out' })
@@ -90,15 +103,22 @@ function Lightbox({ items, index, onClose, onNav }) {
 
   useEffect(() => {
     const h = e => {
-      if (e.key === 'Escape')     onClose()
+      if (e.key === 'Escape') onClose()
       if (e.key === 'ArrowRight') onNav(1)
-      if (e.key === 'ArrowLeft')  onNav(-1)
+      if (e.key === 'ArrowLeft') onNav(-1)
     }
     window.addEventListener('keydown', h)
     return () => window.removeEventListener('keydown', h)
   }, [onClose, onNav])
 
-  const btn = { border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }
+  const enterFullscreen = () => {
+    const el = imgRef.current
+    if (!el) return
+    if (el.requestFullscreen) el.requestFullscreen()
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen()
+  }
+
+  const btn = { border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', fontFamily: 'Inter, sans-serif' }
 
   return (
     <div
@@ -106,7 +126,6 @@ function Lightbox({ items, index, onClose, onNav }) {
       onClick={e => { if (e.target === e.currentTarget) onClose() }}
       style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(8px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 'clamp(1.5rem,5vw,4rem)', gap: '1rem' }}
     >
-      {/* Top bar */}
       <div style={{ width: '100%', maxWidth: 1100, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
         <div>
           <p style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(93,224,230,0.85)', margin: '0 0 0.2rem 0' }}>{item.caption}</p>
@@ -114,15 +133,25 @@ function Lightbox({ items, index, onClose, onNav }) {
             {String(index + 1).padStart(2, '0')} / {String(items.length).padStart(2, '0')} · {item.client}
           </p>
         </div>
-        <button
-          onClick={onClose}
-          style={{ ...btn, width: 40, height: 40, borderRadius: '8px', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.7)', fontSize: '1.1rem' }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,60,60,0.5)'; e.currentTarget.style.color = '#fff' }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)' }}
-        >✕</button>
+        
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <button
+            onClick={enterFullscreen}
+            title="Full Screen"
+            style={{ ...btn, width: 40, height: 40, borderRadius: '8px', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(135deg,#5de0e6,#004aad)'; e.currentTarget.style.color = '#fff' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)' }}
+          >⛶</button>
+          <button
+            onClick={onClose}
+            title="Close (Esc)"
+            style={{ ...btn, width: 40, height: 40, borderRadius: '8px', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.7)', fontSize: '1.1rem' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,60,60,0.5)'; e.currentTarget.style.color = '#fff' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)' }}
+          >✕</button>
+        </div>
       </div>
 
-      {/* Image + arrows */}
       <div style={{ width: '100%', maxWidth: 1100, display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 1 }}>
         <button
           onClick={() => onNav(-1)}
@@ -146,7 +175,6 @@ function Lightbox({ items, index, onClose, onNav }) {
         >›</button>
       </div>
 
-      {/* Thumbnail strip */}
       <div style={{ width: '100%', maxWidth: 1100, display: 'flex', gap: '4px', overflowX: 'auto', flexShrink: 0, scrollbarWidth: 'none' }}>
         {items.map((p, i) => (
           <button
@@ -169,30 +197,7 @@ function Lightbox({ items, index, onClose, onNav }) {
   )
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   PHOTO CARD — CSS hover (zero React re-renders on hover)
-   ───────────────────────────────────────────────────────────────────────────── */
-const PhotoCard = memo(function PhotoCard({ item, index, onOpen, colCount }) {
-  // ✅ No useState — hover via CSS class eliminates 24 re-render cycles per hover
-
-  let colSpan = 1
-  let rowSpan = 1
-
-  if (colCount >= 4) {
-    if (item.layout === 'landscape') {
-      colSpan = 2; rowSpan = 1
-      if (item.id % 6 === 0) rowSpan = 2
-    } else {
-      colSpan = 1; rowSpan = 2
-      if (item.id % 9 === 0) { colSpan = 2; rowSpan = 2 }
-    }
-  } else if (colCount === 3) {
-    if (item.layout === 'landscape') { colSpan = 2 } else { rowSpan = 2 }
-  } else if (colCount === 2) {
-    if (item.layout === 'landscape') { colSpan = 2 } else { rowSpan = 2 }
-  }
-
-  // ✅ Stable click handler — allows React.memo to work correctly
+const PhotoCard = memo(function PhotoCard({ item, index, onOpen }) {
   const handleClick = useCallback(() => onOpen(index), [index, onOpen])
 
   return (
@@ -200,17 +205,9 @@ const PhotoCard = memo(function PhotoCard({ item, index, onOpen, colCount }) {
       className="photo-card"
       onClick={handleClick}
       style={{
-        position: 'relative',
-        overflow: 'hidden',
-        cursor: 'zoom-in',
-        background: '#0d0d0d',
-        height: '100%',
-        width: '100%',
-        gridColumn: `span ${colSpan}`,
-        gridRow: `span ${rowSpan}`,
+        aspectRatio: item.layout === 'landscape' ? '4/3' : '2/3',
       }}
     >
-      {/* ✅ loading="lazy" decoding="async" — only loads images when in viewport */}
       <img
         src={item.src}
         alt={item.caption}
@@ -220,12 +217,10 @@ const PhotoCard = memo(function PhotoCard({ item, index, onOpen, colCount }) {
         className="pc-img"
       />
 
-      {/* All hover effects are CSS-driven — zero JS involvement */}
       <div className="pc-overlay" />
       <div className="pc-scrim" />
 
       <div className="pc-caption">
-        <div style={{ width: 20, height: 2, borderRadius: 2, background: 'linear-gradient(90deg,#5de0e6,#004aad)', marginBottom: '0.35rem' }} />
         <p style={{ fontSize: 'clamp(0.55rem,1.2vw,0.62rem)', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(93,224,230,0.9)', margin: '0 0 0.2rem 0' }}>
           {item.client}
         </p>
@@ -234,21 +229,11 @@ const PhotoCard = memo(function PhotoCard({ item, index, onOpen, colCount }) {
         </p>
       </div>
 
-      {/* ✅ Removed backdropFilter: blur — was GPU-expensive on all 24 badges */}
-      <div className="pc-badge">
-        <span style={{ fontSize: 'clamp(0.48rem,1vw,0.55rem)', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.75)' }}>
-          {item.category}
-        </span>
-      </div>
-
       <div className="pc-zoom">🔍</div>
     </div>
   )
 })
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   TAB BAR — memo + CSS hover + no counts prop (uses module-level constant)
-   ───────────────────────────────────────────────────────────────────────────── */
 const TabBar = memo(function TabBar({ active, onSelect }) {
   return (
     <div style={{ borderBottom: '1px solid rgba(0,0,0,0.08)', background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(12px)' }}>
@@ -270,7 +255,6 @@ const TabBar = memo(function TabBar({ active, onSelect }) {
             <button
               key={tab.id}
               onClick={() => onSelect(tab.id)}
-              // ✅ CSS hover — removed onMouseEnter/onMouseLeave inline handlers
               className={`tab-btn${isActive ? ' tab-btn--active' : ''}`}
               style={{
                 padding: '0 0 10px',
@@ -305,40 +289,27 @@ const TabBar = memo(function TabBar({ active, onSelect }) {
   )
 })
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   PAGE
-   ───────────────────────────────────────────────────────────────────────────── */
 export default function VisualPhotographyPortfolioPage() {
   useLenis()
 
-  const heroRef     = useRef(null)
+  const heroRef = useRef(null)
   const heroTextRef = useRef(null)
-  const overlayRef  = useRef(null)
+  const overlayRef = useRef(null)
   const countRowRef = useRef(null)
 
-  const [activeTab,   setActiveTab]   = useState('all')
+  const [activeTab, setActiveTab] = useState('all')
   const [lightboxIdx, setLightboxIdx] = useState(null)
-  const [cols,        setCols]        = useState(4)
-
-  // ✅ FIX #1 — useTransition: tab switch doesn't block main thread paint
   const [isPending, startTransition] = useTransition()
 
-  // ✅ FIX #2 — useMemo: replaces filteredItems state + 2× useEffect cascade
-  //    Before: click → setActiveTab → render → useEffect → setFilteredItems → render → useEffect → GSAP (3 renders)
-  //    After:  click → setActiveTab → render (1 render, synchronous derived value)
   const filteredItems = useMemo(() =>
     activeTab === 'all' ? PORTFOLIO : PORTFOLIO.filter(p => p.category === activeTab),
     [activeTab]
   )
 
-  // ✅ FIX #3 — useCallback: stable tab handler with transition
   const handleTabSelect = useCallback((id) => {
     startTransition(() => setActiveTab(id))
   }, [])
 
-  // ✅ FIX #4 — useCallback: stable open handler, allows React.memo on PhotoCard to work
-  //    Before: onOpen={() => setLightboxIdx(i)} — new function every render
-  //    After:  stable reference, memo works correctly
   const handleOpen = useCallback((index) => {
     setLightboxIdx(index)
   }, [])
@@ -350,28 +321,11 @@ export default function VisualPhotographyPortfolioPage() {
     })
   }, [filteredItems.length])
 
-  /* Responsive cols */
-  useEffect(() => {
-    const update = () => {
-      const w = window.innerWidth
-      if (w < 600)       setCols(1)
-      else if (w < 960)  setCols(2)
-      else if (w < 1200) setCols(3)
-      else               setCols(4)
-    }
-    update()
-    window.addEventListener('resize', update)
-    return () => window.removeEventListener('resize', update)
-  }, [])
-
-  // ✅ FIX #5 — single useEffect, triggered by activeTab (not filteredItems)
-  //    Removed the double-useEffect cascade that caused 2 extra renders on every tab click
   useEffect(() => {
     if (!countRowRef.current) return
     gsap.fromTo(countRowRef.current, { opacity: 0, x: -12 }, { opacity: 1, x: 0, duration: 0.4, ease: 'power2.out' })
   }, [activeTab])
 
-  /* Hero entrance */
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.timeline({ defaults: { ease: 'power3.out' } })
@@ -387,39 +341,31 @@ export default function VisualPhotographyPortfolioPage() {
         html { scroll-behavior: auto !important; }
         *, *::before, *::after { box-sizing: border-box; }
 
-        /* ── Scrollbar ───────────────────────────────────────────────────── */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #fafafa; }
         ::-webkit-scrollbar-thumb { background: #d1d1d1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #004aad; }
 
-        /* ── Photo Grid ──────────────────────────────────────────────────── */
         .photo-grid {
-          display: grid;
-          gap: 6px;
-          grid-template-columns: repeat(4, 1fr);
-          grid-auto-rows: 340px;
-          grid-auto-flow: dense;
+          columns: 4;
+          column-gap: 6px;
           transition: opacity 0.15s ease;
         }
-        @media (max-width: 1200px) {
-          .photo-grid { grid-template-columns: repeat(3, 1fr); grid-auto-rows: 320px; }
-        }
-        @media (max-width: 960px) {
-          .photo-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 300px; }
-        }
-        @media (max-width: 600px) {
-          .photo-grid { grid-template-columns: 1fr; grid-auto-rows: 360px; }
-        }
+        @media (max-width: 1200px) { .photo-grid { columns: 3; } }
+        @media (max-width: 960px)  { .photo-grid { columns: 2; } }
+        @media (max-width: 600px)  { .photo-grid { columns: 1; } }
 
-        /* ✅ Pending state — visual feedback while useTransition defers work */
         .photo-grid--pending { opacity: 0.55; pointer-events: none; }
 
-        /* ── PhotoCard CSS hover ─────────────────────────────────────────── */
-        /* All hover effects live here — zero React useState, zero re-renders  */
-
-        /* CSS containment: layout recalculation stays inside each card */
-        .photo-card { contain: layout paint; }
+        .photo-card {
+          contain: paint;
+          break-inside: avoid;
+          margin-bottom: 6px;
+          position: relative;
+          overflow: hidden;
+          cursor: zoom-in;
+          background: #0d0d0d;
+        }
 
         .pc-img {
           position: absolute;
@@ -465,7 +411,6 @@ export default function VisualPhotographyPortfolioPage() {
           transform: translateY(0);
         }
 
-        /* Badge — no backdropFilter, uses solid bg instead (much cheaper) */
         .pc-badge {
           position: absolute;
           top: clamp(0.6rem, 1.5vw, 0.85rem);
@@ -496,7 +441,6 @@ export default function VisualPhotographyPortfolioPage() {
         }
         .photo-card:hover .pc-zoom { opacity: 1; }
 
-        /* ── TabBar CSS hover ────────────────────────────────────────────── */
         .tab-btn { color: rgba(0, 0, 0, 0.38); transition: color 0.2s; }
         .tab-btn:not(.tab-btn--active):hover { color: #000; }
         .tab-btn--active { color: #000; }
@@ -510,7 +454,6 @@ export default function VisualPhotographyPortfolioPage() {
         .tab-btn:not(.tab-btn--active):hover .tab-count { color: rgba(0, 0, 0, 0.4); }
         .tab-count--active { color: #5de0e6 !important; }
 
-        /* ── Lenis ───────────────────────────────────────────────────────── */
         html.lenis { height: auto; }
         .lenis.lenis-smooth { scroll-behavior: auto; }
         .lenis.lenis-stopped { overflow: hidden; }
@@ -528,8 +471,6 @@ export default function VisualPhotographyPortfolioPage() {
       )}
 
       <main>
-
-        {/* ── HERO ──────────────────────────────────────────────────────────── */}
         <section ref={heroRef} style={{
           position: 'relative', width: '100%',
           height: '100vh', minHeight: 520,
@@ -557,7 +498,6 @@ export default function VisualPhotographyPortfolioPage() {
             width: '100%', maxWidth: 860, textAlign: 'center',
             display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'clamp(1rem,3vw,1.5rem)',
           }}>
-            {/* Breadcrumb */}
             <div className="hero-line" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap', justifyContent: 'center' }}>
               <Link href="/"
                 style={{ fontSize: 'clamp(0.6rem,1.5vw,0.72rem)', fontWeight: 500, color: 'rgba(0,0,0,0.4)', textDecoration: 'none', letterSpacing: '0.1em', transition: 'color 0.2s' }}
@@ -574,7 +514,6 @@ export default function VisualPhotographyPortfolioPage() {
               <span style={{ fontSize: 'clamp(0.6rem,1.5vw,0.72rem)', fontWeight: 600, color: '#5de0e6', letterSpacing: '0.1em' }}>Portfolio</span>
             </div>
 
-            {/* Label */}
             <div className="hero-line" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <div style={{ width: 22, height: 2, borderRadius: 2, background: 'linear-gradient(90deg,#5de0e6,#004aad)' }} />
               <span style={{ fontSize: 'clamp(0.58rem,1.5vw,0.68rem)', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.4)' }}>
@@ -583,7 +522,6 @@ export default function VisualPhotographyPortfolioPage() {
               <div style={{ width: 22, height: 2, borderRadius: 2, background: 'linear-gradient(90deg,#004aad,#5de0e6)' }} />
             </div>
 
-            {/* Heading */}
             <h1 className="hero-line" style={{
               fontWeight: 800,
               fontSize: 'clamp(3.5rem,13vw,10rem)',
@@ -595,7 +533,6 @@ export default function VisualPhotographyPortfolioPage() {
               </span>
             </h1>
 
-            {/* Desc */}
             <p className="hero-line" style={{
               fontSize: 'clamp(0.82rem,2vw,1.05rem)',
               color: 'rgba(0,0,0,0.5)', lineHeight: 1.75, maxWidth: 480, margin: 0, padding: '0 0.5rem',
@@ -604,28 +541,21 @@ export default function VisualPhotographyPortfolioPage() {
             </p>
           </div>
 
-          {/* Scroll hint */}
           <div style={{ position: 'absolute', bottom: '2rem', left: '50%', transform: 'translateX(-50%)', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
             <span style={{ fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.25)' }}>Scroll</span>
             <div style={{ width: 1, height: 36, background: 'linear-gradient(180deg,rgba(93,224,230,0.6),transparent)', borderRadius: 1 }} />
           </div>
         </section>
 
-        {/* ── FILTER + GRID ──────────────────────────────────────────────────── */}
         <section id="portfolio" style={{ background: '#fff', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
-
-          {/* Sticky Tab Bar */}
           <div style={{ position: 'sticky', top: 0, zIndex: 50 }}>
             <div style={{ maxWidth: 1400, margin: '0 auto', padding: 'clamp(0.75rem,2vw,1rem) clamp(1rem,4vw,2rem) 0' }}>
-              {/* ✅ No counts prop — TabBar reads CATEGORY_COUNTS directly */}
               <TabBar active={activeTab} onSelect={handleTabSelect} />
             </div>
           </div>
 
-          {/* Grid area */}
           <div style={{ padding: '0 0 clamp(3rem,8vw,5rem)' }}>
             <div style={{ maxWidth: 1800, margin: '0 auto', padding: '0 clamp(0.75rem,3vw,2rem)' }}>
-
               {filteredItems.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '6rem 0', color: 'rgba(0,0,0,0.2)' }}>
                   <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>📷</div>
@@ -633,7 +563,6 @@ export default function VisualPhotographyPortfolioPage() {
                 </div>
               ) : (
                 <>
-                  {/* Count row */}
                   <div ref={countRowRef} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: 'clamp(1.25rem,3vw,1.75rem) 0 clamp(1rem,2.5vw,1.25rem)' }}>
                     <div style={{ width: 18, height: 1.5, background: 'linear-gradient(90deg,#5de0e6,#004aad)' }} />
                     <span style={{ fontSize: 'clamp(0.58rem,1.5vw,0.62rem)', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#004aad' }}>
@@ -641,15 +570,13 @@ export default function VisualPhotographyPortfolioPage() {
                     </span>
                   </div>
 
-                  {/* ✅ isPending class gives visual feedback while transition is running */}
                   <div className={`photo-grid${isPending ? ' photo-grid--pending' : ''}`}>
                     {filteredItems.map((item, i) => (
                       <PhotoCard
-                        key={item.id}          // ✅ Stable key — React keeps instances alive
+                        key={item.id}
                         item={item}
-                        index={i}              // ✅ Pass index separately for stable onOpen
-                        colCount={cols}
-                        onOpen={handleOpen}    // ✅ Stable reference via useCallback
+                        index={i}
+                        onOpen={handleOpen}
                       />
                     ))}
                   </div>
@@ -659,7 +586,6 @@ export default function VisualPhotographyPortfolioPage() {
           </div>
         </section>
 
-        {/* ── BOTTOM CTA ─────────────────────────────────────────────────────── */}
         <section style={{
           background: '#fff',
           borderTop: '1px solid rgba(0,0,0,0.06)',

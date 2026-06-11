@@ -13,6 +13,7 @@ const services = [
     sub: 'Commercial · Corporate · Documentary',
     href: '/services/video-production',
     bg: '#fff',
+    gif: '/image/vdgp.gif',
   },
   {
     id: 2,
@@ -20,6 +21,7 @@ const services = [
     sub: 'Strategy · Content · Community',
     href: '/services/social-media-management',
     bg: '#fff',
+    gif: '/image/smm.gif',
   },
   {
     id: 3,
@@ -27,6 +29,7 @@ const services = [
     sub: 'Editorial · Product · Lifestyle',
     href: '/services/visual-photography',
     bg: '#fff',
+    gif: '/image/ptgp.gif',
   },
   {
     id: 4,
@@ -34,6 +37,7 @@ const services = [
     sub: 'Identity · Logo · Guidelines',
     href: '/services/branding',
     bg: '#fff',
+    gif: '/image/branding.gif', 
   },
 ]
 
@@ -94,18 +98,24 @@ function ServiceCard({ service, index }) {
         cursor: 'pointer',
       }}
     >
-      {/* Placeholder / ganti dengan img atau video */}
       <div
         ref={thumbRef}
         style={{
           position: 'absolute', inset: 0, zIndex: 0,
-          background: service.bg,
-          backgroundImage: 'radial-gradient(circle, rgba(0,0,0,0.045) 1px, transparent 1px)',
-          backgroundSize: '28px 28px',
           transformOrigin: 'center',
           willChange: 'transform',
         }}
-      />
+      >
+        <img
+          src={service.gif}
+          alt={service.title}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+          }}
+        />
+      </div>
 
       {/* Gradient overlay — muncul saat hover */}
       <div
@@ -129,7 +139,7 @@ function ServiceCard({ service, index }) {
           <p style={{
             fontSize: '0.68rem', fontWeight: 500,
             letterSpacing: '0.16em', textTransform: 'uppercase',
-            color: hovered ? '#004aad' : 'rgba(0, 0, 0, 0.55)',
+            color: hovered ? '#004aad' : 'rgba(255, 255, 255, 0.55)',
             margin: '0 0 0.4rem 0',
             transition: 'color 0.35s ease',
           }}>
@@ -138,7 +148,7 @@ function ServiceCard({ service, index }) {
           <h3 style={{
             fontWeight: 700,
             fontSize: 'clamp(2.6rem, 5vw, 4rem)',
-            color: '#000',
+            color: '#ffffff',
             letterSpacing: '-0.03em',
             lineHeight: 1.1,
             margin: 0,

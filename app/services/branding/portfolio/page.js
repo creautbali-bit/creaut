@@ -9,11 +9,9 @@ import Footer from '../../../components/footer'
 
 gsap.registerPlugin(ScrollTrigger)
 
-/* ═══════════════════════════════════════════════════════════════════
-   LENIS SMOOTH SCROLL
-═══════════════════════════════════════════════════════════════════ */
 function useLenis() {
   const lenisRef = useRef(null)
+
   useEffect(() => {
     let lenis
     const init = async () => {
@@ -33,7 +31,7 @@ function useLenis() {
         gsap.ticker.add((time) => lenis.raf(time * 1000))
         gsap.ticker.lagSmoothing(0)
         lenis.on('scroll', ScrollTrigger.update)
-      } catch { /* native fallback */ }
+      } catch {}
     }
     init()
     return () => {
@@ -42,135 +40,112 @@ function useLenis() {
       lenisRef.current = null
     }
   }, [])
+
   return lenisRef
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   TABS
-═══════════════════════════════════════════════════════════════════ */
 const TABS = [
-  { id: 'all',       label: 'All Work' },
-  { id: 'Entertaint',  label: 'Dancers & Entertaint' },
-  { id: 'Personal',      label: 'Personal Branding' },
-  { id: 'Beauty',   label: 'Beauty' },
-  { id: 'Env',   label: 'Enviroment' },
+  { id: 'all', label: 'All Work' },
+  { id: 'Entertaint', label: 'Dancers & Entertaint' },
+  { id: 'Personal', label: 'Personal Branding' },
+  { id: 'Beauty', label: 'Beauty' },
+  { id: 'Env', label: 'Enviroment' },
   { id: 'Adv', label: 'Adventure' },
-  { id: 'Katalog',     label: 'Katalog' },
-  { id: 'F&B',label: 'F&B' },
+  { id: 'Katalog', label: 'Katalog' },
+  { id: 'F&B', label: 'F&B' },
 ]
 
-/* ═══════════════════════════════════════════════════════════════════
-   PORTFOLIO DATA — 1080×1350 portrait images
-   Ganti src dengan path gambar aslimu
-═══════════════════════════════════════════════════════════════════ */
 const PORTFOLIO = [
-  { id: 1,  category: 'F&B',   caption: '',               client: 'Pan&Co', layout: 'portrait',  src: '/image/bra42.webp' },
-  { id: 2,  category: 'Entertaint',       caption: '',               client: 'Logo Design',           layout: 'portrait',  src: '/image/bra15.webp' },
-  { id: 3,  category: 'Adv',  caption: '',                 client: 'Packaging Design',      layout: 'portrait',  src: '/image/bra8.webp' },
-  { id: 4,  category: 'Katalog',      caption: '',             client: 'Print Design',          layout: 'portrait',  src: '/image/bra58.webp' },
-  { id: 5,  category: 'Entertaint',    caption: '',           client: 'Rebranding',            layout: 'landscape', src: '/image/bra23.webp' },
-  { id: 6,  category: 'Personal', caption: '',     client: 'Stationery Design',     layout: 'portrait',  src: '/image/bra31.webp' },
-  { id: 7,  category: 'Adv', caption: '',     client: 'Brand Guidelines',      layout: 'portrait',  src: '/image/bra9.webp' },
-  
-  { id: 8,  category: 'F&B',   caption: '',      client: 'Brand Katalog System', layout: 'portrait',  src: '/image/bra50.webp' },
-  { id: 9,  category: 'Entertaint',       caption: '',        client: 'Logo Design',           layout: 'portrait',  src: '/image/bra17.webp' },
-  { id: 10, category: 'Katalog',  caption: '',      client: 'Packaging Design',      layout: 'landscape', src: '/image/bra61.webp' },
-  { id: 11, category: 'F&B',      caption: '',  client: 'Print Design',          layout: 'portrait',  src: '/image/bra34.webp' },
-  { id: 12, category: 'Katalog',    caption: '',    client: 'Rebranding',            layout: 'portrait',  src: '/image/bra52.webp' },
-  { id: 13, category: 'Beauty', caption: '',  client: 'Stationery Design',     layout: 'portrait',  src: '/image/bra4.webp' },
-  { id: 14, category: 'Personal', caption: '',         client: 'Brand Guidelines',      layout: 'portrait',  src: '/image/bra28.webp' },
-  
-  { id: 15, category: 'Adv',   caption: '', client: 'Brand Katalog System', layout: 'landscape', src: '/image/bra11.webp' },
-  { id: 16, category: 'F&B',       caption: '',     client: 'Logo Design',           layout: 'portrait',  src: '/image/bra45.webp' },
-  { id: 17, category: 'Katalog',  caption: '',       client: 'Packaging Design',      layout: 'portrait',  src: '/image/bra14.webp' },
-  { id: 18, category: 'F&B',      caption: '',        client: 'Print Collateral',      layout: 'portrait',  src: '/image/bra49.webp' },
-  { id: 19, category: 'Beauty',    caption: '',      client: 'Rebranding',            layout: 'portrait',  src: '/image/bra2.webp' },
-  { id: 20, category: 'F&B', caption: '',        client: 'Stationery Design',     layout: 'landscape', src: '/image/bra39.webp' },
-  { id: 21, category: 'Katalog', caption: '',            client: 'Brand Guidelines',      layout: 'portrait',  src: '/image/bra55.webp' },
-  
-  { id: 22, category: 'Entertaint',   caption: '',        client: 'Brand Katalog System', layout: 'portrait',  src: '/image/bra21.webp' },
-  { id: 23, category: 'F&B',       caption: '',          client: 'Logo Design',           layout: 'portrait',  src: '/image/bra33.webp' },
-  { id: 24, category: 'Env',  caption: '',          client: 'Packaging Design',      layout: 'portrait',  src: '/image/bra64.webp' },
-  { id: 25, category: 'Adv',      caption: '',          client: 'Print Design',          layout: 'landscape', src: '/image/bra7.webp' },
-  { id: 26, category: 'F&B',    caption: '',          client: 'Rebranding',            layout: 'portrait',  src: '/image/bra40.webp' },
-  { id: 27, category: 'Entertaint', caption: '',            client: 'Stationery Design',     layout: 'portrait',  src: '/image/bra18.webp' },
-  { id: 28, category: 'Katalog', caption: '',              client: 'Brand Guidelines',      layout: 'portrait',  src: '/image/bra59.webp' },
-  
-  { id: 29, category: 'Personal',   caption: '',             client: 'Brand Katalog System', layout: 'portrait',  src: '/image/bra26.webp' },
-  { id: 30, category: 'Beauty',       caption: '',             client: 'Logo Design',           layout: 'landscape', src: '/image/bra1.webp' },
-  { id: 31, category: 'F&B',  caption: '',         client: 'Packaging Design',      layout: 'portrait',  src: '/image/bra47.webp' },
-  { id: 32, category: 'F&B',      caption: '',        client: 'Print Design',          layout: 'portrait',  src: '/image/bra36.webp' },
-  { id: 33, category: 'Adv',    caption: '',          client: 'Rebranding',            layout: 'portrait',  src: '/image/bra13.webp' },
-  { id: 34, category: 'Katalog', caption: '',          client: 'Stationery Design',     layout: 'portrait',  src: '/image/bra53.webp' },
-  { id: 35, category: 'Personal', caption: '',            client: 'Brand Guidelines',      layout: 'landscape', src: '/image/bra30.webp' },
-  
-  { id: 36, category: 'F&B',   caption: '',         client: 'Brand Katalog System', layout: 'portrait',  src: '/image/bra48.webp' },
-  { id: 37, category: 'Adv',       caption: '',        client: 'Logo Design',           layout: 'portrait',  src: '/image/bra5.webp' },
-  { id: 38, category: 'Entertaint',  caption: '',             client: 'Packaging Design',      layout: 'portrait',  src: '/image/bra22.webp' },
-  { id: 39, category: 'Katalog',      caption: '',           client: 'Print Design',          layout: 'portrait',  src: '/image/bra60.webp' },
-  { id: 40, category: 'F&B',    caption: '',         client: 'Rebranding',            layout: 'landscape', src: '/image/bra37.webp' },
-  { id: 41, category: 'Entertaint', caption: '',    client: 'Stationery Design',     layout: 'portrait',  src: '/image/bra16.webp' },
-  { id: 42, category: 'F&B', caption: '',          client: 'Brand Guidelines',      layout: 'portrait',  src: '/image/bra41.webp' },
-  
-  { id: 43, category: 'Personal',   caption: '',        client: 'Brand Katalog System', layout: 'portrait',  src: '/image/bra29.webp' },
-  { id: 44, category: 'Adv',       caption: '',     client: 'Logo Design',           layout: 'portrait',  src: '/image/bra10.webp' },
-  { id: 45, category: 'Katalog',  caption: '',     client: 'Packaging Design',      layout: 'landscape', src: '/image/bra54.webp' },
-  { id: 46, category: 'F&B',      caption: '',       client: 'Print Design',          layout: 'portrait',  src: '/image/bra32.webp' },
-  { id: 47, category: 'F&B',    caption: '',       client: 'Rebranding',            layout: 'portrait',  src: '/image/bra46.webp' },
-  { id: 48, category: 'Entertaint', caption: '',       client: 'Stationery Design',     layout: 'portrait',  src: '/image/bra25.webp' },
-  { id: 49, category: 'Adv', caption: '',         client: 'Brand Guidelines',      layout: 'portrait',  src: '/image/bra6.webp' },
-  
-  { id: 50, category: 'Katalog',   caption: '',        client: 'Brand Katalog System', layout: 'landscape', src: '/image/bra57.webp' },
-  { id: 51, category: 'F&B',       caption: '',        client: 'Logo Design',           layout: 'portrait',  src: '/image/bra35.webp' },
-  { id: 52, category: 'Entertaint',  caption: '',           client: 'Packaging Design',      layout: 'portrait',  src: '/image/bra20.webp' },
-  { id: 53, category: 'F&B',      caption: '',        client: 'Print Design',          layout: 'portrait',  src: '/image/bra43.webp' },
-  { id: 54, category: 'rebrand',    caption: '',    client: 'Rebranding',            layout: 'portrait',  src: '/image/bra63.webp' },
-  { id: 55, category: 'stationery', caption: '',    client: 'Stationery Design',     layout: 'landscape', src: '/image/bra27.webp' },
-  { id: 56, category: 'guidelines', caption: '',             client: 'Brand Guidelines',      layout: 'portrait',  src: '/image/bra12.webp' },
-  
-  { id: 57, category: 'F&B',   caption: '',          client: 'Brand Katalog System', layout: 'portrait',  src: '/image/bra51.webp' },
-  { id: 58, category: 'logo',       caption: '',         client: 'Logo Design',           layout: 'portrait',  src: '/image/bra38.webp' },
-  // { id: 59, category: 'packaging',  caption: 'Kuta Sunsets',          client: 'Packaging Design',      layout: 'portrait',  src: '/image/bra24.webp' },
-  { id: 60, category: 'print',      caption: '',         client: 'Print Design',          layout: 'landscape', src: '/image/bra62.webp' },
-  { id: 61, category: 'rebrand',    caption: '',        client: 'Rebranding',            layout: 'portrait',  src: '/image/bra19.webp' },
-  { id: 62, category: 'stationery', caption: '',          client: 'Stationery Design',     layout: 'portrait',  src: '/image/bra73.webp' },
-  { id: 63, category: 'guidelines', caption: '',            client: 'Brand Guidelines',      layout: 'portrait',  src: '/image/bra81.webp' },
-  
-  // { id: 64, category: 'Katalog',   caption: 'Pererenan Retreat',     client: 'Brand Katalog System', layout: 'portrait',  src: '/image/bra65.webp' },
-  { id: 65, category: 'logo',       caption: '',          client: 'Logo Design',           layout: 'landscape', src: '/image/bra77.webp' },
-  { id: 66, category: 'packaging',  caption: '',      client: 'Packaging Design',      layout: 'portrait',  src: '/image/bra68.webp' },
-  { id: 67, category: 'print',      caption: '',         client: 'Print Design',          layout: 'portrait',  src: '/image/bra70.webp' },
-  { id: 68, category: 'rebrand',    caption: '',           client: 'Rebranding',            layout: 'portrait',  src: '/image/bra83.webp' },
-  { id: 69, category: 'stationery', caption: '',          client: 'Stationery Design',     layout: 'portrait',  src: '/image/bra67.webp' },
-  { id: 70, category: 'guidelines', caption: '',    client: 'Brand Guidelines',      layout: 'landscape', src: '/image/bra79.webp' },
-  
-  { id: 71, category: 'Env',   caption: '',         client: 'Brand Katalog System', layout: 'portrait',  src: '/image/bra69.webp' },
-  { id: 72, category: 'Env',       caption: '',         client: 'Logo Design',           layout: 'portrait',  src: '/image/bra74.webp' },
-  { id: 73, category: 'Env',  caption: '',        client: 'Packaging Design',      layout: 'portrait',  src: '/image/bra82.webp' },
-  { id: 74, category: 'Env',      caption: '',           client: 'Print Design',          layout: 'portrait',  src: '/image/bra72.webp' },
-  { id: 75, category: 'Env',    caption: '',       client: 'Rebranding',            layout: 'landscape', src: '/image/bra78.webp' },
-  { id: 76, category: 'Env', caption: '',       client: 'Stationery Design',     layout: 'portrait',  src: '/image/bra75.webp' },
-  // { id: 77, category: 'guidelines', caption: 'Sidemen Valleys',       client: 'Brand Guidelines',      layout: 'portrait',  src: '/image/bra66.webp' },
-
-  { id: 78, category: 'Env',   caption: '',       client: 'Brand Identity System', layout: 'portrait',  src: '/image/bra76.webp' },
-  { id: 79, category: 'Env',       caption: '',        client: 'Logo Design',           layout: 'portrait',  src: '/image/bra71.webp' },
-  { id: 80, category: 'packaging',  caption: '',     client: 'Packaging Design',      layout: 'landscape', src: '/image/bra80.webp' },
-  { id: 81, category: 'Beauty',      caption: '',     client: 'Print Design',          layout: 'portrait',  src: '/image/bra3.webp' },
-  { id: 82, category: 'F&B',    caption: '',       client: 'Rebranding',            layout: 'portrait',  src: '/image/bra44.webp' },
-  { id: 83, category: 'Katalog', caption: '', client: 'Stationery Design',   layout: 'portrait',  src: '/image/bra56.webp' }
+  { id: 1, category: 'F&B', caption: '', client: '', layout: 'portrait', src: '/image/bra42.webp' },
+  { id: 2, category: 'Entertaint', caption: '', client: '', layout: 'portrait', src: '/image/bra15.webp' },
+  { id: 3, category: 'Adv', caption: '', client: '', layout: 'portrait', src: '/image/bra8.webp' },
+  { id: 4, category: 'Katalog', caption: '', client: '', layout: 'portrait', src: '/image/bra58.webp' },
+  { id: 5, category: 'Entertaint', caption: '', client: '', layout: 'landscape', src: '/image/bra23.webp' },
+  { id: 6, category: 'Personal', caption: '', client: '', layout: 'portrait', src: '/image/bra31.webp' },
+  { id: 7, category: 'Adv', caption: '', client: '', layout: 'portrait', src: '/image/bra9.webp' },
+  { id: 8, category: 'F&B', caption: '', client: '', layout: 'portrait', src: '/image/bra50.webp' },
+  { id: 9, category: 'Entertaint', caption: '', client: '', layout: 'portrait', src: '/image/bra17.webp' },
+  { id: 10, category: 'Katalog', caption: '', client: '', layout: 'landscape', src: '/image/bra61.webp' },
+  { id: 11, category: 'F&B', caption: '', client: '', layout: 'portrait', src: '/image/bra34.webp' },
+  { id: 12, category: 'Katalog', caption: '', client: '', layout: 'portrait', src: '/image/bra52.webp' },
+  { id: 13, category: 'Beauty', caption: '', client: '', layout: 'portrait', src: '/image/bra4.webp' },
+  { id: 14, category: 'Personal', caption: '', client: '', layout: 'portrait', src: '/image/bra28.webp' },
+  { id: 15, category: 'Adv', caption: '', client: '', layout: 'landscape', src: '/image/bra11.webp' },
+  { id: 16, category: 'F&B', caption: '', client: '', layout: 'portrait', src: '/image/bra45.webp' },
+  { id: 17, category: 'Katalog', caption: '', client: '', layout: 'portrait', src: '/image/bra14.webp' },
+  { id: 18, category: 'F&B', caption: '', client: '', layout: 'portrait', src: '/image/bra49.webp' },
+  { id: 19, category: 'Beauty', caption: '', client: '', layout: 'portrait', src: '/image/bra2.webp' },
+  { id: 20, category: 'F&B', caption: '', client: '', layout: 'landscape', src: '/image/bra39.webp' },
+  { id: 21, category: 'Katalog', caption: '', client: '', layout: 'portrait', src: '/image/bra55.webp' },
+  { id: 22, category: 'Entertaint', caption: '', client: '', layout: 'portrait', src: '/image/bra21.webp' },
+  { id: 23, category: 'F&B', caption: '', client: '', layout: 'portrait', src: '/image/bra33.webp' },
+  { id: 24, category: 'Env', caption: '', client: '', layout: 'portrait', src: '/image/bra64.webp' },
+  { id: 25, category: 'Adv', caption: '', client: '', layout: 'landscape', src: '/image/bra7.webp' },
+  { id: 26, category: 'F&B', caption: '', client: '', layout: 'portrait', src: '/image/bra40.webp' },
+  { id: 27, category: 'Entertaint', caption: '', client: '', layout: 'portrait', src: '/image/bra18.webp' },
+  { id: 28, category: 'Katalog', caption: '', client: '', layout: 'portrait', src: '/image/bra59.webp' },
+  { id: 29, category: 'Personal', caption: '', client: '', layout: 'portrait', src: '/image/bra26.webp' },
+  { id: 30, category: 'Beauty', caption: '', client: '', layout: 'landscape', src: '/image/bra1.webp' },
+  { id: 31, category: 'F&B', caption: '', client: '', layout: 'portrait', src: '/image/bra47.webp' },
+  { id: 32, category: 'F&B', caption: '', client: '', layout: 'portrait', src: '/image/bra36.webp' },
+  { id: 33, category: 'Adv', caption: '', client: '', layout: 'portrait', src: '/image/bra13.webp' },
+  { id: 34, category: 'Katalog', caption: '', client: '', layout: 'portrait', src: '/image/bra53.webp' },
+  { id: 35, category: 'Personal', caption: '', client: '', layout: 'landscape', src: '/image/bra30.webp' },
+  { id: 36, category: 'F&B', caption: '', client: '', layout: 'portrait', src: '/image/bra48.webp' },
+  { id: 37, category: 'Adv', caption: '', client: '', layout: 'portrait', src: '/image/bra5.webp' },
+  { id: 38, category: 'Entertaint', caption: '', client: '', layout: 'portrait', src: '/image/bra22.webp' },
+  { id: 39, category: 'Katalog', caption: '', client: '', layout: 'portrait', src: '/image/bra60.webp' },
+  { id: 40, category: 'F&B', caption: '', client: '', layout: 'landscape', src: '/image/bra37.webp' },
+  { id: 41, category: 'Entertaint', caption: '', client: '', layout: 'portrait', src: '/image/bra16.webp' },
+  { id: 42, category: 'F&B', caption: '', client: '', layout: 'portrait', src: '/image/bra41.webp' },
+  { id: 43, category: 'Personal', caption: '', client: '', layout: 'portrait', src: '/image/bra29.webp' },
+  { id: 44, category: 'Adv', caption: '', client: '', layout: 'portrait', src: '/image/bra10.webp' },
+  { id: 45, category: 'Katalog', caption: '', client: '', layout: 'landscape', src: '/image/bra54.webp' },
+  { id: 46, category: 'F&B', caption: '', client: '', layout: 'portrait', src: '/image/bra32.webp' },
+  { id: 47, category: 'F&B', caption: '', client: '', layout: 'portrait', src: '/image/bra46.webp' },
+  { id: 48, category: 'Entertaint', caption: '', client: '', layout: 'portrait', src: '/image/bra25.webp' },
+  { id: 49, category: 'Adv', caption: '', client: '', layout: 'portrait', src: '/image/bra6.webp' },
+  { id: 50, category: 'Katalog', caption: '', client: '', layout: 'landscape', src: '/image/bra57.webp' },
+  { id: 51, category: 'F&B', caption: '', client: '', layout: 'portrait', src: '/image/bra35.webp' },
+  { id: 52, category: 'Entertaint', caption: '', client: '', layout: 'portrait', src: '/image/bra20.webp' },
+  { id: 53, category: 'F&B', caption: '', client: '', layout: 'portrait', src: '/image/bra43.webp' },
+  { id: 54, category: 'rebrand', caption: '', client: '', layout: 'portrait', src: '/image/bra63.webp' },
+  { id: 55, category: 'stationery', caption: '', client: '', layout: 'landscape', src: '/image/bra27.webp' },
+  { id: 56, category: 'guidelines', caption: '', client: '', layout: 'portrait', src: '/image/bra12.webp' },
+  { id: 57, category: 'F&B', caption: '', client: '', layout: 'portrait', src: '/image/bra51.webp' },
+  { id: 58, category: 'logo', caption: '', client: '', layout: 'portrait', src: '/image/bra38.webp' },
+  { id: 60, category: 'print', caption: '', client: '', layout: 'landscape', src: '/image/bra62.webp' },
+  { id: 61, category: 'rebrand', caption: '', client: '', layout: 'portrait', src: '/image/bra19.webp' },
+  { id: 62, category: 'stationery', caption: '', client: '', layout: 'portrait', src: '/image/bra73.webp' },
+  { id: 63, category: 'guidelines', caption: '', client: '', layout: 'portrait', src: '/image/bra81.webp' },
+  { id: 65, category: 'logo', caption: '', client: '', layout: 'landscape', src: '/image/bra77.webp' },
+  { id: 66, category: 'packaging', caption: '', client: '', layout: 'portrait', src: '/image/bra68.webp' },
+  { id: 67, category: 'print', caption: '', client: '', layout: 'portrait', src: '/image/bra70.webp' },
+  { id: 68, category: 'rebrand', caption: '', client: '', layout: 'portrait', src: '/image/bra83.webp' },
+  { id: 69, category: 'stationery', caption: '', client: '', layout: 'portrait', src: '/image/bra67.webp' },
+  { id: 70, category: 'guidelines', caption: '', client: '', layout: 'landscape', src: '/image/bra79.webp' },
+  { id: 71, category: 'Env', caption: '', client: '', layout: 'portrait', src: '/image/bra69.webp' },
+  { id: 72, category: 'Env', caption: '', client: '', layout: 'portrait', src: '/image/bra74.webp' },
+  { id: 73, category: 'Env', caption: '', client: '', layout: 'portrait', src: '/image/bra82.webp' },
+  { id: 74, category: 'Env', caption: '', client: '', layout: 'portrait', src: '/image/bra72.webp' },
+  { id: 75, category: 'Env', caption: '', client: '', layout: 'landscape', src: '/image/bra78.webp' },
+  { id: 76, category: 'Env', caption: '', client: '', layout: 'portrait', src: '/image/bra75.webp' },
+  { id: 78, category: 'Env', caption: '', client: '', layout: 'portrait', src: '/image/bra76.webp' },
+  { id: 79, category: 'Env', caption: '', client: '', layout: 'portrait', src: '/image/bra71.webp' },
+  { id: 80, category: 'packaging', caption: '', client: '', layout: 'landscape', src: '/image/bra80.webp' },
+  { id: 81, category: 'Beauty', caption: '', client: '', layout: 'portrait', src: '/image/bra3.webp' },
+  { id: 82, category: 'F&B', caption: '', client: '', layout: 'portrait', src: '/image/bra44.webp' },
+  { id: 83, category: 'Katalog', caption: '', client: '', layout: 'portrait', src: '/image/bra56.webp' }
 ]
 
-/* ═══════════════════════════════════════════════════════════════════
-   LIGHTBOX
-═══════════════════════════════════════════════════════════════════ */
 function Lightbox({ items, index, onClose, onNav }) {
   const overlayRef = useRef(null)
-  const imgRef     = useRef(null)
-  const item       = items[index]
+  const imgRef = useRef(null)
+  const item = items[index]
 
   useEffect(() => {
     gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power2.out' })
-    gsap.fromTo(imgRef.current,     { scale: 0.94, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: 'power3.out' })
+    gsap.fromTo(imgRef.current, { scale: 0.94, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: 'power3.out' })
   }, [])
 
   useEffect(() => {
@@ -180,13 +155,20 @@ function Lightbox({ items, index, onClose, onNav }) {
 
   useEffect(() => {
     const h = (e) => {
-      if (e.key === 'Escape')     onClose()
+      if (e.key === 'Escape') onClose()
       if (e.key === 'ArrowRight') onNav(1)
-      if (e.key === 'ArrowLeft')  onNav(-1)
+      if (e.key === 'ArrowLeft') onNav(-1)
     }
     window.addEventListener('keydown', h)
     return () => window.removeEventListener('keydown', h)
   }, [onClose, onNav])
+
+  const enterFullscreen = () => {
+    const el = imgRef.current
+    if (!el) return
+    if (el.requestFullscreen) el.requestFullscreen()
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen()
+  }
 
   const btn = {
     border: 'none', cursor: 'pointer',
@@ -206,34 +188,37 @@ function Lightbox({ items, index, onClose, onNav }) {
         padding: 'clamp(1.5rem, 5vw, 4rem)', gap: '1rem',
       }}
     >
-      {/* Top bar */}
       <div style={{ width: '100%', maxWidth: 860, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
-        <div>
-          {/* <p style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(93,224,230,0.85)', margin: '0 0 0.2rem 0' }}>
-            {item.caption}
-          </p>
-          <p style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.3)', margin: 0, letterSpacing: '0.1em' }}>
-            {String(index + 1).padStart(2,'0')} / {String(items.length).padStart(2,'0')} · {item.client}
-          </p> */}
-        </div>
+        <div />
         <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <button
+            onClick={enterFullscreen}
+            style={{ ...btn, width: 40, height: 40, borderRadius: '8px', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(135deg,#5de0e6,#004aad)'; e.currentTarget.style.color = '#fff' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)' }}
+          >
+            ⛶
+          </button>
           <button
             onClick={onClose}
             style={{ ...btn, width: 40, height: 40, borderRadius: '8px', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.7)', fontSize: '1.1rem' }}
             onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,60,60,0.5)'; e.currentTarget.style.color = '#fff' }}
             onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)' }}
-          >✕</button>
+          >
+            ✕
+          </button>
         </div>
       </div>
 
-      {/* Image + arrows */}
       <div style={{ width: '100%', maxWidth: 860, display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 1 }}>
         <button
           onClick={() => onNav(-1)}
           style={{ ...btn, flexShrink: 0, width: 44, height: 44, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', border: '1.5px solid rgba(255,255,255,0.15)', color: '#fff', fontSize: '1.3rem' }}
           onMouseEnter={e => e.currentTarget.style.background = 'linear-gradient(135deg,#5de0e6,#004aad)'}
           onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
-        >‹</button>
+        >
+          ‹
+        </button>
 
         <div style={{
           flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -261,10 +246,11 @@ function Lightbox({ items, index, onClose, onNav }) {
           style={{ ...btn, flexShrink: 0, width: 44, height: 44, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', border: '1.5px solid rgba(255,255,255,0.15)', color: '#fff', fontSize: '1.3rem' }}
           onMouseEnter={e => e.currentTarget.style.background = 'linear-gradient(135deg,#5de0e6,#004aad)'}
           onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
-        >›</button>
+        >
+          ›
+        </button>
       </div>
 
-      {/* Thumbnail strip — portrait thumbs */}
       <div style={{
         width: '100%', maxWidth: 860,
         display: 'flex', gap: '4px',
@@ -301,9 +287,6 @@ function Lightbox({ items, index, onClose, onNav }) {
   )
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   TAB BAR
-═══════════════════════════════════════════════════════════════════ */
 function TabBar({ active, onSelect, counts }) {
   return (
     <div style={{
@@ -321,7 +304,7 @@ function TabBar({ active, onSelect, counts }) {
       }}>
         {TABS.map((tab, i) => {
           const isActive = active === tab.id
-          const count    = tab.id === 'all' ? PORTFOLIO.length : (counts[tab.id] || 0)
+          const count = tab.id === 'all' ? PORTFOLIO.length : (counts[tab.id] || 0)
           return (
             <button
               key={tab.id}
@@ -340,7 +323,6 @@ function TabBar({ active, onSelect, counts }) {
               onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = '#000' }}
               onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = 'rgba(0,0,0,0.38)' }}
             >
-              {/* Divider after "All Work" */}
               {i === 1 && (
                 <span style={{
                   position: 'absolute',
@@ -357,8 +339,9 @@ function TabBar({ active, onSelect, counts }) {
                 fontWeight: 600,
                 color: isActive ? '#5de0e6' : 'rgba(0,0,0,0.22)',
                 transition: 'color 0.2s',
-              }}>{count}</span>
-              {/* Active underline */}
+              }}>
+                {count}
+              </span>
               <span style={{
                 position: 'absolute', bottom: 0, left: 0, right: 0, height: '2px',
                 background: 'linear-gradient(90deg,#5de0e6,#004aad)',
@@ -374,9 +357,6 @@ function TabBar({ active, onSelect, counts }) {
   )
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   PORTFOLIO CARD — portrait 4:5 (1080×1350)
-═══════════════════════════════════════════════════════════════════ */
 function PortfolioCard({ item, onOpen }) {
   const [hovered, setHovered] = useState(false)
 
@@ -387,14 +367,13 @@ function PortfolioCard({ item, onOpen }) {
       onMouseLeave={() => setHovered(false)}
       style={{
         position: 'relative',
-        aspectRatio: '4/5',       /* 1080×1350 native ratio */
+        aspectRatio: '4/5',
         overflow: 'hidden',
         cursor: 'zoom-in',
         background: '#e8e8e8',
         borderRadius: 0,
       }}
     >
-      {/* Image */}
       <img
         src={item.src}
         alt={item.caption}
@@ -408,7 +387,6 @@ function PortfolioCard({ item, onOpen }) {
         }}
       />
 
-      {/* Hover gradient */}
       <div style={{
         position: 'absolute', inset: 0,
         background: 'linear-gradient(160deg, rgba(93,224,230,0.08) 0%, rgba(0,74,173,0.38) 100%)',
@@ -416,7 +394,6 @@ function PortfolioCard({ item, onOpen }) {
         transition: 'opacity 0.45s ease',
       }} />
 
-      {/* Bottom scrim */}
       <div style={{
         position: 'absolute', bottom: 0, left: 0, right: 0,
         height: '55%',
@@ -425,55 +402,6 @@ function PortfolioCard({ item, onOpen }) {
         transition: 'opacity 0.45s ease',
       }} />
 
-      {/* Caption */}
-      {/* <div style={{
-        position: 'absolute',
-        bottom: 'clamp(1rem, 2vw, 1.4rem)',
-        left: 'clamp(1rem, 2vw, 1.4rem)',
-        opacity: hovered ? 1 : 0,
-        transform: hovered ? 'translateY(0)' : 'translateY(10px)',
-        transition: 'all 0.4s ease',
-      }}>
-        <div style={{
-          width: 20, height: 2, borderRadius: 2,
-          background: 'linear-gradient(90deg, #5de0e6, #004aad)',
-          marginBottom: '0.4rem',
-        }} />
-        <p style={{
-          fontSize: 'clamp(0.52rem, 1.1vw, 0.6rem)',
-          fontWeight: 700, letterSpacing: '0.15em',
-          textTransform: 'uppercase',
-          color: 'rgba(93,224,230,0.9)',
-          margin: '0 0 0.2rem 0',
-        }}>{item.client}</p>
-        <p style={{
-          fontSize: 'clamp(0.78rem, 1.6vw, 0.95rem)',
-          fontWeight: 700, color: '#fff', margin: 0,
-          letterSpacing: '-0.02em', lineHeight: 1.2,
-        }}>{item.caption}</p>
-      </div> */}
-
-      {/* Category badge */}
-      {/* <div style={{
-        position: 'absolute',
-        top: 'clamp(0.7rem, 1.5vw, 1rem)',
-        left: 'clamp(0.7rem, 1.5vw, 1rem)',
-        background: 'rgba(0,0,0,0.42)',
-        backdropFilter: 'blur(8px)',
-        border: '1px solid rgba(255,255,255,0.1)',
-        padding: '0.22rem 0.55rem', borderRadius: '4px',
-        opacity: hovered ? 1 : 0.55,
-        transition: 'opacity 0.3s',
-      }}>
-        <span style={{
-          fontSize: 'clamp(0.45rem, 0.9vw, 0.52rem)',
-          fontWeight: 700, letterSpacing: '0.14em',
-          textTransform: 'uppercase',
-          color: 'rgba(255,255,255,0.8)',
-        }}>{item.category}</span>
-      </div> */}
-
-      {/* Zoom icon */}
       <div style={{
         position: 'absolute',
         top: 'clamp(0.7rem, 1.5vw, 1rem)',
@@ -483,32 +411,29 @@ function PortfolioCard({ item, onOpen }) {
         borderRadius: '50%', width: 34, height: 34,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         fontSize: '0.8rem',
-      }}>🔍</div>
+      }}>
+        🔍
+      </div>
     </div>
   )
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   PAGE
-═══════════════════════════════════════════════════════════════════ */
 export default function BrandingPortfolioPage() {
   useLenis()
 
-  const heroRef     = useRef(null)
+  const heroRef = useRef(null)
   const heroTextRef = useRef(null)
-  const overlayRef  = useRef(null)
+  const overlayRef = useRef(null)
   const countRowRef = useRef(null)
 
-  const [activeTab,     setActiveTab]     = useState('all')
+  const [activeTab, setActiveTab] = useState('all')
   const [filteredItems, setFilteredItems] = useState(PORTFOLIO)
-  const [lightboxIdx,   setLightboxIdx]   = useState(null)
+  const [lightboxIdx, setLightboxIdx] = useState(null)
 
-  /* Filter */
   useEffect(() => {
     setFilteredItems(activeTab === 'all' ? PORTFOLIO : PORTFOLIO.filter(p => p.category === activeTab))
   }, [activeTab])
 
-  /* Count-row flash on filter change */
   useEffect(() => {
     if (!countRowRef.current) return
     gsap.fromTo(countRowRef.current,
@@ -517,7 +442,6 @@ export default function BrandingPortfolioPage() {
     )
   }, [filteredItems])
 
-  /* Hero entrance curtain */
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       gsap.timeline({ defaults: { ease: 'power3.out' } })
@@ -553,7 +477,6 @@ export default function BrandingPortfolioPage() {
         html { scroll-behavior: auto !important; }
         *, *::before, *::after { box-sizing: border-box; }
 
-        /* ── Portrait Grid — 4 kolom desktop → 3 → 2 → 1 ── */
         .brand-grid {
           display: grid;
           gap: 4px;
@@ -569,7 +492,6 @@ export default function BrandingPortfolioPage() {
           .brand-grid { grid-template-columns: 1fr; }
         }
 
-        /* Elegant scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #fafafa; }
         ::-webkit-scrollbar-thumb { background: #d0d0d0; border-radius: 10px; }
@@ -592,8 +514,6 @@ export default function BrandingPortfolioPage() {
       )}
 
       <main>
-
-        {/* ── HERO ───────────────────────────────────────────── */}
         <section
           ref={heroRef}
           style={{
@@ -603,7 +523,6 @@ export default function BrandingPortfolioPage() {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}
         >
-          {/* Ambient glow */}
           <div style={{
             position: 'absolute', inset: 0, zIndex: 0,
             backgroundImage: `
@@ -612,7 +531,6 @@ export default function BrandingPortfolioPage() {
             `,
           }} />
 
-          {/* Curtain reveal */}
           <div ref={overlayRef} style={{
             position: 'absolute', inset: 0, zIndex: 10,
             background: 'linear-gradient(135deg, #5de0e6, #004aad)',
@@ -629,22 +547,24 @@ export default function BrandingPortfolioPage() {
               gap: 'clamp(1rem, 2.5vw, 1.5rem)',
             }}
           >
-            {/* Breadcrumb */}
             <div className="hero-line" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
               <Link href="/" style={{ fontSize: '0.72rem', fontWeight: 500, color: 'rgba(0,0,0,0.4)', textDecoration: 'none', letterSpacing: '0.1em', transition: 'color 0.2s' }}
                 onMouseEnter={e => e.currentTarget.style.color = '#5de0e6'}
                 onMouseLeave={e => e.currentTarget.style.color = 'rgba(0,0,0,0.4)'}
-              >Creaut Bali</Link>
+              >
+                Creaut Bali
+              </Link>
               <span style={{ color: 'rgba(0,0,0,0.2)' }}>·</span>
               <Link href="/services/branding" style={{ fontSize: '0.72rem', fontWeight: 500, color: 'rgba(0,0,0,0.4)', textDecoration: 'none', letterSpacing: '0.1em', transition: 'color 0.2s' }}
                 onMouseEnter={e => e.currentTarget.style.color = '#5de0e6'}
                 onMouseLeave={e => e.currentTarget.style.color = 'rgba(0,0,0,0.4)'}
-              >Branding</Link>
+              >
+                Branding
+              </Link>
               <span style={{ color: 'rgba(0,0,0,0.2)' }}>·</span>
               <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#5de0e6', letterSpacing: '0.1em' }}>Portfolio</span>
             </div>
 
-            {/* Pill label */}
             <div className="hero-line" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <div style={{ width: 24, height: 2, borderRadius: 2, background: 'linear-gradient(90deg, #5de0e6, #004aad)' }} />
               <span style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.4)' }}>
@@ -653,7 +573,6 @@ export default function BrandingPortfolioPage() {
               <div style={{ width: 24, height: 2, borderRadius: 2, background: 'linear-gradient(90deg, #004aad, #5de0e6)' }} />
             </div>
 
-            {/* Heading */}
             <h1 className="hero-line" style={{
               fontWeight: 800,
               fontSize: 'clamp(4rem, 12vw, 10rem)',
@@ -663,20 +582,19 @@ export default function BrandingPortfolioPage() {
               <span style={{
                 background: 'linear-gradient(90deg, #5de0e6, #004aad)',
                 WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-              }}>Work.</span>
+              }}>
+                Work.
+              </span>
             </h1>
 
-            {/* Desc */}
             <p className="hero-line" style={{
               fontSize: 'clamp(0.875rem, 1.6vw, 1.05rem)',
               color: 'rgba(0,0,0,0.5)', lineHeight: 1.75, maxWidth: 460, margin: 0,
             }}>
               Every brand we've built — from identity systems to packaging, strategy to guidelines.
             </p>
-
           </div>
 
-          {/* Scroll hint */}
           <div style={{
             position: 'absolute', bottom: '2.5rem', left: '50%', transform: 'translateX(-50%)',
             zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem',
@@ -686,17 +604,13 @@ export default function BrandingPortfolioPage() {
           </div>
         </section>
 
-        {/* ── FILTER + PORTFOLIO GRID ─────────────────────────── */}
         <section id="portfolio" style={{ background: '#fff', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
-
-          {/* Sticky tab bar */}
           <div style={{ position: 'sticky', top: 0, zIndex: 50 }}>
             <div style={{ maxWidth: 1600, margin: '0 auto', padding: 'clamp(0.75rem,2vw,1rem) clamp(1rem,4vw,2rem) 0' }}>
               <TabBar active={activeTab} onSelect={setActiveTab} counts={counts} />
             </div>
           </div>
 
-          {/* Grid area */}
           <div style={{ padding: '0 0 clamp(3rem,8vw,5rem)' }}>
             <div style={{ maxWidth: 1600, margin: '0 auto', padding: '0 clamp(0.75rem,3vw,2rem)' }}>
               {filteredItems.length === 0 ? (
@@ -706,7 +620,6 @@ export default function BrandingPortfolioPage() {
                 </div>
               ) : (
                 <>
-                  {/* Count row */}
                   <div ref={countRowRef} style={{
                     display: 'flex', alignItems: 'center', gap: '0.6rem',
                     padding: 'clamp(1.25rem,3vw,1.75rem) 0 clamp(1rem,2.5vw,1.25rem)',
@@ -721,7 +634,6 @@ export default function BrandingPortfolioPage() {
                     </span>
                   </div>
 
-                  {/* Portrait grid — 4/5 ratio (1080×1350) */}
                   <div className="brand-grid">
                     {filteredItems.map((item, i) => (
                       <PortfolioCard
@@ -737,7 +649,6 @@ export default function BrandingPortfolioPage() {
           </div>
         </section>
 
-        {/* ── BOTTOM CTA ──────────────────────────────────────── */}
         <section style={{
           background: '#fff',
           borderTop: '1px solid rgba(0,0,0,0.06)',
@@ -784,7 +695,9 @@ export default function BrandingPortfolioPage() {
               }}
                 onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
                 onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-              >Start a Project ↗</a>
+              >
+                Start a Project ↗
+              </a>
               <Link href="/services/branding" style={{
                 padding: 'clamp(0.75rem,2vw,0.9rem) clamp(1.5rem,4vw,2.25rem)',
                 background: '#fff', border: '1.5px solid rgba(0,0,0,0.15)',
@@ -794,7 +707,9 @@ export default function BrandingPortfolioPage() {
               }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = '#5de0e6'; e.currentTarget.style.color = '#004aad' }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.15)'; e.currentTarget.style.color = '#000' }}
-              >← Back to Branding</Link>
+              >
+                ← Back to Branding
+              </Link>
             </div>
           </div>
         </section>

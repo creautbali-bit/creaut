@@ -9,9 +9,6 @@ import Footer from '../../components/footer'
 
 gsap.registerPlugin(ScrollTrigger)
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   LENIS SMOOTH SCROLL — wired into GSAP RAF
-   ───────────────────────────────────────────────────────────────────────────── */
 function useLenis() {
   const lenisRef = useRef(null)
 
@@ -38,9 +35,7 @@ function useLenis() {
         gsap.ticker.add((time) => lenis.raf(time * 1000))
         gsap.ticker.lagSmoothing(0)
         lenis.on('scroll', ScrollTrigger.update)
-      } catch {
-        // Lenis not available — native scroll fallback
-      }
+      } catch {}
     }
 
     init()
@@ -55,32 +50,26 @@ function useLenis() {
   return lenisRef
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   DATA
-   ───────────────────────────────────────────────────────────────────────────── */
 const photos = [
-  { id: 1, src: '/image/pho1.webp', category: 'Editorial',  caption: 'Golden Hour Session', layout: 'portrait'  },
-  { id: 2, src: '/image/pho3.webp', category: 'Product',    caption: 'Skincare Campaign',   layout: 'landscape' },
-  { id: 3, src: '/image/pho4.webp', category: 'Lifestyle',  caption: 'Bali Morning Ritual', layout: 'landscape' },
-  { id: 4, src: '/image/pho2.webp', category: 'Editorial',  caption: 'Fashion Forward',     layout: 'portrait'  },
-  { id: 5, src: '/image/pho5.webp', category: 'Product',    caption: 'Jewelry Collection',  layout: 'portrait'  },
-  { id: 6, src: '/image/pho6.webp', category: 'Corporate',  caption: 'Brand Identity Shoot',layout: 'landscape' },
+  { id: 1, src: '/image/photo5.webp', category: '', caption: '', layout: 'portrait' },
+  { id: 2, src: '/image/photo3.webp', category: '', caption: '', layout: 'landscape' },
+  { id: 3, src: '/image/photo7.webp', category: '', caption: '', layout: 'landscape' },
+  { id: 4, src: '/image/photo16.webp', category: '', caption: '', layout: 'portrait' },
+  { id: 5, src: '/image/photo12.webp', category: '', caption: '', layout: 'portrait' },
+  { id: 6, src: '/image/photo23.webp', category: '', caption: '', layout: 'landscape' },
 ]
 
 const serviceTypes = [
-  { title: 'Event Coverage',    desc: "Whatever your event, we can make sure it's captured the way you want it to be. The angles, the lighting, the mood — we work with you to understand your requirements and bring them to life." },
-  { title: 'Social Media',      desc: 'We excel in providing photography services specifically tailored for social media content, creating visually captivating visuals that effectively communicate brand identity and tell compelling stories.' },
-  { title: 'Studio Photography',desc: 'Booking your studio portrait session is simple. Our professional photographers will guarantee you feel comfortable throughout and will produce the best images using a wide range of props and poses.' },
-  { title: 'Key Visual',        desc: "We specialize in Key Visual Photography, harnessing the power of compelling and visually captivating images to convey your brand's message and showcase the essence of your products." },
+  { title: 'Event Coverage', desc: "Whatever your event, we can make sure it's captured the way you want it to be. The angles, the lighting, the mood — we work with you to understand your requirements and bring them to life." },
+  { title: 'Social Media', desc: 'We excel in providing photography services specifically tailored for social media content, creating visually captivating visuals that effectively communicate brand identity and tell compelling stories.' },
+  { title: 'Studio Photography', desc: 'Booking your studio portrait session is simple. Our professional photographers will guarantee you feel comfortable throughout and will produce the best images using a wide range of props and poses.' },
+  { title: 'Key Visual', desc: "We specialize in Key Visual Photography, harnessing the power of compelling and visually captivating images to convey your brand's message and showcase the essence of your products." },
 ]
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   LIGHTBOX
-   ───────────────────────────────────────────────────────────────────────────── */
 function Lightbox({ photos, index, onClose, onNav }) {
   const lightboxRef = useRef(null)
-  const imgRef      = useRef(null)
-  const photo       = photos[index]
+  const imgRef = useRef(null)
+  const photo = photos[index]
 
   useEffect(() => {
     gsap.fromTo(lightboxRef.current, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power2.out' })
@@ -94,9 +83,9 @@ function Lightbox({ photos, index, onClose, onNav }) {
 
   useEffect(() => {
     const handler = (e) => {
-      if (e.key === 'Escape')     onClose()
+      if (e.key === 'Escape') onClose()
       if (e.key === 'ArrowRight') onNav(1)
-      if (e.key === 'ArrowLeft')  onNav(-1)
+      if (e.key === 'ArrowLeft') onNav(-1)
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
@@ -105,7 +94,7 @@ function Lightbox({ photos, index, onClose, onNav }) {
   const enterFullscreen = () => {
     const el = imgRef.current
     if (!el) return
-    if (el.requestFullscreen)            el.requestFullscreen()
+    if (el.requestFullscreen) el.requestFullscreen()
     else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen()
   }
 
@@ -127,7 +116,6 @@ function Lightbox({ photos, index, onClose, onNav }) {
         padding: 'clamp(1.5rem, 5vw, 4rem)', gap: '1rem',
       }}
     >
-      {/* Top bar */}
       <div style={{ width: '100%', maxWidth: 1100, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
         <div>
           <p style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(93,224,230,0.85)', margin: '0 0 0.2rem 0' }}>
@@ -151,7 +139,6 @@ function Lightbox({ photos, index, onClose, onNav }) {
         </div>
       </div>
 
-      {/* Image + arrows */}
       <div style={{ position: 'relative', width: '100%', maxWidth: 1100, display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 1 }}>
         <button onClick={() => onNav(-1)}
           style={{ ...btn, flexShrink: 0, width: 44, height: 44, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', border: '1.5px solid rgba(255,255,255,0.15)', color: '#fff', fontSize: '1.3rem' }}
@@ -172,7 +159,6 @@ function Lightbox({ photos, index, onClose, onNav }) {
         >›</button>
       </div>
 
-      {/* Thumbnail strip */}
       <div style={{ width: '100%', maxWidth: 1100, display: 'flex', gap: '4px', overflowX: 'auto', flexShrink: 0, scrollbarWidth: 'none' }}>
         {photos.map((p, i) => (
           <button key={p.id} onClick={() => onNav(i - index)} style={{
@@ -192,9 +178,6 @@ function Lightbox({ photos, index, onClose, onNav }) {
   )
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   SERVICE CARD
-   ───────────────────────────────────────────────────────────────────────────── */
 function ServiceCard({ service, index }) {
   const [hovered, setHovered] = useState(false)
   return (
@@ -235,9 +218,6 @@ function ServiceCard({ service, index }) {
   )
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   PHOTO GRID PANEL
-   ───────────────────────────────────────────────────────────────────────────── */
 function PhotoGrid({ onOpenLightbox }) {
   const [hoveredId, setHoveredId] = useState(null)
   const [cols, setCols] = useState(3)
@@ -246,9 +226,9 @@ function PhotoGrid({ onOpenLightbox }) {
   useEffect(() => {
     const update = () => {
       const w = window.innerWidth
-      if (w < 600)      setCols(1)
+      if (w < 600) setCols(1)
       else if (w < 960) setCols(2)
-      else              setCols(3)
+      else setCols(3)
     }
     update()
     window.addEventListener('resize', update)
@@ -312,21 +292,18 @@ function PhotoGrid({ onOpenLightbox }) {
   )
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   PAGE
-   ───────────────────────────────────────────────────────────────────────────── */
 export default function VisualPhotographyPage() {
   useLenis()
 
-  const heroRef       = useRef(null)
-  const heroTextRef   = useRef(null)
-  const heroInnerRef  = useRef(null)
-  const overlayRef    = useRef(null)
-  const gridRef       = useRef(null)
-  const descRef       = useRef(null)
-  const servicesRef   = useRef(null)
-  const ctaRef        = useRef(null)
-  const footerRef     = useRef(null)
+  const heroRef = useRef(null)
+  const heroTextRef = useRef(null)
+  const heroInnerRef = useRef(null)
+  const overlayRef = useRef(null)
+  const gridRef = useRef(null)
+  const descRef = useRef(null)
+  const servicesRef = useRef(null)
+  const ctaRef = useRef(null)
+  const footerRef = useRef(null)
 
   const [lightboxIdx, setLightboxIdx] = useState(null)
 
@@ -337,7 +314,6 @@ export default function VisualPhotographyPage() {
     })
   }, [])
 
-  /* ── Hero entrance curtain ── */
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       gsap.timeline({ defaults: { ease: 'power3.out' } })
@@ -354,12 +330,10 @@ export default function VisualPhotographyPage() {
     return () => ctx.revert()
   }, [])
 
-  /* ── Cinematic stacked scroll orchestration ── */
   useLayoutEffect(() => {
     const mm = gsap.matchMedia()
 
     mm.add('(min-width: 1px)', () => {
-      /* ── 1. HERO — pin + parallax fade as grid climbs over ── */
       ScrollTrigger.create({
         trigger: heroRef.current,
         start: 'top top',
@@ -380,7 +354,6 @@ export default function VisualPhotographyPage() {
         },
       })
 
-      /* ── 2. PHOTO GRID — slides up to cover hero ── */
       gsap.fromTo(gridRef.current,
         { y: 120, clipPath: 'inset(6% 0% 0% 0% round 18px 18px 0px 0px)' },
         {
@@ -394,7 +367,6 @@ export default function VisualPhotographyPage() {
         }
       )
 
-      /* ── 3. DESCRIPTION — rises over grid ── */
       gsap.fromTo(descRef.current,
         { y: 90, clipPath: 'inset(5% 0% 0% 0% round 16px 16px 0px 0px)' },
         {
@@ -415,7 +387,6 @@ export default function VisualPhotographyPage() {
         onEnter: () => gsap.to(descItems, { opacity: 1, y: 0, duration: 0.8, stagger: 0.1, ease: 'power3.out' }),
       })
 
-      /* ── 4. SERVICES — rises over description ── */
       gsap.fromTo(servicesRef.current,
         { y: 80, clipPath: 'inset(4% 0% 0% 0% round 16px 16px 0px 0px)' },
         {
@@ -436,7 +407,6 @@ export default function VisualPhotographyPage() {
         onEnter: () => gsap.to(cards, { opacity: 1, y: 0, duration: 0.65, stagger: 0.08, ease: 'power3.out' }),
       })
 
-      /* ── 5. CTA — dramatic overlay ── */
       gsap.fromTo(ctaRef.current,
         { y: 70, clipPath: 'inset(5% 0% 0% 0% round 20px 20px 0px 0px)' },
         {
@@ -457,7 +427,6 @@ export default function VisualPhotographyPage() {
         onEnter: () => gsap.to(ctaItems, { opacity: 1, y: 0, duration: 0.75, stagger: 0.12, ease: 'power3.out' }),
       })
 
-      /* ── 6. FOOTER — rises from below ── */
       gsap.fromTo(footerRef.current,
         { y: 60, clipPath: 'inset(8% 0% 0% 0% round 24px 24px 0px 0px)' },
         {
@@ -509,8 +478,6 @@ export default function VisualPhotographyPage() {
       )}
 
       <main style={{ overflow: 'hidden' }}>
-
-        {/* ── HERO PANEL ────────────────────────────────────────────────── */}
         <section
           ref={heroRef}
           className="panel-hero"
@@ -529,14 +496,12 @@ export default function VisualPhotographyPage() {
             `,
           }} />
 
-          {/* Entrance curtain */}
           <div ref={overlayRef} style={{
             position: 'absolute', inset: 0, zIndex: 10,
             background: 'linear-gradient(135deg, #5de0e6, #004aad)',
             transformOrigin: 'top', pointerEvents: 'none',
           }} />
 
-          {/* Inner — gets parallax-faded on scroll */}
           <div ref={heroInnerRef} style={{
             position: 'relative', zIndex: 2,
             width: '100%', height: '100%',
@@ -548,7 +513,6 @@ export default function VisualPhotographyPage() {
               width: '100%', maxWidth: 900, textAlign: 'center',
               display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem',
             }}>
-              {/* Breadcrumb */}
               <div className="hero-line" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                 <Link href="/" style={{ fontSize: '0.72rem', fontWeight: 500, color: 'rgba(0,0,0,0.4)', textDecoration: 'none', letterSpacing: '0.1em', transition: 'color 0.2s' }}
                   onMouseEnter={e => e.currentTarget.style.color = '#5de0e6'}
@@ -560,7 +524,6 @@ export default function VisualPhotographyPage() {
                 <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#5de0e6', letterSpacing: '0.1em' }}>Visual Photography</span>
               </div>
 
-              {/* Label */}
               <div className="hero-line" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 <div style={{ width: 28, height: 2, borderRadius: 2, background: 'linear-gradient(90deg, #5de0e6, #004aad)' }} />
                 <span style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.4)' }}>
@@ -569,7 +532,6 @@ export default function VisualPhotographyPage() {
                 <div style={{ width: 28, height: 2, borderRadius: 2, background: 'linear-gradient(90deg, #004aad, #5de0e6)' }} />
               </div>
 
-              {/* Heading */}
               <h1 className="hero-line" style={{
                 fontWeight: 800, fontSize: 'clamp(3rem, 8vw, 7rem)',
                 color: '#000000', letterSpacing: '-0.04em',
@@ -581,7 +543,6 @@ export default function VisualPhotographyPage() {
                 </span>graphy
               </h1>
 
-              {/* Desc */}
               <p className="hero-line" style={{
                 fontSize: 'clamp(0.875rem, 1.5vw, 1.05rem)',
                 color: 'rgba(0,0,0,0.5)', lineHeight: 1.75, maxWidth: 480, margin: 0, textAlign: 'center',
@@ -589,7 +550,6 @@ export default function VisualPhotographyPage() {
                 We capture moments that matter — from editorial fashion shoots to brand product photography. Every frame is intentional, every light considered.
               </p>
 
-              {/* CTA */}
               <div className="hero-line" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                 <a href="/services/visual-photography/portfolio" style={{
                   padding: '0.9rem 2.25rem',
@@ -616,14 +576,12 @@ export default function VisualPhotographyPage() {
             </div>
           </div>
 
-          {/* Scroll hint */}
           <div style={{ position: 'absolute', bottom: '2.5rem', left: '50%', transform: 'translateX(-50%)', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
             <span style={{ fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.25)' }}>Scroll</span>
             <div style={{ width: 1, height: 40, background: 'linear-gradient(180deg, rgba(93,224,230,0.6), transparent)', borderRadius: 1 }} />
           </div>
         </section>
 
-        {/* ── PHOTO GRID PANEL — overlaps hero ──────────────────────────── */}
         <div
           id="grid"
           ref={gridRef}
@@ -636,7 +594,6 @@ export default function VisualPhotographyPage() {
           <PhotoGrid onOpenLightbox={setLightboxIdx} />
         </div>
 
-        {/* ── DESCRIPTION PANEL — overlaps grid ─────────────────────────── */}
         <section
           ref={descRef}
           className="panel-desc"
@@ -648,7 +605,6 @@ export default function VisualPhotographyPage() {
           }}
         >
           <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '3rem', alignItems: 'center' }}>
-
             <div>
               <div className="reveal" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
                 <div style={{ width: 28, height: 2, borderRadius: 2, background: 'linear-gradient(90deg, #5de0e6, #004aad)' }} />
@@ -668,7 +624,6 @@ export default function VisualPhotographyPage() {
               </p>
             </div>
 
-            {/* Capability tags */}
             <div className="reveal">
               <p style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.35)', marginBottom: '1rem' }}>
                 Our Capabilities
@@ -691,7 +646,6 @@ export default function VisualPhotographyPage() {
           </div>
         </section>
 
-        {/* ── SERVICES PANEL — overlaps description ─────────────────────── */}
         <section
           ref={servicesRef}
           className="panel-services"
@@ -717,7 +671,6 @@ export default function VisualPhotographyPage() {
           </div>
         </section>
 
-        {/* ── CTA PANEL — overlaps services ─────────────────────────────── */}
         <section
           ref={ctaRef}
           className="panel-cta"
@@ -731,7 +684,6 @@ export default function VisualPhotographyPage() {
             position: 'relative', overflow: 'hidden',
           }}
         >
-          {/* Atmospheric glow */}
           <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse at 60% 50%, rgba(93,224,230,0.05) 0%, transparent 65%), radial-gradient(ellipse at 20% 80%, rgba(0,74,173,0.05) 0%, transparent 55%)' }} />
 
           <div className="cta-reveal" style={{ position: 'relative' }}>
@@ -748,7 +700,6 @@ export default function VisualPhotographyPage() {
 
         </section>
 
-        {/* ── FOOTER PANEL — rises from below ───────────────────────────── */}
         <div
           ref={footerRef}
           className="panel-footer"

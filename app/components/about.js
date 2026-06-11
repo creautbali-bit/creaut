@@ -6,35 +6,26 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const stats = [
-  { number: '7+',   label: 'Years Experience' },
-  { number: '200+', label: 'Happy Clients' },
-  { number: '500+', label: 'Projects Done' },
-  { number: '12',   label: 'Team Members' },
-]
-
 const values = [
-  { title: 'Creative First',     desc: 'Every project starts with bold ideas before anything else.' },
-  { title: 'Story-driven',       desc: 'We craft narratives that connect brands with real people.' },
-  { title: 'Always On Time',     desc: 'Deadlines are commitments. We treat them that way.' },
-  { title: 'Client-Obsessed',    desc: 'Your success is the only metric that matters to us.' },
+  { title: 'Creative First', desc: 'Every project starts with bold ideas before anything else.' },
+  { title: 'Story-driven', desc: 'We craft narratives that connect brands with real people.' },
+  { title: 'Always On Time', desc: 'Deadlines are commitments. We treat them that way.' },
+  { title: 'Client-Obsessed', desc: 'Your success is the only metric that matters to us.' },
 ]
 
 export default function About() {
-  const sectionRef   = useRef(null)
-  const labelRef     = useRef(null)
-  const headingRef   = useRef(null)
-  const bodyRef      = useRef(null)
-  const statsRef     = useRef(null)
-  const valuesRef    = useRef(null)
-  const imgRef       = useRef(null)
-  const ctaRef       = useRef(null)
-  const dividerRef   = useRef(null)
+  const sectionRef = useRef(null)
+  const labelRef = useRef(null)
+  const headingRef = useRef(null)
+  const bodyRef = useRef(null)
+  const valuesRef = useRef(null)
+  const imgRef = useRef(null)
+  const ctaRef = useRef(null)
+  const dividerRef = useRef(null)
 
   useEffect(() => {
     const ctx = gsap.context(() => {
 
-      /* ── Left column: label → heading → body → cta ── */
       const leftItems = [
         labelRef.current,
         dividerRef.current,
@@ -42,6 +33,7 @@ export default function About() {
         bodyRef.current,
         ctaRef.current,
       ]
+
       gsap.set(leftItems, { opacity: 0, y: 36 })
       ScrollTrigger.create({
         trigger: sectionRef.current,
@@ -56,7 +48,6 @@ export default function About() {
         },
       })
 
-      /* ── Right: image panel ── */
       gsap.set(imgRef.current, { opacity: 0, x: 40 })
       ScrollTrigger.create({
         trigger: imgRef.current,
@@ -66,23 +57,6 @@ export default function About() {
         },
       })
 
-      // /* ── Stats count-up ── */
-      // const statEls = statsRef.current.querySelectorAll('.stat-num')
-      // gsap.set(statEls, { opacity: 0, y: 20 })
-      // ScrollTrigger.create({
-      //   trigger: statsRef.current,
-      //   start: 'top 82%',
-      //   onEnter: () => {
-      //     gsap.to(statEls, {
-      //       opacity: 1, y: 0,
-      //       duration: 0.6,
-      //       stagger: 0.1,
-      //       ease: 'power3.out',
-      //     })
-      //   },
-      // })
-
-      /* ── Values cards stagger ── */
       const cards = valuesRef.current.querySelectorAll('.value-card')
       gsap.set(cards, { opacity: 0, y: 28 })
       ScrollTrigger.create({
@@ -109,15 +83,11 @@ export default function About() {
       id="about"
       style={{ background: '#fff', borderTop: '1px solid rgba(0,0,0,0.07)' }}
     >
-
-      {/* ── TOP: 2-col intro ───────────────────────────────────────── */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: '1fr 1fr',
         minHeight: '90vh',
       }}>
-
-        {/* Left — text */}
         <div style={{
           padding: 'clamp(4rem, 8vw, 7rem) clamp(2rem, 5vw, 5rem)',
           display: 'flex',
@@ -125,8 +95,6 @@ export default function About() {
           justifyContent: 'center',
           gap: '1.75rem',
         }}>
-
-          {/* Label */}
           <div ref={labelRef} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <div style={{
               width: 28, height: 2, borderRadius: 2,
@@ -141,7 +109,6 @@ export default function About() {
             </span>
           </div>
 
-          {/* Heading */}
           <div ref={headingRef}>
             <h2 style={{
               fontWeight: 800,
@@ -165,13 +132,11 @@ export default function About() {
             </h2>
           </div>
 
-          {/* Divider */}
           <div ref={dividerRef} style={{
             width: 48, height: 2, borderRadius: 2,
             background: 'linear-gradient(90deg, #5de0e6, #004aad)',
           }} />
 
-          {/* Body */}
           <p ref={bodyRef} style={{
             fontSize: '1rem',
             color: 'rgba(0,0,0,0.55)',
@@ -188,7 +153,6 @@ export default function About() {
             resonates, converts, and endures.
           </p>
 
-          {/* CTA */}
           <div ref={ctaRef} style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
             <a
               href="#contact"
@@ -223,10 +187,8 @@ export default function About() {
               Our Work
             </a>
           </div>
-
         </div>
 
-        {/* Right — visual panel */}
         <div
           ref={imgRef}
           style={{
@@ -236,21 +198,17 @@ export default function About() {
             minHeight: 480,
           }}
         >
-
-          {/* Placeholder grid pattern */}
           <div style={{
             position: 'absolute', inset: 0,
             backgroundImage: 'radial-gradient(circle, rgba(0,0,0,0.06) 1px, transparent 1px)',
             backgroundSize: '32px 32px',
           }} />
 
-          {/* Gradient wash */}
           <div style={{
             position: 'absolute', inset: 0,
             background: 'linear-gradient(135deg, rgba(93,224,230,0.08) 0%, rgba(0,74,173,0.12) 100%)',
           }} />
 
-          {/* Center brand mark */}
           <div style={{
             position: 'absolute', inset: 0,
             display: 'flex', flexDirection: 'column',
@@ -274,7 +232,6 @@ export default function About() {
             </p>
           </div>
 
-          {/* Bottom label */}
           <div style={{
             position: 'absolute', bottom: '2rem', left: '2rem', right: '2rem',
             display: 'flex', alignItems: 'center', gap: '0.75rem',
@@ -293,57 +250,8 @@ export default function About() {
             </span>
           </div>
         </div>
-
       </div>
 
-      {/* ── STATS ROW ─────────────────────────────────────────────── */}
-      {/* <div
-        ref={statsRef}
-        style={{
-          borderTop: '1px solid rgba(0,0,0,0.07)',
-          borderBottom: '1px solid rgba(0,0,0,0.07)',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-        }}
-      >
-        {stats.map((s, i) => (
-          <div
-            key={s.label}
-            style={{
-              padding: 'clamp(2rem, 4vw, 3rem) clamp(1.5rem, 3vw, 2.5rem)',
-              borderRight: i < stats.length - 1 ? '1px solid rgba(0,0,0,0.07)' : 'none',
-              textAlign: 'center',
-            }}
-          >
-            <div
-              className="stat-num"
-              style={{
-                fontWeight: 800,
-                fontSize: 'clamp(2.2rem, 4vw, 3.5rem)',
-                letterSpacing: '-0.05em',
-                lineHeight: 1,
-                background: 'linear-gradient(90deg, #5de0e6, #004aad)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                marginBottom: '0.4rem',
-              }}
-            >
-              {s.number}
-            </div>
-            <p style={{
-              fontSize: '0.75rem', fontWeight: 500,
-              letterSpacing: '0.08em', textTransform: 'uppercase',
-              color: 'rgba(0,0,0,0.4)',
-              margin: 0,
-            }}>
-              {s.label}
-            </p>
-          </div>
-        ))}
-      </div> */}
-
-      {/* ── VALUES GRID ───────────────────────────────────────────── */}
       <div
         ref={valuesRef}
         style={{
@@ -351,7 +259,6 @@ export default function About() {
           maxWidth: 1200, margin: '0 auto',
         }}
       >
-        {/* Sub header */}
         <div style={{ marginBottom: '3rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
             <div style={{ width: 28, height: 2, borderRadius: 2, background: 'linear-gradient(90deg, #5de0e6, #004aad)' }} />
@@ -367,7 +274,6 @@ export default function About() {
           </h3>
         </div>
 
-        {/* 4-col cards */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
@@ -382,7 +288,6 @@ export default function About() {
           ))}
         </div>
       </div>
-
     </section>
   )
 }
@@ -404,7 +309,6 @@ function ValueCard({ value, index }) {
         cursor: 'default',
       }}
     >
-      {/* Gradient number */}
       <div style={{
         fontWeight: 800, fontSize: '1rem',
         background: 'linear-gradient(90deg, #5de0e6, #004aad)',
@@ -436,7 +340,6 @@ function ValueCard({ value, index }) {
         {value.desc}
       </p>
 
-      {/* Bottom gradient line — visible on hover */}
       <div style={{
         marginTop: '1.5rem', height: 2,
         background: 'linear-gradient(90deg, #5de0e6, #004aad)',
