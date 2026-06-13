@@ -139,7 +139,7 @@ function ServiceCard({ service, index }) {
           <p style={{
             fontSize: '0.68rem', fontWeight: 500,
             letterSpacing: '0.16em', textTransform: 'uppercase',
-            color: hovered ? '#004aad' : 'rgba(255, 255, 255, 0.55)',
+            color: hovered ? '#ffffff' : 'rgba(255, 255, 255, 0.55)',
             margin: '0 0 0.4rem 0',
             transition: 'color 0.35s ease',
           }}>
