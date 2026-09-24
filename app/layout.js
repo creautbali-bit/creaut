@@ -9,7 +9,14 @@ const inter = Inter({
 
 export const metadata = {
   title: "Creaut Bali - Digital Creative Agency",
-  description: "Video Production, Social Media Management, Visual Photography & Branding. Bali-based creative agency.",
+  description:
+    "Video Production, Social Media Management, Visual Photography & Branding. Bali-based creative agency.",
+
+  icons: {
+    icon: "/image/logo/logo.webp",
+    shortcut: "/image/logo/logo.webp",
+    apple: "/image/logo/logo.webp",
+  },
 };
 
 export default function RootLayout({ children }) {

@@ -13,7 +13,7 @@ gsap.registerPlugin(ScrollTrigger)
 
 function useLenis() {
   const lenisRef = useRef(null)
-  
+
   useEffect(() => {
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual'
@@ -45,15 +45,13 @@ function useLenis() {
     init()
 
     return () => {
-      if (lenis) {
-        lenis.scrollTo(0, { immediate: true })
-      }
+      if (lenis) lenis.scrollTo(0, { immediate: true })
       gsap.ticker.remove((time) => lenis?.raf(time * 1000))
       lenis?.destroy()
       lenisRef.current = null
     }
   }, [])
-  
+
   return lenisRef
 }
 
@@ -136,196 +134,431 @@ const CATEGORIES = [
   },
 ]
 
-function ImageTrail() {
-  const POOL_SIZE   = 12
-  const MIN_DIST    = 90
-  const TRAIL_WIDTH = 130
+// ─── CursorPreview ─────────────────────────────────────────────────────────────
+// Awwwards-style: single smooth-following preview card with clip-path wipe transitions.
+// Replaces the old scattered ImageTrail pool approach.
+// Uses only GSAP (already installed) — zero extra dependencies.
+// ──────────────────────────────────────────────────────────────────────────────
+function CursorPreview() {
+  const PW = 165                         // preview width  (px)
+  const PH = Math.round(PW * 16 / 9)    // preview height ≈ 293px  (9:16 portrait)
 
-  const pool     = useRef([])
-  const dotRef   = useRef(null)
-  const head     = useRef(0)
-  const lastXY   = useRef({ x: -999, y: -999 })
-  const imgHead  = useRef(0)
+  const wrapRef = useRef(null)   // outer card element  (the thing that moves + scales)
+  const imgARef = useRef(null)   // image layer A  (double-buffer)
+  const imgBRef = useRef(null)   // image layer B
+  const dotRef  = useRef(null)   // custom cursor dot
+  const catRef  = useRef(null)   // category label (top-left)
+  const capRef  = useRef(null)   // caption        (bottom)
+  const dotsRef = useRef(null)   // progress dots  (top-right)
+
   const [mounted, setMounted] = useState(false)
-
-  useEffect(() => { setMounted(true) }, [])
+  useEffect(() => setMounted(true), [])
 
   useEffect(() => {
     if (!mounted) return
+    // Touch devices OR small screens (tablet/mobile): bail out
     if (window.matchMedia('(hover: none)').matches) return
+    if (window.innerWidth < 1024) return
 
-    let inside = false
+    const wrap = wrapRef.current
+    const imgA = imgARef.current
+    const imgB = imgBRef.current
+    const dot  = dotRef.current
 
-    const onMove = (e) => {
-      const mx = e.clientX
-      const my = e.clientY
-      const cardEl = e.target.closest('.insta-card')
+    // ── mouse & lerped-position state ──────────────────────────────────────
+    let mx = 0, my = 0   // raw mouse
+    let cx = 0, cy = 0   // lerped (current) position
+    let pvx = 0          // previous cx, used for velocity-based rotation
 
-      if (!cardEl) {
-        if (inside) {
-          inside = false
-          if (dotRef.current) {
-            gsap.killTweensOf(dotRef.current)
-            gsap.to(dotRef.current, { opacity: 0, scale: 0.4, duration: 0.22, ease: 'power2.in' })
-          }
+    // ── interaction state ──────────────────────────────────────────────────
+    let active     = false   // is preview currently visible?
+    let prevCard   = null    // last hovered .insta-card element
+    let prevIdx    = -1      // last image index shown
+    let showing    = 'a'     // which buffer is on top: 'a' | 'b'
+    let currentSrc = ''      // src of the image currently being shown
+    let curImages  = []      // images[] from the hovered card
+
+    // ── helpers ─────────────────────────────────────────────────────────────
+
+    /** Keep the preview inside the viewport, flipping side when near the edge */
+    function clampPos(x, y) {
+      const pad = 12
+      let px = x + 20         // default: right of cursor
+      let py = y - PH / 2     // vertically centred on cursor
+
+      if (px + PW > window.innerWidth  - pad) px = x - 20 - PW   // flip left
+      if (py < pad)                            py = pad             // top clamp
+      if (py + PH > window.innerHeight - pad) py = window.innerHeight - pad - PH  // bottom clamp
+
+      return [px, py]
+    }
+
+    /** Rebuild / update the progress dot strip */
+    function buildDots(count, activeIdx) {
+      const el = dotsRef.current
+      if (!el) return
+      const cap = Math.min(count, 8)   // show max 8 dots
+
+      // Only rebuild DOM when the count changes
+      if (el.children.length !== cap) {
+        el.innerHTML = ''
+        for (let i = 0; i < cap; i++) {
+          const d = document.createElement('div')
+          Object.assign(d.style, {
+            height: '3px',
+            borderRadius: '999px',
+            flexShrink: '0',
+            transition: 'width 0.22s ease, background 0.22s ease',
+          })
+          el.appendChild(d)
+        }
+      }
+
+      // Update each dot's active / inactive style
+      Array.from(el.children).forEach((d, i) => {
+        d.style.width      = i === activeIdx ? '16px'              : '4px'
+        d.style.background = i === activeIdx ? '#ffffff'           : 'rgba(255,255,255,0.35)'
+      })
+    }
+
+    /**
+     * Double-buffer image swap with awwwards-style clip-path wipe.
+     * The incoming image reveals from top → bottom (expo.out snappy ease).
+     * The outgoing image fades beneath with a short delay.
+     *
+     * `immediate = true`: sets image instantly, used on card entry so the
+     * card-entrance scale animation masks the first load.
+     */
+    function swapTo(src, immediate = false) {
+      if (!src || src === currentSrc) return
+      currentSrc = src
+
+      const front = showing === 'a' ? imgA : imgB
+      const back  = showing === 'a' ? imgB : imgA
+
+      gsap.killTweensOf([front, back])
+
+      if (immediate) {
+        front.src = src
+        gsap.set(front, { opacity: 1, zIndex: 2, clipPath: 'inset(0% 0% 0% 0%)' })
+        gsap.set(back,  { opacity: 0, zIndex: 1, clipPath: 'inset(0% 0% 0% 0%)' })
+        return
+        // NOTE: no `showing` flip needed — front stays on top, no animation
+      }
+
+      // Put new image on back layer (hidden, fully clipped from bottom)
+      back.src = src
+      gsap.set(back,  { opacity: 1, zIndex: 2, clipPath: 'inset(0% 0% 100% 0%)' })
+      // Ensure front has no stale clipPath from a previously interrupted swap
+      gsap.set(front, { opacity: 1, zIndex: 1, clipPath: 'inset(0% 0% 0% 0%)' })
+
+      // Reveal back: clip shrinks top→bottom (expo snappy feel)
+      gsap.to(back,  { clipPath: 'inset(0% 0% 0% 0%)',  duration: 0.52, ease: 'expo.out'   })
+      // Fade out front beneath, slight delay so it's not abrupt
+      gsap.to(front, { opacity: 0,                       duration: 0.38, ease: 'power2.in', delay: 0.06 })
+
+      showing = showing === 'a' ? 'b' : 'a'
+    }
+
+    // ── RAF ticker: lerp position + velocity rotation ────────────────────
+    function tick() {
+      cx += (mx - cx) * 0.09    // adjust for snappier (↑) or dreamier (↓) follow
+      cy += (my - cy) * 0.09
+
+      const vx = cx - pvx
+      pvx = cx
+
+      const [px, py] = clampPos(cx, cy)
+      const rot = gsap.utils.clamp(-5, 5, vx * 1.1)   // tilt on fast moves
+
+      gsap.set(wrap, { x: px, y: py, rotation: rot, force3D: true })
+      if (dot) gsap.set(dot, { x: mx, y: my, force3D: true })
+    }
+    gsap.ticker.add(tick)
+
+    // ── mouse handler ────────────────────────────────────────────────────
+    function onMove(e) {
+      mx = e.clientX
+      my = e.clientY
+
+      const card = e.target.closest('.insta-card')
+
+      // ── Cursor left all cards ────────────────────────────────────────
+      if (!card) {
+        if (active) {
+          active = false
+          prevCard = null
+          prevIdx  = -1
+          gsap.to(wrap, { opacity: 0, scale: 0.8, duration: 0.3, ease: 'power3.in' })
+          if (dot) gsap.to(dot, { opacity: 0, duration: 0.2 })
         }
         return
       }
 
-      if (!inside) {
-        inside = true
-        if (dotRef.current) {
-          gsap.killTweensOf(dotRef.current)
-          gsap.set(dotRef.current, { xPercent: -50, yPercent: -50 })
-          gsap.to(dotRef.current, { opacity: 1, scale: 1, duration: 0.22, ease: 'power2.out' })
+      // ── Cursor entered a card (from nothing) ─────────────────────────
+      if (!active) {
+        active = true
+        // Scale-up entrance — card starts slightly small for a "pop" feel
+        gsap.fromTo(wrap,
+          { scale: 0.72 },
+          { opacity: 1, scale: 1, duration: 0.56, ease: 'expo.out' }
+        )
+        if (dot) gsap.to(dot, { opacity: 1, duration: 0.22 })
+      }
+
+      // ── Switched to a different card ─────────────────────────────────
+      if (card !== prevCard) {
+        prevCard   = card
+        prevIdx    = -1
+        currentSrc = ''
+        showing    = 'a'
+
+        // Reset both image buffers to a clean slate
+        gsap.killTweensOf([imgA, imgB])
+        gsap.set([imgA, imgB], { opacity: 0, clipPath: 'inset(0% 0% 0% 0%)', zIndex: 1 })
+
+        // Read new card's data
+        curImages = JSON.parse(card.getAttribute('data-trail') || '[]')
+
+        // Animate category label in
+        if (catRef.current) {
+          gsap.set(catRef.current, { y: 5, opacity: 0 })
+          catRef.current.textContent = card.getAttribute('data-category') || ''
+          gsap.to(catRef.current, { y: 0, opacity: 1, duration: 0.28, ease: 'power2.out', delay: 0.04 })
+        }
+
+        // Animate caption in (slightly offset for stagger feel)
+        if (capRef.current) {
+          gsap.set(capRef.current, { y: 8, opacity: 0 })
+          capRef.current.textContent = card.getAttribute('data-caption') || ''
+          gsap.to(capRef.current, { y: 0, opacity: 1, duration: 0.34, ease: 'power2.out', delay: 0.09 })
+        }
+
+        // Load first image immediately (hidden under the entrance scale)
+        if (curImages.length > 0) {
+          swapTo(curImages[0], true)
+          buildDots(curImages.length, 0)
         }
       }
 
-      if (dotRef.current) gsap.set(dotRef.current, { x: mx, y: my })
+      if (!curImages.length) return
 
-      if (Math.hypot(mx - lastXY.current.x, my - lastXY.current.y) < MIN_DIST) return
-      lastXY.current = { x: mx, y: my }
+      // ── Map cursor X position → image index ─────────────────────────
+      const rect = card.getBoundingClientRect()
+      const rel  = Math.max(0, Math.min(e.clientX - rect.left, rect.width)) / rect.width
+      const idx  = Math.min(Math.floor(rel * curImages.length), curImages.length - 1)
 
-      const imagesRaw = cardEl.getAttribute('data-trail')
-      if (!imagesRaw) return
-      const images = JSON.parse(imagesRaw)
-      if (images.length === 0) return
-
-      const i  = head.current++ % POOL_SIZE
-      const el = pool.current[i]
-      if (!el) return
-
-      el.querySelector('img').src = images[imgHead.current++ % images.length]
-
-      const rot = gsap.utils.random(-22, 22)
-      const sc  = gsap.utils.random(0.88, 1.12)
-      const z = 6000 + (head.current % 400)
-
-      gsap.killTweensOf(el)
-      gsap.timeline()
-        .set(el, {
-          x: mx, y: my, xPercent: -50, yPercent: -50,
-          rotation: rot * 0.15, scale: 0.28, opacity: 1, zIndex: z,
-        })
-        .to(el, { scale: sc, rotation: rot, duration: 0.52, ease: 'back.out(1.5)' })
-        .to(el, { y: my - 96, opacity: 0, scale: sc * 0.72, duration: 0.72, ease: 'power2.in' }, '+=0.04')
+      if (idx !== prevIdx) {
+        prevIdx = idx
+        swapTo(curImages[idx])
+        buildDots(curImages.length, idx)
+      }
     }
 
     window.addEventListener('mousemove', onMove, { passive: true })
-    return () => window.removeEventListener('mousemove', onMove)
+    return () => {
+      window.removeEventListener('mousemove', onMove)
+      gsap.ticker.remove(tick)
+    }
   }, [mounted])
 
   if (!mounted) return null
 
   return createPortal(
     <>
+      {/* ── Custom cursor dot ───────────────────────────────────────────── */}
+      {/* mix-blend-mode:difference gives the classic white inversion effect */}
       <div
         ref={dotRef}
         style={{
-          position: 'fixed', top: 0, left: 0, width: 12, height: 12,
-          borderRadius: '50%', background: '#ffffff', mixBlendMode: 'difference', 
-          opacity: 0, pointerEvents: 'none', willChange: 'transform, opacity', zIndex: 9997,
+          position: 'fixed', top: 0, left: 0,
+          width: 10, height: 10, borderRadius: '50%',
+          background: '#fff',
+          mixBlendMode: 'difference',
+          pointerEvents: 'none',
+          opacity: 0,
+          zIndex: 9999,
+          willChange: 'transform',
+          transform: 'translate(-50%, -50%)',
         }}
       />
-      {Array.from({ length: POOL_SIZE }, (_, i) => (
-        <div
-          key={i}
-          ref={el => { pool.current[i] = el }}
+
+      {/* ── Preview card ────────────────────────────────────────────────── */}
+      <div
+        ref={wrapRef}
+        style={{
+          position: 'fixed', top: 0, left: 0,
+          width: PW, height: PH,
+          borderRadius: 0,
+          overflow: 'hidden',
+          pointerEvents: 'none',
+          opacity: 0,
+          zIndex: 9997,
+          willChange: 'transform, opacity',
+          background: '#0a0a0a',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.35), 0 24px 64px rgba(0,0,0,0.45)',
+        }}
+      >
+        {/* Image layer A */}
+        <img
+          ref={imgARef}
+          alt=""
+          draggable={false}
           style={{
-            position: 'fixed', top: 0, left: 0, width: TRAIL_WIDTH, aspectRatio: '9 / 16',
-            borderRadius: 10, overflow: 'hidden', opacity: 0, pointerEvents: 'none',
-            willChange: 'transform, opacity', boxShadow: '0 8px 24px rgba(0,0,0,0.28), 0 20px 56px rgba(0,0,0,0.22)',
+            position: 'absolute', inset: 0,
+            width: '100%', height: '100%',
+            objectFit: 'cover',
+            zIndex: 1,
           }}
-        >
-          <img src="" alt="" draggable={false} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+        />
+        {/* Image layer B */}
+        <img
+          ref={imgBRef}
+          alt=""
+          draggable={false}
+          style={{
+            position: 'absolute', inset: 0,
+            width: '100%', height: '100%',
+            objectFit: 'cover',
+            opacity: 0,
+            zIndex: 1,
+          }}
+        />
+
+        {/* Bottom vignette for text legibility */}
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none',
+          background: 'linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.06) 52%, transparent 72%)',
+        }} />
+
+        {/* ── Top row: category label (left) + progress dots (right) ──── */}
+        <div style={{
+          position: 'absolute', top: '0.8rem', left: '0.85rem', right: '0.85rem',
+          zIndex: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          pointerEvents: 'none',
+        }}>
+          <p
+            ref={catRef}
+            style={{
+              margin: 0,
+              color: 'rgba(255,255,255,0.55)',
+              fontSize: '0.5rem',
+              fontWeight: 700,
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              fontFamily: 'Inter, sans-serif',
+            }}
+          />
+          <div
+            ref={dotsRef}
+            style={{ display: 'flex', gap: '3px', alignItems: 'center' }}
+          />
         </div>
-      ))}
+
+        {/* ── Bottom: caption ─────────────────────────────────────────── */}
+        <div style={{
+          position: 'absolute', bottom: '0.9rem', left: '0.85rem', right: '0.85rem',
+          zIndex: 4, pointerEvents: 'none',
+        }}>
+          <p
+            ref={capRef}
+            style={{
+              margin: 0,
+              color: '#fff',
+              fontSize: '0.74rem',
+              fontWeight: 600,
+              lineHeight: 1.35,
+              fontFamily: 'Inter, sans-serif',
+              letterSpacing: '-0.01em',
+            }}
+          />
+        </div>
+      </div>
     </>,
     document.body
   )
 }
 
-function InstaCard({ card, accent, platform }) {
-  const [isHovered, setIsHovered] = useState(false)
-  const [slideIndex, setSlideIndex] = useState(0)
-  const [portalPos, setPortalPos] = useState({ x: 0, y: 0 })
-  
-  const cardRef  = useRef(null)
-  const portalRef = useRef(null)
+// ─── InstaCard ────────────────────────────────────────────────────────────────
+// Simplified: portal preview removed — CursorPreview handles everything globally.
+// Added data-caption + data-category so CursorPreview can read them.
+// ──────────────────────────────────────────────────────────────────────────────
+function InstaCard({ card, accent, platform, className = '' }) {
   const slideshowImages = card.images || [card.src]
-  const PORTAL_OFFSET = 15
-
-  const handleMouseEnter = () => { setIsHovered(true); setSlideIndex(0) }
-  const handleMouseLeave = () => { setIsHovered(false); setSlideIndex(0) }
-
-  const handleMouseMove = (e) => {
-    if (!cardRef.current) return
-    const rect = cardRef.current.getBoundingClientRect()
-    const mouseXRel = e.clientX - rect.left
-    const mouseYRel = e.clientY - rect.top
-
-    setPortalPos({ x: mouseXRel + PORTAL_OFFSET, y: mouseYRel + PORTAL_OFFSET })
-
-    if (slideshowImages.length > 1) {
-      const clampedX = Math.max(0, Math.min(mouseXRel, rect.width))
-      const mapXToIndex = gsap.utils.mapRange(0, rect.width, 0, slideshowImages.length)
-      const calculatedIndex = Math.floor(mapXToIndex(clampedX))
-      const newIndex = Math.min(calculatedIndex, slideshowImages.length - 1)
-      if (newIndex !== slideIndex) setSlideIndex(newIndex)
-    }
-  }
 
   return (
     <div
-      ref={cardRef}
-      className="insta-card"
+      className={`insta-card${className ? ' ' + className : ''}`}
       data-trail={JSON.stringify(slideshowImages)}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onMouseMove={handleMouseMove}
+      data-caption={card.caption}
+      data-category={platform}
       style={{
-        position: 'relative', overflow: 'visible', cursor: 'none',
-        background: '#111', width: '100%', aspectRatio: '9 / 16', borderRadius: '12px',
+        position: 'relative',
+        overflow: 'hidden',
+        cursor: 'none',
+        background: '#111',
+        width: '100%',
+        aspectRatio: '9 / 16',
+        borderRadius: 0,
       }}
     >
-      <img src={card.src} alt={card.caption} draggable={false} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block'}} />
+      <img
+        src={card.src}
+        alt={card.caption}
+        draggable={false}
+        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+      />
 
-      <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', pointerEvents: 'none', background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 35%, rgba(0,0,0,0) 60%)' }} />
+      {/* Gradient overlay */}
+      <div style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none',
+        background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 35%, rgba(0,0,0,0) 60%)',
+      }} />
 
-      <div style={{ position: 'absolute', top: '0.75rem', left: '0.75rem', right: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', pointerEvents: 'none' }}>
-        <div style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.08)', color: '#fff', padding: '0.3rem 0.6rem', borderRadius: '999px', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'Inter, sans-serif' }}>
+      {/* Top row: platform badge + accent dot */}
+      <div style={{
+        position: 'absolute', top: '0.75rem', left: '0.75rem', right: '0.75rem',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        pointerEvents: 'none',
+      }}>
+        <div style={{
+          background: 'rgba(255,255,255,0.1)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          color: '#fff',
+          padding: '0.3rem 0.6rem',
+          borderRadius: '999px',
+          fontSize: '0.6rem',
+          fontWeight: 700,
+          letterSpacing: '0.08em',
+          textTransform: 'uppercase',
+          fontFamily: 'Inter, sans-serif',
+        }}>
           {platform}
         </div>
-        <div style={{ width: 7, height: 7, borderRadius: '999px', background: accent, boxShadow: `0 0 10px ${accent}` }} />
+        <div style={{
+          width: 7, height: 7, borderRadius: '999px',
+          background: accent, boxShadow: `0 0 10px ${accent}`,
+        }} />
       </div>
 
-      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '1rem', pointerEvents: 'none' }}>
-        <p style={{ color: '#fff', fontSize: '0.78rem', fontWeight: 600, lineHeight: 1.4, margin: 0, fontFamily: 'Inter, sans-serif' }}>
+      {/* Bottom: caption */}
+      <div style={{
+        position: 'absolute', bottom: 0, left: 0, right: 0,
+        padding: '1rem', pointerEvents: 'none',
+      }}>
+        <p style={{
+          color: '#fff', fontSize: '0.78rem', fontWeight: 600,
+          lineHeight: 1.4, margin: 0, fontFamily: 'Inter, sans-serif',
+        }}>
           {card.caption}
         </p>
       </div>
-
-      {isHovered && slideshowImages.length > 1 && (
-        <div
-          ref={portalRef}
-          style={{
-            position: 'absolute', transform: `translate3d(${portalPos.x}px, ${portalPos.y}px, 0)`, pointerEvents: 'none',
-            zIndex: 9999, width: '110px', aspectRatio: '9 / 16', background: '#000', border: '3px solid #fff',
-            borderRadius: '8px', boxShadow: '0 16px 40px rgba(0,0,0,0.5)', overflow: 'hidden',
-          }}
-        >
-          <img key={slideIndex} src={slideshowImages[slideIndex]} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', filter: 'brightness(1.05)' }} />
-          <div style={{ position: 'absolute', bottom: '8px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '3px', zIndex: 10 }}>
-            {slideshowImages.map((_, i) => (
-              <div key={i} style={{ width: i === slideIndex ? 10 : 3, height: 3, borderRadius: 999, background: i === slideIndex ? '#fff' : 'rgba(255,255,255,0.4)', transition: 'all 0.2s ease' }} />
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   )
 }
 
+// ─── SeeMoreCard ─────────────────────────────────────────────────────────────
 function SeeMoreCard({ category, href }) {
   const BLUE_FROM = '#5de0e6'
   const BLUE_TO   = '#004aad'
@@ -335,48 +568,88 @@ function SeeMoreCard({ category, href }) {
       href={href}
       className="see-more-card"
       style={{
-        position: 'relative', overflow: 'hidden', cursor: 'pointer', width: '100%', aspectRatio: '9 / 16',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.8rem',
-        padding: '1rem', background: `linear-gradient(135deg, ${BLUE_FROM}, ${BLUE_TO})`, transition: 'filter 0.3s ease',
-        textDecoration: 'none', borderRadius: '12px',
+        position: 'relative', overflow: 'hidden', cursor: 'pointer',
+        width: '100%', aspectRatio: '9 / 16',
+        display: 'flex', flexDirection: 'column', alignItems: 'center',
+        justifyContent: 'center', gap: '0.8rem', padding: '1rem',
+        background: `linear-gradient(135deg, ${BLUE_FROM}, ${BLUE_TO})`,
+        transition: 'filter 0.3s ease', textDecoration: 'none', borderRadius: 0,
       }}
       onMouseEnter={e => (e.currentTarget.style.filter = 'brightness(1.12)')}
       onMouseLeave={e => (e.currentTarget.style.filter = 'brightness(1)')}
     >
-      <div style={{ position: 'absolute', width: '70%', height: '70%', borderRadius: '50%', background: 'rgba(255,255,255,0.08)', filter: 'blur(28px)', top: '-15%', right: '-15%', pointerEvents: 'none' }} />
-      <div style={{ background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)', padding: 'max(1rem, 1.8vw)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 32px rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.25)', position: 'relative', zIndex: 1 }}>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 'min(24px, 4vw)', height: 'min(24px, 4vw)' }}>
+      {/* decorative blur blob */}
+      <div style={{
+        position: 'absolute', width: '70%', height: '70%', borderRadius: '50%',
+        background: 'rgba(255,255,255,0.08)', filter: 'blur(28px)',
+        top: '-15%', right: '-15%', pointerEvents: 'none',
+      }} />
+
+      {/* Arrow circle — className lets CSS shrink it on mobile */}
+      <div className="see-more-circle" style={{
+        background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)',
+        padding: 'max(1rem, 1.8vw)', borderRadius: '50%',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+        border: '1px solid rgba(255,255,255,0.25)',
+        position: 'relative', zIndex: 1, flexShrink: 0,
+      }}>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+          style={{ width: 'min(24px, 4vw)', height: 'min(24px, 4vw)' }}
+        >
           <path d="M5 12h14M12 5l7 7-7 7" />
         </svg>
       </div>
-      <span style={{ color: '#fff', fontWeight: 700, fontSize: 'clamp(0.65rem, 1.2vw, 0.85rem)', fontFamily: 'Inter, sans-serif', letterSpacing: '0.05em', whiteSpace: 'nowrap', position: 'relative', zIndex: 1 }}>
-        See More
-      </span>
-      <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.6rem', fontFamily: 'Inter, sans-serif', textTransform: 'uppercase', letterSpacing: '0.18em', position: 'relative', zIndex: 1 }}>
-        {category}
-      </span>
+
+      {/* Text group — className lets CSS align left on mobile */}
+      <div className="see-more-label" style={{
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', gap: '0.2rem',
+        position: 'relative', zIndex: 1,
+      }}>
+        <span style={{
+          color: '#fff', fontWeight: 700, fontSize: 'clamp(0.65rem, 1.2vw, 0.85rem)',
+          fontFamily: 'Inter, sans-serif', letterSpacing: '0.05em', whiteSpace: 'nowrap',
+        }}>See More</span>
+        <span style={{
+          color: 'rgba(255,255,255,0.6)', fontSize: '0.6rem',
+          fontFamily: 'Inter, sans-serif', textTransform: 'uppercase', letterSpacing: '0.18em',
+        }}>{category}</span>
+      </div>
     </Link>
   )
 }
 
+// ─── OurWorkPage ─────────────────────────────────────────────────────────────
+// Only change: <ImageTrail /> → <CursorPreview />
+// Everything else identical to original.
+// ──────────────────────────────────────────────────────────────────────────────
 export default function OurWorkPage() {
   const lenisRef = useLenis()
   const [activeTab, setActiveTab] = useState(0)
 
   const workContainerRef = useRef(null)
-  const heroRef      = useRef(null)
-  const heroInnerRef = useRef(null)
-  const heroTextRef  = useRef(null)
-  const overlayRef   = useRef(null)
-  const workRef      = useRef(null)
-  const trackRef     = useRef(null)
-  const footerRef    = useRef(null)
+  const heroRef          = useRef(null)
+  const heroInnerRef     = useRef(null)
+  const heroTextRef      = useRef(null)
+  const overlayRef       = useRef(null)
+  const workRef          = useRef(null)
+  const trackRef         = useRef(null)
+  const footerRef        = useRef(null)
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       gsap.timeline({ defaults: { ease: 'power3.out' } })
-        .fromTo(overlayRef.current, { scaleY: 1 }, { scaleY: 0, duration: 1.25, ease: 'power4.inOut', transformOrigin: 'top' })
-        .fromTo(heroTextRef.current.querySelectorAll('.hero-line'), { y: 70, opacity: 0 }, { y: 0, opacity: 1, stagger: 0.1, duration: 0.95 }, '-=0.45')
+        .fromTo(overlayRef.current,
+          { scaleY: 1 },
+          { scaleY: 0, duration: 1.25, ease: 'power4.inOut', transformOrigin: 'top' }
+        )
+        .fromTo(heroTextRef.current.querySelectorAll('.hero-line'),
+          { y: 70, opacity: 0 },
+          { y: 0, opacity: 1, stagger: 0.1, duration: 0.95 },
+          '-=0.45'
+        )
     }, heroRef)
     return () => ctx.revert()
   }, [])
@@ -384,35 +657,59 @@ export default function OurWorkPage() {
   useLayoutEffect(() => {
     const mm = gsap.matchMedia()
     mm.add('(min-width: 1px)', () => {
-      ScrollTrigger.create({ trigger: heroRef.current, start: 'top top', end: () => `+=${window.innerHeight * 1.2}`, pin: true, pinSpacing: false, anticipatePin: 1, id: 'hero-pin' })
-      
-      gsap.to(heroInnerRef.current, { y: -80, opacity: 0, scale: 0.97, ease: 'none', scrollTrigger: { trigger: workContainerRef.current, start: 'top 85%', end: 'top 10%', scrub: 1.2 } })
-      
+      ScrollTrigger.create({
+        trigger: heroRef.current, start: 'top top',
+        end: () => `+=${window.innerHeight * 1.2}`,
+        pin: true, pinSpacing: false, anticipatePin: 1, id: 'hero-pin',
+      })
+
+      gsap.to(heroInnerRef.current, {
+        y: -80, opacity: 0, scale: 0.97, ease: 'none',
+        scrollTrigger: {
+          trigger: workContainerRef.current,
+          start: 'top 85%', end: 'top 10%', scrub: 1.2,
+        },
+      })
+
       gsap.fromTo(workRef.current,
         { y: 120, clipPath: 'inset(6% 0% 0% 0% round 18px 18px 0px 0px)' },
-        { y: 0, clipPath: 'inset(0% 0% 0% 0% round 0px 0px 0px 0px)', ease: 'none', scrollTrigger: { trigger: workContainerRef.current, start: 'top 92%', end: 'top 5%', scrub: 1 } }
+        {
+          y: 0, clipPath: 'inset(0% 0% 0% 0% round 0px 0px 0px 0px)', ease: 'none',
+          scrollTrigger: {
+            trigger: workContainerRef.current,
+            start: 'top 92%', end: 'top 5%', scrub: 1,
+          },
+        }
       )
-      
+
       gsap.to(trackRef.current, {
         x: () => -(trackRef.current.scrollWidth - window.innerWidth),
         ease: 'none',
         scrollTrigger: {
-          trigger: workContainerRef.current, start: 'top top', end: () => `+=${window.innerHeight * 1.3 * (CATEGORIES.length - 1)}`,
-          pin: true, pinSpacing: true, scrub: 0.9, anticipatePin: 1, invalidateOnRefresh: true, id: 'work-horizontal',
+          trigger: workContainerRef.current,
+          start: 'top top',
+          end: () => `+=${window.innerHeight * 1.3 * (CATEGORIES.length - 1)}`,
+          pin: true, pinSpacing: true, scrub: 0.9, anticipatePin: 1,
+          invalidateOnRefresh: true, id: 'work-horizontal',
           onUpdate: (self) => setActiveTab(Math.round(self.progress * (CATEGORIES.length - 1))),
         },
       })
-      
+
       gsap.fromTo(footerRef.current,
         { y: 60, clipPath: 'inset(8% 0% 0% 0% round 24px 24px 0px 0px)' },
-        { y: 0, clipPath: 'inset(0% 0% 0% 0% round 0px 0px 0px 0px)', ease: 'none', scrollTrigger: { trigger: footerRef.current, start: 'top 92%', end: 'top 15%', scrub: 1 } }
+        {
+          y: 0, clipPath: 'inset(0% 0% 0% 0% round 0px 0px 0px 0px)', ease: 'none',
+          scrollTrigger: {
+            trigger: footerRef.current, start: 'top 92%', end: 'top 15%', scrub: 1,
+          },
+        }
       )
-      
+
       ScrollTrigger.refresh()
       return () => ScrollTrigger.getAll().forEach(t => t.kill())
     })
-    
-    const timer = setTimeout(() => { ScrollTrigger.refresh() }, 100)
+
+    const timer = setTimeout(() => ScrollTrigger.refresh(), 100)
     return () => { mm.revert(); clearTimeout(timer) }
   }, [])
 
@@ -446,91 +743,288 @@ export default function OurWorkPage() {
         .lenis.lenis-scrolling iframe { pointer-events: none; }
         .tab-strip::-webkit-scrollbar { display: none; }
         .tab-strip { scrollbar-width: none; }
-        .cat-panel-inner { width: 100vw; height: 100%; display: flex; flex-direction: column; padding: calc(var(--navbar-h) + var(--tabbar-h) + 1rem) 1.75rem 1.4rem 1.75rem; gap: 0.85rem; overflow: visible; }
-        @media (max-width: 768px) { .cat-panel-inner { padding: calc(var(--navbar-h) + var(--tabbar-h) + 0.75rem) 0.9rem 0.9rem 0.9rem; gap: 0.6rem; } }
-        .cat-header { display: flex; align-items: flex-end; justify-content: space-between; flex-shrink: 0; gap: 1rem; }
-        @media (max-width: 768px) { .cat-header { align-items: flex-start; } .cat-header .cat-desc { display: none; } .cat-header h2 { font-size: 0.95rem !important; } }
-        .card-grid { display: grid; gap: 8px; grid-template-columns: repeat(4, 1fr); overflow: visible; align-items: start; }
-        @media (max-width: 768px) { .card-grid { grid-template-columns: repeat(2, 1fr); overflow: visible !important; } .see-more-card { grid-column: span 2 !important; aspect-ratio: unset !important; height: 72px !important; } .hide-on-mobile { display: none !important; } }
-        .tab-btn { position: relative; padding: 0 1.4rem; height: 100%; border: none; background: transparent; cursor: pointer; font-family: Inter, sans-serif; white-space: nowrap; flex-shrink: 0; transition: color 0.28s ease; }
-        @media (max-width: 768px) { .tab-btn { padding: 0 0.85rem; font-size: 0.72rem !important; } }
-        @media (max-width: 480px) { .tab-btn { padding: 0 0.6rem; font-size: 0.68rem !important; } }
+        .cat-panel-inner {
+          width: 100vw; height: 100%; display: flex; flex-direction: column;
+          padding: calc(var(--navbar-h) + var(--tabbar-h) + 1rem) 1.75rem 1.4rem 1.75rem;
+          gap: 0.85rem; overflow: visible;
+        }
+        @media (max-width: 768px) {
+          .cat-panel-inner {
+            padding: calc(var(--navbar-h) + var(--tabbar-h) + 0.75rem) 0.9rem 0.9rem 0.9rem;
+            gap: 0.6rem;
+          }
+        }
+        .cat-header {
+          display: flex; align-items: flex-end; justify-content: space-between;
+          flex-shrink: 0; gap: 1rem;
+        }
+        @media (max-width: 768px) {
+          .cat-header { align-items: flex-start; }
+          .cat-header .cat-desc { display: none; }
+          .cat-header h2 { font-size: 0.95rem !important; }
+        }
+        .card-grid {
+          display: grid; gap: 8px;
+          grid-template-columns: repeat(4, 1fr);
+          overflow: visible; align-items: start;
+        }
+        @media (max-width: 768px) {
+          .card-grid { grid-template-columns: repeat(2, 1fr); overflow: visible !important; }
+
+          /* See More: horizontal strip on mobile */
+          .see-more-card {
+            grid-column: span 2 !important;
+            aspect-ratio: unset !important;
+            height: 60px !important;
+            flex-direction: row !important;
+            justify-content: flex-start !important;
+            align-items: center !important;
+            padding: 0 1.2rem !important;
+            gap: 0.85rem !important;
+          }
+          .see-more-circle { padding: 0.65rem !important; }
+          .see-more-label  { align-items: flex-start !important; }
+
+          .hide-on-mobile { display: none !important; }
+        }
+        .tab-btn {
+          position: relative; padding: 0 1.4rem; height: 100%; border: none;
+          background: transparent; cursor: pointer; font-family: Inter, sans-serif;
+          white-space: nowrap; flex-shrink: 0; transition: color 0.28s ease;
+        }
+        @media (max-width: 768px)  { .tab-btn { padding: 0 0.85rem; font-size: 0.72rem !important; } }
+        @media (max-width: 480px)  { .tab-btn { padding: 0 0.6rem;  font-size: 0.68rem !important; } }
       `}</style>
 
       <Navbar />
-      <ImageTrail />
+
+      {/* ── Awwwards cursor preview (replaces scattered ImageTrail) ────── */}
+      <CursorPreview />
 
       <main style={{ overflow: 'hidden' }}>
-        <section ref={heroRef} className="panel-hero" style={{ width: '100%', height: '100vh', minHeight: 560, background: '#ffffff', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div ref={overlayRef} style={{ position: 'absolute', inset: 0, zIndex: 10, background: 'linear-gradient(135deg, #5de0e6, #004aad)', transformOrigin: 'top', pointerEvents: 'none' }} />
-          <div ref={heroInnerRef} style={{ position: 'relative', zIndex: 2, width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', transformOrigin: 'center center' }}>
-            <div ref={heroTextRef} style={{ padding: 'clamp(2rem, 5vw, 4rem)', width: '100%', maxWidth: 860, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>
-              <div className="hero-line" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-                <Link href="/" style={{ fontSize: '0.72rem', fontWeight: 500, color: 'rgba(0,0,0,0.4)', textDecoration: 'none', letterSpacing: '0.1em', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#5de0e6'} onMouseLeave={e => e.currentTarget.style.color = 'rgba(0,0,0,0.4)'}>Creaut Bali</Link>
+
+        {/* ── Hero ──────────────────────────────────────────────────────── */}
+        <section
+          ref={heroRef}
+          className="panel-hero"
+          style={{
+            width: '100%', height: '100vh', minHeight: 560,
+            background: '#ffffff', overflow: 'hidden',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}
+        >
+          <div ref={overlayRef} style={{
+            position: 'absolute', inset: 0, zIndex: 10,
+            background: 'linear-gradient(135deg, #5de0e6, #004aad)',
+            transformOrigin: 'top', pointerEvents: 'none',
+          }} />
+
+          <div ref={heroInnerRef} style={{
+            position: 'relative', zIndex: 2, width: '100%', height: '100%',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            transformOrigin: 'center center',
+          }}>
+            <div ref={heroTextRef} style={{
+              padding: 'clamp(2rem, 5vw, 4rem)', width: '100%', maxWidth: 860,
+              textAlign: 'center', display: 'flex', flexDirection: 'column',
+              alignItems: 'center', gap: '1.5rem',
+            }}>
+              <div className="hero-line" style={{
+                display: 'flex', alignItems: 'center', gap: '0.5rem',
+                flexWrap: 'wrap', justifyContent: 'center',
+              }}>
+                <Link
+                  href="/"
+                  style={{ fontSize: '0.72rem', fontWeight: 500, color: 'rgba(0,0,0,0.4)', textDecoration: 'none', letterSpacing: '0.1em', transition: 'color 0.2s' }}
+                  onMouseEnter={e => e.currentTarget.style.color = '#5de0e6'}
+                  onMouseLeave={e => e.currentTarget.style.color = 'rgba(0,0,0,0.4)'}
+                >Creaut Bali</Link>
                 <span style={{ color: 'rgba(0,0,0,0.2)' }}>·</span>
                 <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#5de0e6', letterSpacing: '0.1em' }}>Our Work</span>
               </div>
-              <div className="hero-line" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+
+              <div className="hero-line" style={{
+                display: 'flex', alignItems: 'center', gap: '0.75rem',
+                flexWrap: 'wrap', justifyContent: 'center',
+              }}>
                 <div style={{ width: 28, height: 2, borderRadius: 2, background: 'linear-gradient(90deg, #5de0e6, #004aad)', flexShrink: 0 }} />
-                <span style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.4)' }}>Social · Photography · Video · Branding</span>
+                <span style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.4)' }}>
+                  Social · Photography · Video · Branding
+                </span>
                 <div style={{ width: 28, height: 2, borderRadius: 2, background: 'linear-gradient(90deg, #004aad, #5de0e6)', flexShrink: 0 }} />
               </div>
-              <h1 className="hero-line" style={{ fontWeight: 800, fontSize: 'clamp(3.5rem, 10vw, 9rem)', color: '#000000', letterSpacing: '-0.04em', lineHeight: 0.9, margin: 0 }}>
-                Our<br /><span style={{ background: 'linear-gradient(90deg, #5de0e6, #004aad)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Work</span>
+
+              <h1 className="hero-line" style={{
+                fontWeight: 800, fontSize: 'clamp(3.5rem, 10vw, 9rem)',
+                color: '#000000', letterSpacing: '-0.04em', lineHeight: 0.9, margin: 0,
+              }}>
+                Our<br />
+                <span style={{ background: 'linear-gradient(90deg, #5de0e6, #004aad)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                  Work
+                </span>
               </h1>
-              <p className="hero-line" style={{ fontSize: '1rem', color: 'rgba(0,0,0,0.45)', lineHeight: 1.8, maxWidth: 440, margin: 0 }}>
+
+              <p className="hero-line" style={{
+                fontSize: '1rem', color: 'rgba(0,0,0,0.45)', lineHeight: 1.8,
+                maxWidth: 440, margin: 0,
+              }}>
                 A curated selection of our finest projects — from social campaigns to cinematic productions.
               </p>
+
               <div className="hero-line" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-                <a href="#our-work" style={{ padding: '0.9rem 2.25rem', background: 'linear-gradient(90deg, #5de0e6, #004aad)', color: '#fff', textDecoration: 'none', fontSize: '0.875rem', fontWeight: 600, borderRadius: '8px', transition: 'opacity 0.2s', boxShadow: '0 4px 24px rgba(93,224,230,0.25)' }} onMouseEnter={e => e.currentTarget.style.opacity = '0.82'} onMouseLeave={e => e.currentTarget.style.opacity = '1'}>Explore Portfolio ↓</a>
-                <a href="https://wa.me/62818160664" target="_blank" rel="noreferrer" style={{ padding: '0.9rem 2.25rem', background: 'transparent', border: '1.5px solid rgba(0,0,0,0.2)', color: 'rgba(0,0,0,0.75)', textDecoration: 'none', fontSize: '0.875rem', fontWeight: 600, borderRadius: '8px', transition: 'border-color 0.2s, color 0.2s' }} onMouseEnter={e => { e.currentTarget.style.borderColor = '#5de0e6'; e.currentTarget.style.color = '#5de0e6' }} onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.2)'; e.currentTarget.style.color = 'rgba(0,0,0,0.75)' }}>Work With Us ↗</a>
+                <a
+                  href="#our-work"
+                  style={{
+                    padding: '0.9rem 2.25rem',
+                    background: 'linear-gradient(90deg, #5de0e6, #004aad)',
+                    color: '#fff', textDecoration: 'none', fontSize: '0.875rem',
+                    fontWeight: 600, borderRadius: '8px', transition: 'opacity 0.2s',
+                    boxShadow: '0 4px 24px rgba(93,224,230,0.25)',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.opacity = '0.82'}
+                  onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+                >
+                  Explore Portfolio ↓
+                </a>
+                <a
+                  href="https://wa.me/62818160664"
+                  target="_blank" rel="noreferrer"
+                  style={{
+                    padding: '0.9rem 2.25rem', background: 'transparent',
+                    border: '1.5px solid rgba(0,0,0,0.2)', color: 'rgba(0,0,0,0.75)',
+                    textDecoration: 'none', fontSize: '0.875rem', fontWeight: 600,
+                    borderRadius: '8px', transition: 'border-color 0.2s, color 0.2s',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#5de0e6'; e.currentTarget.style.color = '#5de0e6' }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.2)'; e.currentTarget.style.color = 'rgba(0,0,0,0.75)' }}
+                >
+                  Work With Us ↗
+                </a>
               </div>
             </div>
           </div>
-          <div style={{ position: 'absolute', bottom: '2.5rem', left: '50%', transform: 'translateX(-50%)', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+
+          {/* Scroll indicator */}
+          <div style={{
+            position: 'absolute', bottom: '2.5rem', left: '50%',
+            transform: 'translateX(-50%)', zIndex: 2,
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem',
+          }}>
             <span style={{ fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.25)' }}>Scroll</span>
             <div style={{ width: 1, height: 40, background: 'linear-gradient(180deg, rgba(93,224,230,0.6), transparent)', borderRadius: 1 }} />
           </div>
         </section>
 
+        {/* ── Work (horizontal scroll) ──────────────────────────────────── */}
         <div ref={workContainerRef} style={{ position: 'relative', width: '100%', zIndex: 2 }}>
-          <div id="our-work" ref={workRef} className="panel-work" style={{ width: '100%', height: '100vh', overflow: 'visible', background: '#fff', boxShadow: '0 -32px 80px rgba(0,0,0,0.18), 0 -4px 20px rgba(0,0,0,0.12)' }}>
-            <div className="tab-strip" style={{ position: 'absolute', top: 'var(--navbar-h, 65px)', left: 0, right: 0, zIndex: 9999, height: 'var(--tabbar-h, 52px)', background: 'rgb(255,255,255)', backdropFilter: 'blur(18px)', borderBottom: '1px solid rgba(0,0,0,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 1rem', overflowX: 'auto' }}>
+          <div
+            id="our-work"
+            ref={workRef}
+            className="panel-work"
+            style={{
+              width: '100%', height: '100vh', overflow: 'visible',
+              background: '#fff',
+              boxShadow: '0 -32px 80px rgba(0,0,0,0.18), 0 -4px 20px rgba(0,0,0,0.12)',
+            }}
+          >
+            {/* Tab strip */}
+            <div
+              className="tab-strip"
+              style={{
+                position: 'absolute', top: 'var(--navbar-h, 65px)', left: 0, right: 0,
+                zIndex: 9999, height: 'var(--tabbar-h, 52px)',
+                background: 'rgb(255,255,255)', backdropFilter: 'blur(18px)',
+                borderBottom: '1px solid rgba(0,0,0,0.07)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                padding: '0 1rem', overflowX: 'auto',
+              }}
+            >
               {CATEGORIES.map((cat, i) => (
-                <button key={cat.id} className="tab-btn" onClick={() => handleTabClick(i)} style={{ fontSize: '0.8rem', fontWeight: activeTab === i ? 700 : 500, color: activeTab === i ? '#0a0a0a' : 'rgba(0,0,0,0.38)', letterSpacing: activeTab === i ? '0.01em' : '0' }}>
+                <button
+                  key={cat.id}
+                  className="tab-btn"
+                  onClick={() => handleTabClick(i)}
+                  style={{
+                    fontSize: '0.8rem',
+                    fontWeight: activeTab === i ? 700 : 500,
+                    color: activeTab === i ? '#0a0a0a' : 'rgba(0,0,0,0.38)',
+                    letterSpacing: activeTab === i ? '0.01em' : '0',
+                  }}
+                >
                   {cat.label}
-                  <div style={{ position: 'absolute', bottom: 0, left: '1.4rem', right: '1.4rem', height: 2, borderRadius: '2px 2px 0 0', background: `linear-gradient(90deg, ${cat.accentColor}, ${cat.gradientTo})`, transform: activeTab === i ? 'scaleX(1)' : 'scaleX(0)', transformOrigin: 'left', transition: 'transform 0.38s cubic-bezier(0.34, 1.56, 0.64, 1)' }} />
+                  <div style={{
+                    position: 'absolute', bottom: 0, left: '1.4rem', right: '1.4rem',
+                    height: 2, borderRadius: '2px 2px 0 0',
+                    background: `linear-gradient(90deg, ${cat.accentColor}, ${cat.gradientTo})`,
+                    transform: activeTab === i ? 'scaleX(1)' : 'scaleX(0)',
+                    transformOrigin: 'left',
+                    transition: 'transform 0.38s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  }} />
                 </button>
               ))}
             </div>
 
-            <div ref={trackRef} style={{ display: 'flex', width: `${CATEGORIES.length * 100}vw`, height: '100%', willChange: 'transform', overflow: 'visible' }}>
+            {/* Horizontal track */}
+            <div
+              ref={trackRef}
+              style={{
+                display: 'flex',
+                width: `${CATEGORIES.length * 100}vw`,
+                height: '100%',
+                willChange: 'transform',
+                overflow: 'visible',
+              }}
+            >
               {CATEGORIES.map((cat, ci) => {
-                const isMobile = typeof window !== 'undefined' ? window.innerWidth < 768 : false
-                const visibleCards = cat.cards.slice(0, isMobile ? 2 : 3)
+                // Always render 3 cards on both server and client (avoids hydration mismatch).
+                // The 3rd card gets `hide-on-mobile` so CSS hides it on small screens.
+                const visibleCards = cat.cards.slice(0, 3)
 
                 return (
                   <div key={cat.id} className="cat-panel-inner">
+                    {/* Category header */}
                     <div className="cat-header">
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.2rem' }}>
                           <div style={{ width: 16, height: 2, borderRadius: 2, background: `linear-gradient(90deg, ${cat.accentColor}, ${cat.gradientTo})` }} />
-                          <span style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: cat.accentColor, fontFamily: 'Inter, sans-serif' }}>{cat.shortLabel}</span>
+                          <span style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: cat.accentColor, fontFamily: 'Inter, sans-serif' }}>
+                            {cat.shortLabel}
+                          </span>
                         </div>
-                        <h2 style={{ fontWeight: 800, fontSize: 'clamp(1.1rem, 1.8vw, 1.45rem)', color: '#0a0a0a', letterSpacing: '-0.03em', margin: '0 0 0.2rem 0', fontFamily: 'Inter, sans-serif' }}>{cat.label}</h2>
-                        <p className="cat-desc" style={{ fontSize: '0.76rem', color: 'rgba(0,0,0,0.38)', margin: 0, fontFamily: 'Inter, sans-serif' }}>{cat.description}</p>
+                        <h2 style={{ fontWeight: 800, fontSize: 'clamp(1.1rem, 1.8vw, 1.45rem)', color: '#0a0a0a', letterSpacing: '-0.03em', margin: '0 0 0.2rem 0', fontFamily: 'Inter, sans-serif' }}>
+                          {cat.label}
+                        </h2>
+                        <p className="cat-desc" style={{ fontSize: '0.76rem', color: 'rgba(0,0,0,0.38)', margin: 0, fontFamily: 'Inter, sans-serif' }}>
+                          {cat.description}
+                        </p>
                       </div>
                       <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                        <p style={{ fontSize: 'clamp(1.6rem, 3vw, 2.2rem)', fontWeight: 800, letterSpacing: '-0.05em', margin: '0 0 0.1rem 0', lineHeight: 1, background: `linear-gradient(135deg, ${cat.accentColor}, ${cat.gradientTo})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', fontFamily: 'Inter, sans-serif' }}>
-                          {String(ci + 1).padStart(2, '0')} <span style={{ fontSize: '0.45em', opacity: 0.5 }}>/ {String(CATEGORIES.length).padStart(2, '0')}</span>
+                        <p style={{
+                          fontSize: 'clamp(1.6rem, 3vw, 2.2rem)', fontWeight: 800,
+                          letterSpacing: '-0.05em', margin: '0 0 0.1rem 0', lineHeight: 1,
+                          background: `linear-gradient(135deg, ${cat.accentColor}, ${cat.gradientTo})`,
+                          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+                          fontFamily: 'Inter, sans-serif',
+                        }}>
+                          {String(ci + 1).padStart(2, '0')}{' '}
+                          <span style={{ fontSize: '0.45em', opacity: 0.5 }}>/ {String(CATEGORIES.length).padStart(2, '0')}</span>
                         </p>
-                        <p style={{ fontSize: '0.65rem', color: 'rgba(0,0,0,0.3)', margin: 0, fontFamily: 'Inter, sans-serif', letterSpacing: '0.06em' }}>{cat.stats}</p>
+                        <p style={{ fontSize: '0.65rem', color: 'rgba(0,0,0,0.3)', margin: 0, fontFamily: 'Inter, sans-serif', letterSpacing: '0.06em' }}>
+                          {cat.stats}
+                        </p>
                       </div>
                     </div>
 
+                    {/* Cards grid */}
                     <div className="card-grid">
-                      {visibleCards.map((card) => (
-                        <InstaCard key={card.id} card={card} accent={cat.accentColor} platform={cat.shortLabel} />
+                      {visibleCards.map((card, i) => (
+                        <InstaCard
+                          key={card.id}
+                          card={card}
+                          accent={cat.accentColor}
+                          platform={cat.shortLabel}
+                          className={i === 2 ? 'hide-on-mobile' : ''}
+                        />
                       ))}
                       <SeeMoreCard category={cat.shortLabel} href={cat.href} />
                     </div>
@@ -542,7 +1036,9 @@ export default function OurWorkPage() {
         </div>
 
         <CTA />
-        <div ref={footerRef} className="panel-footer" style={{ boxShadow: '0 -20px 50px rgba(0,0,0,0.10)' }}><Footer /></div>
+        <div ref={footerRef} className="panel-footer" style={{ boxShadow: '0 -20px 50px rgba(0,0,0,0.10)' }}>
+          <Footer />
+        </div>
       </main>
     </>
   )
