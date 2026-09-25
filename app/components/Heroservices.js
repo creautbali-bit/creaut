@@ -40,6 +40,13 @@ const services = [
     href:  '/services/branding',
     gif:   '/image/bd.gif',
   },
+  {
+    id:    5,
+    title: 'Website Development',
+    sub:   'UI/UX · Web Design · Development',
+    href:  '/services/website',
+    gif:   '/image/web.gif',
+  },
 ]
 
 const NAV_LINKS = [
@@ -199,16 +206,15 @@ export default function HeroServices() {
   const curtainRef     = useRef(null)
   const heroBgRef      = useRef(null)
   const heroContentRef = useRef(null)
-  const cardWrappers   = useRef([null, null, null, null])
+  const cardWrappers   = useRef([null, null, null, null, null])
 
   // ── Mobile refs ──
   const mobCurtainRef = useRef(null)
   const mobCenterRef  = useRef(null)
   const mobBottomRef  = useRef(null)
   const mobHeaderRef  = useRef(null)
-  const mobCardRefs   = useRef([null, null, null, null])
-  // We don't animate topbar natively anymore so it doesn't shift around during scroll/intro
-  
+  const mobCardRefs   = useRef([null, null, null, null, null])
+
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.2,
@@ -240,32 +246,45 @@ export default function HeroServices() {
             opacity: 1, stagger: 0.08, duration: 0.6, ease: 'power2.out',
           }, '-=0.4')
 
-        const el       = containerRef.current
-        const W        = el.offsetWidth
-        const H        = el.offsetHeight
-        const HG       = 16
-        const marginX  = W * 0.04
-        const marginY  = H * 0.04
-        const maxGridW = W - marginX * 2
-        const maxGridH = H - marginY * 2
-        const cardW    = (maxGridW - HG) / 2
-        const cardH    = (maxGridH - HG) / 2
+        const el        = containerRef.current
+        const W         = el.offsetWidth
+        const viewportH = window.innerHeight || document.documentElement.clientHeight // Ukuran 1 viewport murni
+        const HG        = 16
+        const marginX   = W * 0.04
+        const marginY   = viewportH * 0.04
+        
+        const maxGridW  = W - marginX * 2
+        const cardW     = (maxGridW - HG) / 2
+        
+        // Kita menggunakan tinggi card asli (agar proporsi tetap ideal seperti sebelumnya)
+        // Kartu tidak dipaksakan menyusut (squished) hanya demi muat di 1 layar
+        const cardH     = (viewportH - marginY * 2 - HG) / 2
+        
+        // Kalkulasi tinggi keseluruhan yang dibutuhkan oleh 3 baris
+        const totalH    = marginY * 2 + (cardH * 3) + (HG * 2)
+
+        // Terapkan kalkulasi tinggi ke container (container memanjang ke bawah sesuai jumlah baris)
+        gsap.set(el, { height: Math.max(viewportH, totalH) })
 
         const stackW = 700, stackH = 400
         const SL = (W - stackW) / 2
-        const ST = H - stackH - W * 0.03
+        // Stack awal mengikuti ukuran viewport agar tampil pas saat layar pertama kali di-load
+        const ST = viewportH - stackH - W * 0.03
 
         const STACKS = [
-          { dx:  0,  dy:  0,  rot:  1.5, z: 4, sh: '0 20px 40px rgba(0,0,0,0.55)' },
-          { dx: -10, dy:  8,  rot: -3.0, z: 3, sh: '0 15px 30px rgba(0,0,0,0.45)' },
-          { dx:  15, dy:  15, rot:  4.5, z: 2, sh: '0 10px 20px rgba(0,0,0,0.38)' },
-          { dx:  -6, dy:  22, rot: -1.5, z: 1, sh: '0 5px 15px rgba(0,0,0,0.30)'  },
+          { dx:   0, dy:  0, rot:  1.5, z: 5, sh: '0 20px 40px rgba(0,0,0,0.55)' },
+          { dx: -10, dy:  8, rot: -3.0, z: 4, sh: '0 15px 30px rgba(0,0,0,0.45)' },
+          { dx:  15, dy: 15, rot:  4.5, z: 3, sh: '0 10px 20px rgba(0,0,0,0.38)' },
+          { dx:  -6, dy: 22, rot: -1.5, z: 2, sh: '0 5px 15px rgba(0,0,0,0.30)'  },
+          { dx:   8, dy: 28, rot:  2.0, z: 1, sh: '0 5px 10px rgba(0,0,0,0.25)'  },
         ]
+
         const FINALS = [
-          { x: marginX,              y: marginY              },
-          { x: marginX + cardW + HG, y: marginY              },
-          { x: marginX,              y: marginY + cardH + HG },
-          { x: marginX + cardW + HG, y: marginY + cardH + HG },
+          { x: marginX,              y: marginY,                    w: cardW,    h: cardH },
+          { x: marginX + cardW + HG, y: marginY,                    w: cardW,    h: cardH },
+          { x: marginX,              y: marginY + cardH + HG,       w: cardW,    h: cardH },
+          { x: marginX + cardW + HG, y: marginY + cardH + HG,       w: cardW,    h: cardH },
+          { x: marginX,              y: marginY + (cardH + HG) * 2, w: maxGridW, h: cardH }, // Baris ke-3 full lebar
         ]
 
         STACKS.forEach((s, i) => {
@@ -278,18 +297,23 @@ export default function HeroServices() {
 
         const tl = gsap.timeline({
           scrollTrigger: {
-            trigger: containerRef.current, start: 'top top',
-            end: '+=200%', pin: true, scrub: 1.2, anticipatePin: 1,
+            trigger: containerRef.current, 
+            start: 'top top',
+            end: '+=200%', 
+            pin: true, 
+            scrub: 1.2, 
+            anticipatePin: 1,
           },
         })
 
+        // Hero bergerak naik relatif terhadap ukuran layar (viewportH)
         tl.to([heroBgRef.current, heroContentRef.current], {
-          y: -H * 1.15, duration: 0.8, ease: 'power2.inOut',
+          y: -viewportH * 1.15, duration: 0.8, ease: 'power2.inOut',
         }, 0)
 
         FINALS.forEach((f, i) => {
           tl.to(cardWrappers.current[i], {
-            left: f.x, top: f.y, width: cardW, height: cardH,
+            left: f.x, top: f.y, width: f.w, height: f.h,
             rotation: 0, boxShadow: 'none', zIndex: i + 1,
             duration: 0.8, ease: 'power2.inOut',
           }, i * 0.06)
@@ -446,13 +470,14 @@ export default function HeroServices() {
           .hs-mob-cards {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            grid-template-areas: "a a" "b c" "d d";
+            grid-template-areas: "a a" "b c" "d d" "e e";
             gap: 3px; padding: 0 3px 3px;
           }
           .hs-mob-card-a { grid-area: a; aspect-ratio: 16 / 9;  overflow: hidden; }
           .hs-mob-card-b { grid-area: b; aspect-ratio:  3 / 4;  overflow: hidden; }
           .hs-mob-card-c { grid-area: c; aspect-ratio:  3 / 4;  overflow: hidden; }
           .hs-mob-card-d { grid-area: d; aspect-ratio: 16 / 9;  overflow: hidden; }
+          .hs-mob-card-e { grid-area: e; aspect-ratio: 16 / 9;  overflow: hidden; }
 
           .hs-mob-nav-footer {
             padding: 1.75rem 1.25rem 3rem;
@@ -482,20 +507,22 @@ export default function HeroServices() {
         ref={containerRef}
         className="hs-hero-services-wrapper"
         style={{
-          position: 'relative', width: '100%', height: '100vh',
-          overflow: 'hidden', background: '#ffffff',
+          position: 'relative', width: '100%', minHeight: '100vh',
+          // overflow: 'hidden' dihilangkan agar container bebas memanjang ke bawah
+          overflowX: 'clip',
+          background: '#ffffff',
         }}
       >
-        <div ref={heroBgRef} style={{ position: 'absolute', inset: 0, zIndex: 1, background: '#ffffff', willChange: 'transform' }}>
+        <div ref={heroBgRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100vh', zIndex: 1, background: '#ffffff', willChange: 'transform' }}>
           <div style={{
             position: 'absolute', inset: 0, pointerEvents: 'none',
             background: 'radial-gradient(ellipse at center, rgba(93,224,230,0.06) 0%, rgba(0,74,173,0.03) 45%, transparent 70%)',
           }} />
         </div>
 
-        <div ref={curtainRef} style={{ position: 'absolute', inset: 0, background: '#000000', zIndex: 30, pointerEvents: 'none' }} />
+        <div ref={curtainRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100vh', background: '#000000', zIndex: 30, pointerEvents: 'none' }} />
 
-        <div ref={heroContentRef} style={{ position: 'absolute', inset: 0, zIndex: 5, willChange: 'transform' }}>
+        <div ref={heroContentRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100vh', zIndex: 5, willChange: 'transform' }}>
           <h1 style={{
             position: 'absolute', top: '5vh', left: '50%', transform: 'translateX(-50%)',
             fontFamily: 'Inter, sans-serif', fontWeight: 800, fontSize: '21vw',
@@ -560,12 +587,12 @@ export default function HeroServices() {
       {/* ── Mobile View ── */}
       <div className="hs-mob-section">
         
-        {/* Mobile Slide-in Menu (Using your styling) */}
+        {/* Mobile Slide-in Menu */}
         <div style={{
           position: 'fixed',
           inset: 0,
           background: '#fff',
-          zIndex: 999, // under the topbar
+          zIndex: 999,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -678,7 +705,7 @@ export default function HeroServices() {
 
           <div className="hs-mob-cards">
             {services.map((service, i) => {
-              const areaClass = ['hs-mob-card-a', 'hs-mob-card-b', 'hs-mob-card-c', 'hs-mob-card-d'][i]
+              const areaClass = ['hs-mob-card-a', 'hs-mob-card-b', 'hs-mob-card-c', 'hs-mob-card-d', 'hs-mob-card-e'][i]
               const isCompact = i === 1 || i === 2 
               return (
                 <div

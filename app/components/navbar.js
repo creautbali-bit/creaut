@@ -4,30 +4,28 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
 export default function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [isVisible, setIsVisible] = useState(true)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [showNavbar, setShowNavbar] = useState(true)
 
+  // Logika Hide/Show Navbar saat Scroll
   useEffect(() => {
-    let prevScrollPos = window.scrollY
+    let lastScroll = window.scrollY
 
     const handleScroll = () => {
-      const currentScrollPos = window.scrollY
-      const isScrollingUp = prevScrollPos > currentScrollPos
+      const currentScroll = window.scrollY
+      const scrollingUp = lastScroll > currentScroll
 
-      if (currentScrollPos < 50) {
-        setIsVisible(true)
+      // Tampilkan jika sedang di paling atas, ATAU jika sedang scroll ke atas
+      if (currentScroll < 50 || scrollingUp) {
+        setShowNavbar(true)
       } else {
-        setIsVisible(isScrollingUp)
+        setShowNavbar(false)
       }
-
-      prevScrollPos = currentScrollPos
+      lastScroll = currentScroll
     }
 
     window.addEventListener('scroll', handleScroll)
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll)
-    }
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   const navLinks = [
@@ -38,242 +36,111 @@ export default function Navbar() {
 
   return (
     <>
-      {/* RESPONSIVE NAVBAR CSS */}
-      <style jsx>{`
-        .desktop-nav {
-          display: flex;
-          align-items: center;
-          gap: 2.25rem;
-          margin-left: auto;
-          margin-right: 2rem;
+      {/* CSS Murni: Lebih stabil dan tidak menyebabkan FOUC (jeda loading style) di Next.js */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        .nav-container {
+          position: fixed; top: 0; left: 0; right: 0;
+          z-index: 1000;
+          padding: 1rem 2.5rem;
+          display: flex; align-items: center; justify-content: space-between;
+          background: rgba(255, 255, 255, 0.15);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+          transition: transform 0.3s ease-in-out;
+        }
+        .nav-hidden { transform: translateY(-100%); }
+        .nav-visible { transform: translateY(0); }
+
+        .desktop-nav { display: flex; align-items: center; gap: 2.25rem; margin-left: auto; margin-right: 2rem; }
+        .nav-link { font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 500; color: #555; text-decoration: none; transition: color 0.3s; }
+        .nav-link:hover { color: #000; }
+        
+        .btn-cta { 
+          padding: 0.5rem 1.35rem; background: linear-gradient(90deg, #5de0e6, #004aad); 
+          color: #fff; text-decoration: none; font-size: 0.82rem; font-weight: 600; 
+          border-radius: 6px; white-space: nowrap; 
         }
 
-        .desktop-cta {
-          display: inline-flex;
-        }
+        .hamburger-btn { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; z-index: 1001; padding: 4px; }
+        .hamburger-line { width: 22px; height: 2px; background: #000; border-radius: 2px; transition: all 0.3s ease; }
 
-        .mobile-menu-button {
-          display: none;
+        @media (max-width: 768px) {
+          .nav-container { padding: 1rem 1.5rem; }
+          .desktop-nav, .desktop-cta { display: none; }
+          .hamburger-btn { display: flex; }
         }
 
         .mobile-menu {
-          display: none;
+          position: fixed; inset: 0; background: #fff; z-index: 999;
+          display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2rem;
+          transition: transform 0.45s cubic-bezier(0.77, 0, 0.175, 1);
         }
-
-        .navbar-logo {
-          height: 40px;
-          width: auto;
-          object-fit: contain;
-          display: block;
-        }
-
-        @media (max-width: 767px) {
-          .desktop-nav {
-            display: none;
-          }
-
-          .desktop-cta {
-            display: none;
-          }
-
-          .mobile-menu-button {
-            display: flex;
-          }
-
-          .mobile-menu {
-            display: flex;
-          }
-
-          .navbar-logo {
-            height: 34px;
-          }
-        }
-      `}</style>
+        .mobile-hidden { transform: translateX(100%); }
+        .mobile-visible { transform: translateX(0); }
+        .mobile-link { font-size: 2rem; font-weight: 700; color: #000; text-decoration: none; }
+      `}} />
 
       {/* NAVBAR */}
-      <nav
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 1000,
-
-          padding: '1rem 2.5rem',
-
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-
-          transition: 'transform 0.3s ease',
-
-          transform: isVisible
-            ? 'translateY(0)'
-            : 'translateY(-100%)',
-
-          background: 'rgba(255,255,255,0.15)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-
-          boxShadow: '0 4px 30px rgba(0,0,0,0.05)',
-        }}
-      >
-        {/* LOGO */}
-        <Link
-          href="/"
-          style={{
-            textDecoration: 'none',
-            display: 'flex',
-            alignItems: 'center',
-            flexShrink: 0,
-          }}
-        >
+      <nav className={`nav-container ${showNavbar ? 'nav-visible' : 'nav-hidden'}`}>
+        
+        {/* LOGO (Style disematkan langsung di elemen agar tidak mungkin membesar di detik awal) */}
+        <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', flexShrink: 0 }}>
           <img
             src="/image/logo/logoteks.webp"
             alt="Creaut Bali"
-            className="navbar-logo"
+            style={{ 
+              height: '40px', 
+              width: 'auto', 
+              objectFit: 'contain',
+              display: 'block' 
+            }}
           />
         </Link>
 
-        {/* DESKTOP NAVIGATION */}
+        {/* MENU DESKTOP */}
         <div className="desktop-nav">
           {navLinks.map((link) => (
-            <Link
-              key={link.label}
-              href={link.href}
-              style={{
-                fontFamily: 'Inter, sans-serif',
-                fontSize: '0.85rem',
-                fontWeight: 500,
-                color: 'var(--text-muted)',
-                textDecoration: 'none',
-                transition: 'color 0.3s',
-                whiteSpace: 'nowrap',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = 'var(--text)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = 'var(--text-muted)'
-              }}
-            >
+            <Link key={link.label} href={link.href} className="nav-link">
               {link.label}
             </Link>
           ))}
         </div>
 
-        {/* DESKTOP CTA */}
-        <a
-          href="https://wa.me/6287780594231"
-          target="_blank"
-          rel="noreferrer"
-          className="desktop-cta"
-          style={{
-            padding: '0.5rem 1.35rem',
-            background: 'linear-gradient(90deg, #5de0e6, #004aad)',
-            color: '#fff',
-            textDecoration: 'none',
-            fontSize: '0.82rem',
-            fontWeight: 600,
-            borderRadius: '6px',
-            whiteSpace: 'nowrap',
-            flexShrink: 0,
-          }}
-        >
-          Let's Talk
-        </a>
+        {/* CTA DESKTOP */}
+        <div className="desktop-cta">
+          <a href="https://wa.me/6287780594231" target="_blank" rel="noreferrer" className="btn-cta">
+            Let's Talk
+          </a>
+        </div>
 
-        {/* MOBILE HAMBURGER */}
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="mobile-menu-button"
-          aria-label="Open menu"
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            flexDirection: 'column',
-            gap: '5px',
-            padding: '4px',
-          }}
-        >
-          {[0, 1, 2].map((i) => (
-            <span
-              key={i}
-              style={{
-                display: 'block',
-                width: 22,
-                height: 2,
-                background: 'var(--text)',
-                borderRadius: '2px',
-                transition: 'all 0.3s',
-
-                transform:
-                  menuOpen && i === 0
-                    ? 'rotate(45deg) translate(5px, 5px)'
-                    : menuOpen && i === 2
-                    ? 'rotate(-45deg) translate(5px, -5px)'
-                    : 'none',
-
-                opacity: menuOpen && i === 1 ? 0 : 1,
-              }}
-            />
-          ))}
+        {/* TOMBOL HAMBURGER MOBILE */}
+        <button className="hamburger-btn" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle menu">
+          <span className="hamburger-line" style={{ transform: isMenuOpen ? 'rotate(45deg) translate(5px, 5px)' : 'none' }} />
+          <span className="hamburger-line" style={{ opacity: isMenuOpen ? 0 : 1 }} />
+          <span className="hamburger-line" style={{ transform: isMenuOpen ? 'rotate(-45deg) translate(5px, -5px)' : 'none' }} />
         </button>
       </nav>
 
-      {/* MOBILE MENU */}
-      <div
-        className="mobile-menu"
-        style={{
-          position: 'fixed',
-          inset: 0,
-          background: '#fff',
-          zIndex: 999,
-
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '2rem',
-
-          transform: menuOpen
-            ? 'translateX(0)'
-            : 'translateX(100%)',
-
-          transition:
-            'transform 0.45s cubic-bezier(0.77,0,0.175,1)',
-        }}
-      >
+      {/* MENU FULLSCREEN MOBILE */}
+      <div className={`mobile-menu ${isMenuOpen ? 'mobile-visible' : 'mobile-hidden'}`}>
         {navLinks.map((link) => (
-          <Link
-            key={link.label}
-            href={link.href}
-            onClick={() => setMenuOpen(false)}
-            style={{
-              fontSize: '2rem',
-              fontWeight: 700,
-              color: 'var(--text)',
-              textDecoration: 'none',
-            }}
+          <Link 
+            key={link.label} 
+            href={link.href} 
+            onClick={() => setIsMenuOpen(false)} 
+            className="mobile-link"
           >
             {link.label}
           </Link>
         ))}
 
-        <a
-          href="https://wa.me/6287780594231"
-          target="_blank"
-          rel="noreferrer"
-          style={{
-            marginTop: '0.5rem',
-            padding: '0.8rem 2.5rem',
-            background: 'linear-gradient(90deg, #5de0e6, #004aad)',
-            color: '#fff',
-            textDecoration: 'none',
-            fontSize: '0.9rem',
-            fontWeight: 600,
-            borderRadius: '8px',
-          }}
+        <a 
+          href="https://wa.me/6287780594231" 
+          target="_blank" 
+          rel="noreferrer" 
+          className="btn-cta" 
+          style={{ marginTop: '0.5rem', padding: '0.8rem 2.5rem', fontSize: '0.9rem', borderRadius: '8px' }}
         >
           Let's Talk
         </a>

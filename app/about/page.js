@@ -80,8 +80,8 @@ const values = [
 // Data CEO & Dewan Komisaris
 const executives = [
   { name: 'Laksmi Tri Ayu ', role: 'Chief Executive Officer (CEO)', img: '/image/team/ami.webp' },
-  { name: 'Satria', role: 'Komisaris Utama', img: '/image/team/satria.webp' },
-  { name: 'Turah', role: 'Komisaris Kedua', img: '/image/team/turah.webp' },
+  { name: 'Satria', role: 'Chief Commisioner', img: '/image/team/satria.webp' },
+  { name: 'Anak Agung Ngurah Gede Semara Winangun Dharma', role: 'Commisioner', img: '/image/team/turah.webp' },
 ]
 
 // Data Staff
@@ -89,7 +89,7 @@ const staffMembers = [
   { name: 'Komang Damar Hadi Kusuma', role: 'Project Manager', img: '/image/team/damar.webp' },
   { name: 'Komang Pasek Triadi Marhaenata', role: 'Accounting', img: '/image/team/pasek.webp' },
   { name: 'Ni Made ochiana Septhi P', role: 'Personal Assistant', img: '/image/team/ocik.webp' },
-  { name: 'Komang Yanna Brahmanta', role: 'Personal Assistant', img: '/image/team/yanna.webp' },
+  { name: 'Komang Yanna Brahmanta', role: 'Fotographer & Videographer', img: '/image/team/yanna.webp' },
   { name: 'Bagus Wiryanata Maheswara', role: 'Editor', img: '/image/team/bagus.webp' },
   { name: 'Ahmad Reza Eka Subiyanto', role: 'Editor', img: '/image/team/reza.webp' },
   { name: 'Sadewa Bharaka Mahaputra', role: 'Fullstack Developers', img: '/image/team/sadewa.webp' },
