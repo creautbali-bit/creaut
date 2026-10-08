@@ -22,10 +22,12 @@ const DEFAULT_OPTIONS = {
  *
  * @param {object}  [config]
  * @param {boolean} [config.resetScroll=false] Paksa scroll ke atas saat mount/unmount.
+ * @param {boolean} [config.disableOnTouch=true] Di layar sentuh (HP/tablet) pakai scroll native —
+ *                                              jauh lebih ringan & halus daripada smooth-scroll JS.
  * @param {object}  [config.options]           Override opsi Lenis.
  * @returns {{ current: import('lenis').default | null }} ref ke instance Lenis.
  */
-export default function useLenis({ resetScroll = false, options } = {}) {
+export default function useLenis({ resetScroll = false, disableOnTouch = true, options } = {}) {
   const lenisRef = useRef(null)
 
   useEffect(() => {
@@ -40,6 +42,8 @@ export default function useLenis({ resetScroll = false, options } = {}) {
     }
 
     const tick = (time) => lenis?.raf(time * 1000)
+    const isTouch = window.matchMedia('(pointer: coarse)').matches
+    const useNative = disableOnTouch && isTouch
 
     const init = async () => {
       try {
@@ -59,11 +63,14 @@ export default function useLenis({ resetScroll = false, options } = {}) {
       }
     }
 
-    init()
+    if (!useNative) init()
 
     return () => {
       cancelled = true
-      if (resetScroll && lenis) lenis.scrollTo(0, { immediate: true })
+      if (resetScroll) {
+        if (lenis) lenis.scrollTo(0, { immediate: true })
+        else window.scrollTo(0, 0)
+      }
       gsap.ticker.remove(tick)
       lenis?.destroy()
       lenisRef.current = null

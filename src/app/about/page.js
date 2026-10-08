@@ -10,11 +10,16 @@ import useLenis from '@/hooks/useLenis'
 import ValueCard from '@/components/about/ValueCard'
 import TeamCard from '@/components/about/TeamCard'
 import VisionMission from '@/components/about/VisionMission'
-import { whoWeAreImages, whoWeAreRoles, values, executives, staffMembers, stats } from '@/data/about'
+import { whoWeAreImages, executives, staffMembers } from '@/data/about'
+import { useTranslation } from '@/i18n/LanguageProvider'
 
 gsap.registerPlugin(ScrollTrigger)
 
 export default function AboutPage() {
+  const { dict } = useTranslation()
+  const copy = dict.about.page
+  const roles = dict.about.roles
+  const values = dict.about.values
   const lenisRef = useLenis()
 
   const heroRef = useRef(null)
@@ -545,41 +550,41 @@ export default function AboutPage() {
                   onMouseEnter={e => e.currentTarget.style.color = '#5de0e6'}
                   onMouseLeave={e => e.currentTarget.style.color = 'rgba(0,0,0,0.4)'}>Creaut Bali</Link>
                 <span style={{ color: 'rgba(0,0,0,0.2)' }}>·</span>
-                <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#5de0e6', letterSpacing: '0.1em' }}>About Us</span>
+                <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#5de0e6', letterSpacing: '0.1em' }}>{copy.breadcrumb}</span>
               </div>
 
               <div className="hero-line" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 <div style={{ width: 28, height: 2, borderRadius: 2, background: 'linear-gradient(90deg, #5de0e6, #004aad)' }} />
                 <span style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.4)' }}>
-                  Est. 2015 · Bali, Indonesia
+                  {copy.est}
                 </span>
                 <div style={{ width: 28, height: 2, borderRadius: 2, background: 'linear-gradient(90deg, #004aad, #5de0e6)' }} />
               </div>
 
               <h1 className="hero-line" style={{ fontWeight: 800, fontSize: 'clamp(3.2rem, 9vw, 8rem)', color: '#000000', letterSpacing: '-0.04em', lineHeight: 0.92, margin: 0 }}>
-                We Are<br />
+                {copy.weAre}<br />
                 <span style={{ background: 'linear-gradient(90deg, #5de0e6, #004aad)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                   Creaut Bali
                 </span>
               </h1>
 
               <p className="hero-line" style={{ fontSize: 'clamp(0.95rem, 1.5vw, 1.15rem)', color: 'rgba(0,0,0,0.5)', lineHeight: 1.7, maxWidth: 560, margin: 0 }}>
-                A full-service video production house telling stories for brands across the globe, one frame at a time.
+                {copy.heroText}
               </p>
 
               <div className="hero-line" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                 <a href="#executives" onClick={scrollToTeam} style={{ padding: '0.9rem 2.25rem', background: 'linear-gradient(90deg, #5de0e6, #004aad)', color: '#fff', textDecoration: 'none', fontSize: '0.875rem', fontWeight: 600, borderRadius: '8px', transition: 'opacity 0.2s', boxShadow: '0 4px 24px rgba(93,224,230,0.25)' }}
                   onMouseEnter={e => e.currentTarget.style.opacity = '0.82'}
-                  onMouseLeave={e => e.currentTarget.style.opacity = '1'}>Meet The Team ↓</a>
+                  onMouseLeave={e => e.currentTarget.style.opacity = '1'}>{copy.meetTeam}</a>
                 <a href="https://wa.me/62818160664" target="_blank" rel="noreferrer" style={{ padding: '0.9rem 2.25rem', background: 'transparent', border: '1.5px solid rgba(0,0,0,0.2)', color: 'rgba(0,0,0,0.75)', textDecoration: 'none', fontSize: '0.875rem', fontWeight: 600, borderRadius: '8px', transition: 'border-color 0.2s, color 0.2s' }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = '#5de0e6'; e.currentTarget.style.color = '#5de0e6' }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.2)'; e.currentTarget.style.color = 'rgba(0,0,0,0.75)' }}>Get In Touch ↗</a>
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.2)'; e.currentTarget.style.color = 'rgba(0,0,0,0.75)' }}>{copy.getInTouch}</a>
               </div>
             </div>
           </div>
 
           <div style={{ position: 'absolute', bottom: '2.5rem', left: '50%', transform: 'translateX(-50%)', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{ fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.25)' }}>Scroll</span>
+            <span style={{ fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.25)' }}>{copy.scroll}</span>
             <div style={{ width: 1, height: 40, background: 'linear-gradient(180deg, rgba(93,224,230,0.6), transparent)', borderRadius: 1 }} />
           </div>
         </section>
@@ -602,10 +607,10 @@ export default function AboutPage() {
 
           <div className="who-we-are-layout desktop-only">
             <div className="who-we-are-header">
-              <h2>Who We<br />Are?</h2>
+              <h2>{copy.whoWeAre[0]}<br />{copy.whoWeAre[1]}</h2>
               
               <ul className="roles-list">
-                {whoWeAreRoles.map((role, i) => (
+                {roles.map((role, i) => (
                   <li key={i} ref={el => rolesListRefs.current[i] = el}>
                     {role}
                   </li>
@@ -634,10 +639,10 @@ export default function AboutPage() {
 
           {/* 2. LAYOUT MOBILE */}
           <div className="who-we-are-layout-mobile mobile-only">
-            <h2 className="mobile-title">Who We<br />Are?</h2>
+            <h2 className="mobile-title">{copy.whoWeAre[0]}<br />{copy.whoWeAre[1]}</h2>
             
             <div className="mobile-list">
-              {whoWeAreRoles.map((role, i) => (
+              {roles.map((role, i) => (
                 <div key={i} className="mobile-item">
                   <h3 className="mobile-label">{role}</h3>
                   <div className="mobile-image-wrapper">
@@ -672,7 +677,7 @@ export default function AboutPage() {
                 textAlign: 'center',
                 marginBottom: '0.5rem'
               }}>
-                AT CREAUT
+                {copy.atCreaut}
               </h2>
             </div>
             <div>
@@ -685,7 +690,7 @@ export default function AboutPage() {
                 textAlign: 'center',
                 maxWidth: '100%'
               }}>
-                We are a creative studio where ideas are shaped with intention. By bringing together strategy, design, and innovation, we create distinctive brand identities and experiences that resonate with people, build meaningful connections, and stand the test of time. Every detail is thoughtfully crafted to give brands a clear voice, a strong presence, and a lasting impression in the hearts of their audiences.
+                {copy.story}
               </p>
             </div>
           </div>
@@ -706,10 +711,10 @@ export default function AboutPage() {
             <div style={{ marginBottom: '3rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
                 <div style={{ width: 28, height: 2, borderRadius: 2, background: 'linear-gradient(90deg, #5de0e6, #004aad)' }} />
-                <span style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#004aad' }}>Our Values</span>
+                <span style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#004aad' }}>{copy.valuesEyebrow}</span>
               </div>
               <h2 style={{ fontWeight: 700, fontSize: 'clamp(1.8rem, 3.5vw, 2.8rem)', color: '#0a0a0a', letterSpacing: '-0.04em', margin: 0 }}>
-                What Drives Us
+                {copy.valuesTitle}
               </h2>
             </div>
 
@@ -734,16 +739,16 @@ export default function AboutPage() {
             <div style={{ marginBottom: '3rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
                 <div style={{ width: 28, height: 2, borderRadius: 2, background: 'linear-gradient(90deg, #5de0e6, #004aad)' }} />
-                <span style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#004aad' }}>Leadership</span>
+                <span style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#004aad' }}>{copy.leadershipEyebrow}</span>
               </div>
               <h2 style={{ fontWeight: 700, fontSize: 'clamp(1.8rem, 3.5vw, 2.8rem)', color: '#0a0a0a', letterSpacing: '-0.04em', margin: 0 }}>
-                Executive Team
+                {copy.leadershipTitle}
               </h2>
             </div>
 
             <div className="team-grid-executives">
               {executives.map((m) => (
-                <TeamCard key={m.name} member={m} isExecutive={true} />
+                <TeamCard key={m.name} member={{ ...m, role: dict.about.jobTitles[m.roleKey] }} isExecutive={true} />
               ))}
             </div>
           </div>
@@ -764,16 +769,16 @@ export default function AboutPage() {
             <div style={{ marginBottom: '3rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
                 <div style={{ width: 28, height: 2, borderRadius: 2, background: 'linear-gradient(90deg, #5de0e6, #004aad)' }} />
-                <span style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#004aad' }}>Our Staff</span>
+                <span style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#004aad' }}>{copy.staffEyebrow}</span>
               </div>
               <h2 style={{ fontWeight: 700, fontSize: 'clamp(1.8rem, 3.5vw, 2.8rem)', color: '#0a0a0a', letterSpacing: '-0.04em', margin: 0 }}>
-                Creative Team Members
+                {copy.staffTitle}
               </h2>
             </div>
 
             <div className="team-grid-staff">
               {staffMembers.map((m) => (
-                <TeamCard key={m.name} member={m} isExecutive={false} />
+                <TeamCard key={m.name} member={{ ...m, role: dict.about.jobTitles[m.roleKey] }} isExecutive={false} />
               ))}
             </div>
           </div>
@@ -794,16 +799,16 @@ export default function AboutPage() {
             <div style={{ width: 40, height: 2, borderRadius: 2, background: 'linear-gradient(90deg, #5de0e6, #004aad)' }} />
           </div>
           <h2 className="cta-reveal" style={{ fontWeight: 800, fontSize: 'clamp(2.5rem, 5vw, 4rem)', color: '#0a0a0a', letterSpacing: '-0.04em', lineHeight: 1.05, margin: '0 0 1.5rem 0' }}>
-            Let's Make<br />Something Real.
+            {copy.ctaTitle[0]}<br />{copy.ctaTitle[1]}
           </h2>
           <p className="cta-reveal" style={{ fontSize: '1rem', color: 'rgba(0,0,0,0.5)', maxWidth: 500, margin: '0 auto 2.5rem auto', lineHeight: 1.7 }}>
-            Have a story to tell? We have the tools, the team, and the coffee ready.
+            {copy.ctaText}
           </p>
           <div className="cta-reveal">
             <a href="https://wa.me/62818160664" target="_blank" rel="noreferrer" style={{ display: 'inline-block', padding: '1.1rem 3rem', background: 'linear-gradient(90deg, #5de0e6, #004aad)', color: '#fff', textDecoration: 'none', fontSize: '1rem', fontWeight: 600, borderRadius: '8px', transition: 'transform 0.2s, box-shadow 0.2s', boxShadow: '0 10px 30px rgba(93,224,230,0.3)' }}
               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 15px 40px rgba(93,224,230,0.4)' }}
               onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 10px 30px rgba(93,224,230,0.3)' }}>
-              Start A Project
+              {copy.ctaButton}
             </a>
           </div>
         </section>

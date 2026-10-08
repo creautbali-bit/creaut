@@ -3,11 +3,12 @@ export const siteConfig = {
   title: 'Creaut Bali - Digital Creative Agency',
   description:
     'Video Production, Social Media Management, Visual Photography & Branding. Bali-based creative agency.',
-  logo: '/image/logo/logo.webp',
+  logo: '/image/logo/logo.png',
 }
 
+// `key` mengacu ke kamus i18n: nav.<key>
 export const navLinks = [
-  { label: 'About', href: '/about' },
-  { label: 'Our Work', href: '/our-work' },
-  { label: 'Headquarter', href: '/headquarter' },
+  { key: 'about', href: '/about' },
+  { key: 'work', href: '/our-work' },
+  { key: 'headquarter', href: '/headquarter' },
 ]

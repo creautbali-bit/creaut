@@ -3,10 +3,12 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useTranslation } from '@/i18n/LanguageProvider'
 
 gsap.registerPlugin(ScrollTrigger)
 
 export default function CTA() {
+  const { t } = useTranslation()
   const sectionRef = useRef(null)
   const contentRef = useRef(null)
 
@@ -55,7 +57,7 @@ export default function CTA() {
               flexShrink: 0,
             }} />
             <span style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', letterSpacing: '0.06em' }}>
-              Start a Project
+              {t('cta.eyebrow')}
             </span>
           </div>
 
@@ -67,14 +69,14 @@ export default function CTA() {
             lineHeight: 1.05,
             marginBottom: '1.25rem',
           }}>
-            Interested in{' '}
+            {t('cta.titleLead')}{' '}
             <span style={{
               background: 'linear-gradient(90deg, #5de0e6, #004aad)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
             }}>
-              Working Together?
+              {t('cta.titleAccent')}
             </span>
           </h2>
 
@@ -82,7 +84,7 @@ export default function CTA() {
             fontSize: '1rem', color: 'var(--text-muted)',
             lineHeight: 1.75, marginBottom: '2.5rem',
           }}>
-            Tell us about your project. We're always excited for new creative challenges.
+            {t('cta.text')}
           </p>
 
           <div className="cta-item" style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -102,7 +104,7 @@ export default function CTA() {
               onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
               onMouseLeave={e => e.currentTarget.style.opacity = '1'}
             >
-              WhatsApp Us ↗
+              {t('cta.whatsapp')}
             </a>
             <a
               href="mailto:ask@creautbali.com"
@@ -119,7 +121,7 @@ export default function CTA() {
               onMouseEnter={e => { e.currentTarget.style.borderColor = '#5de0e6'; e.currentTarget.style.color = '#004aad' }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-strong)'; e.currentTarget.style.color = 'var(--text)' }}
             >
-              Email Us ↗
+              {t('cta.email')}
             </a>
           </div>
 

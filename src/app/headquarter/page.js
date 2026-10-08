@@ -6,6 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Link from 'next/link'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
+import { useTranslation } from '@/i18n/LanguageProvider'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -17,6 +18,7 @@ const contacts = [
 ]
 
 export default function HeadquarterPage() {
+  const { t } = useTranslation()
   const heroRef    = useRef(null)
   const textRef    = useRef(null)
   const overlayRef = useRef(null)
@@ -105,7 +107,7 @@ export default function HeadquarterPage() {
                 onMouseLeave={e => e.currentTarget.style.color = 'rgba(0, 0, 0, 0.4)'}
               >Creaut Bali</Link>
               <span style={{ color: 'rgba(255,255,255,0.2)' }}>·</span>
-              <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#5de0e6', letterSpacing: '0.1em' }}>Headquarter</span>
+              <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#5de0e6', letterSpacing: '0.1em' }}>{t('headquarter.breadcrumb')}</span>
             </div>
 
             {/* Label */}
@@ -126,12 +128,12 @@ export default function HeadquarterPage() {
               lineHeight: 0.9,
               margin: 0,
             }}>
-              Head
+              {t('headquarter.titleA')}
               <span style={{
                 background: 'linear-gradient(90deg, #5de0e6, #004aad)',
                 WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
               }}>
-                quarter
+                {t('headquarter.titleB')}
               </span>
             </h1>
 
@@ -148,7 +150,7 @@ export default function HeadquarterPage() {
 
           {/* Scroll hint */}
           <div style={{ position: 'absolute', bottom: '2.5rem', left: '50%', transform: 'translateX(-50%)', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{ fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(0, 0, 0, 0.25)' }}>Scroll</span>
+            <span style={{ fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(0, 0, 0, 0.25)' }}>{t('headquarter.scroll')}</span>
             <div style={{ width: 1, height: 40, background: 'linear-gradient(180deg, rgba(93,224,230,0.6), transparent)', borderRadius: 1 }} />
           </div>
         </section>
@@ -172,7 +174,7 @@ export default function HeadquarterPage() {
                 <div className="info-item" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
                   <div style={{ width: 28, height: 2, borderRadius: 2, background: 'linear-gradient(90deg, #5de0e6, #004aad)' }} />
                   <span style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#004aad' }}>
-                    Our Location
+                    {t('headquarter.ourLocation')}
                   </span>
                 </div>
 
@@ -188,7 +190,7 @@ export default function HeadquarterPage() {
                   Creaut Bali
                 </h2>
                 <p className="info-item" style={{ fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.35)', margin: '0 0 2rem 0' }}>
-                  Creative Agency
+                  {t('headquarter.creativeAgency')}
                 </p>
 
                 {/* Address block */}
@@ -201,7 +203,7 @@ export default function HeadquarterPage() {
                   marginBottom: '2rem',
                 }}>
                   <p style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.4)', margin: '0 0 0.75rem 0' }}>
-                    Address
+                    {t('headquarter.address')}
                   </p>
                   <p style={{ fontSize: '1rem', color: '#0a0a0a', lineHeight: 1.8, margin: '0 0 1rem 0', fontWeight: 500 }}>
                     Jl. Kusuma Bangsa No.3 Pemecutan Kaja, Denpasar Utara <br/>
@@ -220,7 +222,7 @@ export default function HeadquarterPage() {
                     onMouseEnter={e => e.currentTarget.style.opacity = '0.7'}
                     onMouseLeave={e => e.currentTarget.style.opacity = '1'}
                   >
-                    Open in Google Maps ↗
+                    {t('headquarter.openMaps')}
                   </a>
                 </div>
 
@@ -272,7 +274,7 @@ export default function HeadquarterPage() {
                     onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
                     onMouseLeave={e => e.currentTarget.style.opacity = '1'}
                   >
-                    Interested in Working Together? ↗
+                    {t('headquarter.interested')}
                   </a>
                 </div>
               </div>
@@ -282,7 +284,7 @@ export default function HeadquarterPage() {
                 <div className="info-item" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
                   <div style={{ width: 28, height: 2, borderRadius: 2, background: 'linear-gradient(90deg, #5de0e6, #004aad)' }} />
                   <span style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#004aad' }}>
-                    Find Us
+                    {t('headquarter.findUs')}
                   </span>
                 </div>
 
@@ -302,7 +304,7 @@ export default function HeadquarterPage() {
                     allowFullScreen=""
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
-                    title="Creaut Bali Location"
+                    title={t('headquarter.mapTitle')}
                   />
 
                   {/* Gradient overlay strip at bottom */}
@@ -327,7 +329,7 @@ export default function HeadquarterPage() {
                     onMouseEnter={e => e.currentTarget.style.color = '#004aad'}
                     onMouseLeave={e => e.currentTarget.style.color = 'rgba(0,0,0,0.45)'}
                   >
-                    🗺 Open in Google Maps ↗
+                    🗺 {t('headquarter.openMaps')}
                   </a>
                 </div>
               </div>

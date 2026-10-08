@@ -1,8 +1,11 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useTranslation } from '@/i18n/LanguageProvider'
+import LanguageSwitcher from '@/components/ui/LanguageSwitcher'
 
 export default function Footer() {
+  const { t } = useTranslation()
   const year = new Date().getFullYear()
   const [isMobile, setIsMobile] = useState(false)
   const footerRef = useRef(null)
@@ -54,16 +57,16 @@ export default function Footer() {
 
   // ── Data ─────────────────────────────────────────────────────────────────────
   const serviceLinks = [
-    { label: 'Video Production', href: '/services/video-production' },
-    { label: 'Social Media Management', href: '/services/social-media' },
-    { label: 'Visual Photography', href: '/services/visual-photography' },
-    { label: 'Branding', href: '/services/branding' },
+    { label: t('services.video-production.title'), href: '/services/video-production' },
+    { label: t('services.social-media.title'), href: '/services/social-media-management' },
+    { label: t('services.visual-photography.title'), href: '/services/visual-photography' },
+    { label: t('services.branding.title'), href: '/services/branding' },
   ]
 
   const companyLinks = [
-    { label: 'About Us', href: '#about' },
-    { label: 'Our Work', href: '/our-work' },
-    { label: 'Headquarter', href: '/headquarter' },
+    { label: t('footer.aboutUs'), href: '/about' },
+    { label: t('nav.work'), href: '/our-work' },
+    { label: t('nav.headquarter'), href: '/headquarter' },
   ]
 
   const socials = [
@@ -152,8 +155,7 @@ export default function Footer() {
               marginBottom: '1.25rem',
             }}
           >
-            Bali-based creative agency crafting visual stories that move,
-            inspire, and convert.
+            {t('footer.tagline')}
           </p>
 
           <p
@@ -229,7 +231,7 @@ export default function Footer() {
               marginBottom: '1.25rem',
             }}
           >
-            Services
+            {t('footer.services')}
           </h4>
 
           <ul
@@ -280,7 +282,7 @@ export default function Footer() {
               marginBottom: '1.25rem',
             }}
           >
-            Company
+            {t('footer.company')}
           </h4>
 
           <ul
@@ -343,7 +345,7 @@ export default function Footer() {
               margin: 0,
             }}
           >
-            ©{year} Creaut Bali · All rights reserved
+            ©{year} Creaut Bali · {t('footer.rights')}
           </p>
 
           <div
@@ -354,7 +356,8 @@ export default function Footer() {
               alignItems: 'center',
             }}
           >
-            {['Privacy Policy', 'Terms of Use', 'FAQ'].map((item) => (
+            <LanguageSwitcher />
+            {[t('footer.privacy'), t('footer.terms'), t('footer.faq')].map((item) => (
               <a
                 key={item}
                 href="#"
@@ -404,7 +407,7 @@ export default function Footer() {
                 e.currentTarget.style.color = '#666'
               }}
             >
-              ↑ Top
+              {t('footer.top')}
             </button>
           </div>
         </div>

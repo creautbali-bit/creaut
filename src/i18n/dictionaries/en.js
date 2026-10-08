@@ -1,0 +1,125 @@
+const en = {
+  nav: {
+    about: 'About',
+    work: 'Our Work',
+    headquarter: 'Headquarter',
+    letsTalk: "Let's Talk",
+    openMenu: 'Open menu',
+    closeMenu: 'Close menu',
+    language: 'Change language',
+  },
+
+  hero: {
+    location: 'BALI, INDONESIA',
+    tagline: ['CRAFTING IMPACTFUL', 'DIGITAL INNOVATIONS.'],
+    showreel: 'SHOWREEL',
+    scroll: 'SCROLL FOR MORE ↓',
+  },
+
+  services: {
+    'video-production': { title: 'Video Production', sub: 'Commercial · Corporate · Documentary' },
+    'social-media': { title: 'Social Media Management', sub: 'Strategy · Content · Community' },
+    'visual-photography': { title: 'Visual Photography', sub: 'Editorial · Product · Lifestyle' },
+    branding: { title: 'Branding', sub: 'Identity · Logo · Guidelines' },
+    website: { title: 'Website Development', sub: 'UI/UX · Web Design · Development' },
+  },
+
+  cta: {
+    eyebrow: 'Start a Project',
+    titleLead: 'Interested in',
+    titleAccent: 'Working Together?',
+    text: "Tell us about your project. We're always excited for new creative challenges.",
+    whatsapp: 'WhatsApp Us ↗',
+    email: 'Email Us ↗',
+  },
+
+  footer: {
+    tagline: 'Bali-based creative agency crafting visual stories that move, inspire, and convert.',
+    services: 'Services',
+    company: 'Company',
+    aboutUs: 'About Us',
+    rights: 'All rights reserved',
+    privacy: 'Privacy Policy',
+    terms: 'Terms of Use',
+    faq: 'FAQ',
+    top: '↑ Top',
+  },
+
+  about: {
+    page: {
+      breadcrumb: 'About Us',
+      est: 'Est. 2015 · Bali, Indonesia',
+      weAre: 'We Are',
+      heroText: 'A full-service video production house telling stories for brands across the globe, one frame at a time.',
+      meetTeam: 'Meet The Team ↓',
+      getInTouch: 'Get In Touch ↗',
+      scroll: 'Scroll',
+      whoWeAre: ['Who We', 'Are?'],
+      atCreaut: 'AT CREAUT',
+      story: "We are a creative studio where ideas are shaped with intention. By bringing together strategy, design, and innovation, we create distinctive brand identities and experiences that resonate with people, build meaningful connections, and stand the test of time. Every detail is thoughtfully crafted to give brands a clear voice, a strong presence, and a lasting impression in the hearts of their audiences.",
+      valuesEyebrow: 'Our Values',
+      valuesTitle: 'What Drives Us',
+      leadershipEyebrow: 'Leadership',
+      leadershipTitle: 'Executive Team',
+      staffEyebrow: 'Our Staff',
+      staffTitle: 'Creative Team Members',
+      ctaTitle: ["Let's Make", 'Something Real.'],
+      ctaText: 'Have a story to tell? We have the tools, the team, and the coffee ready.',
+      ctaButton: 'Start A Project',
+    },
+    vision: {
+      eyebrow: 'Vision & Mission',
+      heading: "Where We're Heading",
+      visionLabel: 'Our Vision',
+      visionText:
+        'To be the leading creative agency that empowers businesses to build authentic brands, providing innovative solutions for effective social media management.',
+      missionLabel: 'Our Mission',
+      missionText:
+        'Our mission is to deliver exceptional branding services that resonate with your audience, while simplifying the complexities of social media management, making your brand stand out with authenticity and impact.',
+    },
+    roles: [
+      'Our Team',
+      'CEO, Chief Commissioner & Commissioner',
+      'Personal Assistant, Accounting',
+      'Project Manager & Hybrid Shooter',
+      'Fullstack Developer, Editor',
+    ],
+    values: [
+      { title: 'Craft Obsessed', desc: 'We sweat the small details because the small details are the difference between good and unforgettable.' },
+      { title: 'Client Obsessed', desc: 'Your story matters to us as much as it matters to you. We listen first, create second.' },
+      { title: 'Always Curious', desc: 'New tools, new techniques, new ideas — we chase them relentlessly so your work never feels dated.' },
+      { title: 'Collaborative Spirit', desc: 'The best work happens when every voice in the room, yours included, gets heard.' },
+      { title: 'Radically Honest', desc: "We'll tell you what will and won't work, even when it's not what you want to hear." },
+      { title: 'Globally Minded', desc: 'Rooted in Bali, built to a global standard. We work with brands near and far.' },
+    ],
+    jobTitles: {
+      ceo: 'Chief Executive Officer (CEO)',
+      chiefCommissioner: 'Chief Commissioner',
+      commissioner: 'Commissioner',
+      projectManager: 'Project Manager',
+      accounting: 'Accounting',
+      personalAssistant: 'Personal Assistant',
+      photoVideo: 'Photographer & Videographer',
+      editor: 'Editor',
+      fullstack: 'Fullstack Developer',
+    },
+    stats: ['Years of Craft', 'Projects Delivered', 'Happy Clients', 'Creative Specialists'],
+  },
+
+  headquarter: {
+    breadcrumb: 'Headquarter',
+    label: 'Bali, Indonesia',
+    titleA: 'Head',
+    titleB: 'quarter',
+    scroll: 'Scroll',
+    ourLocation: 'Our Location',
+    creativeAgency: 'Creative Agency',
+    address: 'Address',
+    openMaps: 'Open in Google Maps ↗',
+    mapTitle: 'Creaut Bali Location',
+    findUs: 'Find Us',
+    interested: 'Interested in Working Together? ↗',
+  },
+}
+
+export default en

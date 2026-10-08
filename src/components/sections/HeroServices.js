@@ -7,6 +7,8 @@ import Link from 'next/link'
 import useLenis from '@/hooks/useLenis'
 import useMediaQuery from '@/hooks/useMediaQuery'
 import Wordmark from '@/components/ui/Wordmark'
+import LanguageSwitcher from '@/components/ui/LanguageSwitcher'
+import { useTranslation } from '@/i18n/LanguageProvider'
 import { navLinks as NAV_LINKS } from '@/config/site'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -20,38 +22,33 @@ ScrollTrigger.config({ ignoreMobileResize: true })
 const services = [
   {
     id:    1,
-    title: 'Video Production',
-    sub:   'Commercial · Corporate · Documentary',
+    key:   'video-production',
     href:  '/services/video-production',
-    gif:   '/image/vdgp.gif',
+    media: '/video/vdgp',
   },
   {
     id:    2,
-    title: 'Social Media Management',
-    sub:   'Strategy · Content · Community',
+    key:   'social-media',
     href:  '/services/social-media-management',
-    gif:   '/image/smm.gif',
+    media: '/video/smm',
   },
   {
     id:    3,
-    title: 'Visual Photography',
-    sub:   'Editorial · Product · Lifestyle',
+    key:   'visual-photography',
     href:  '/services/visual-photography',
-    gif:   '/image/ptgp.gif',
+    media: '/video/ptgp',
   },
   {
     id:    4,
-    title: 'Branding',
-    sub:   'Identity · Logo · Guidelines',
+    key:   'branding',
     href:  '/services/branding',
-    gif:   '/image/bd.gif',
+    media: '/video/bd',
   },
   {
     id:    5,
-    title: 'Website Development',
-    sub:   'UI/UX · Web Design · Development',
+    key:   'website',
     href:  '/services/website',
-    gif:   '/image/web.gif',
+    media: '/video/web',
   },
 ]
 
@@ -60,11 +57,35 @@ const services = [
 // ─────────────────────────────────────────────────────────────────────────────
 
 function ServiceCard({ service, compact = false }) {
+  const { t } = useTranslation()
+  const title = t(`services.${service.key}.title`)
+  const sub   = t(`services.${service.key}.sub`)
   const plusRef    = useRef(null)
   const titleRef   = useRef(null)
   const overlayRef = useRef(null)
   const thumbRef   = useRef(null)
+  const videoRef   = useRef(null)
   const [active, setActive] = useState(false)
+
+  // Video hanya diputar saat kartu terlihat di layar → hemat CPU/baterai di HP.
+  // Pengguna "reduce motion" / "data saver" hanya melihat poster.
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const saveData = navigator.connection?.saveData
+    if (reduce || saveData) return
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) video.play().catch(() => {})
+        else video.pause()
+      },
+      { threshold: 0.15 },
+    )
+    io.observe(video)
+    return () => io.disconnect()
+  }, [])
 
   const activate = () => {
     setActive(true)
@@ -84,7 +105,7 @@ function ServiceCard({ service, compact = false }) {
 
   const btnSz    = compact ? 36 : 48
   const pad      = compact ? '0.85rem 1rem' : '1.4rem 1.75rem'
-  const subLabel = compact ? service.sub.split('·')[0].trim() : service.sub
+  const subLabel = compact ? sub.split('·')[0].trim() : sub
 
   return (
     <a
@@ -106,9 +127,16 @@ function ServiceCard({ service, compact = false }) {
       }}
     >
       <div ref={thumbRef} style={{ position: 'absolute', inset: 0, zIndex: 0, willChange: 'transform' }}>
-        <img
-          src={service.gif}
-          alt={service.title}
+        <video
+          ref={videoRef}
+          src={`${service.media}.mp4`}
+          poster={`${service.media}.webp`}
+          aria-label={title}
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          disablePictureInPicture
           style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
         />
       </div>
@@ -151,7 +179,7 @@ function ServiceCard({ service, compact = false }) {
               : 'clamp(1.05rem, 2.2vw, 2.4rem)',
             color: '#fff', letterSpacing: '-0.025em', lineHeight: 1.1, margin: 0,
           }}>
-            {service.title}
+            {title}
           </h3>
         </div>
 
@@ -160,11 +188,11 @@ function ServiceCard({ service, compact = false }) {
           style={{
             width: btnSz, height: btnSz, borderRadius: '50%',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            flexShrink: 0, willChange: 'transform', backdropFilter: 'blur(8px)',
+            flexShrink: 0, willChange: 'transform',
             transition: 'background 0.35s, box-shadow 0.35s',
             background: active
               ? 'linear-gradient(135deg, #5de0e6, #004aad)'
-              : 'rgba(255,255,255,0.10)',
+              : 'rgba(255,255,255,0.18)',
             boxShadow: active
               ? '0 0 28px rgba(93,224,230,0.55), 0 0 8px rgba(0,74,173,0.4)'
               : 'inset 0 0 0 1.5px rgba(255,255,255,0.35)',
@@ -199,6 +227,7 @@ function ServiceCard({ service, compact = false }) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function HeroServices() {
+  const { t, dict } = useTranslation()
   const [menuOpen, setMenuOpen] = useState(false)
   const [layoutKey, setLayoutKey] = useState(0)
   const isMobile = useMediaQuery('(max-width: 767px)')
@@ -316,7 +345,7 @@ export default function HeroServices() {
             start: 'top top',
             end: mobile ? '+=160%' : '+=200%',
             pin: true,
-            scrub: mobile ? 0.8 : 1.2,
+            scrub: mobile ? true : 1.2, // mobile: terikat langsung ke scroll native (tanpa smoothing)
             anticipatePin: 1,
           },
         })
@@ -365,6 +394,7 @@ export default function HeroServices() {
         .hs-side     { position: absolute; right: 4vw; bottom: 3vw; display: flex; flex-direction: column; align-items: flex-end; gap: 2.5rem; }
 
         .hs-topbar   { display: none; }
+        .hs-lang-desktop { display: block; }
         .hs-mob-menu { display: none; }
 
         /* ── Mobile: tampilan sama seperti desktop, elemen disusun vertikal ── */
@@ -384,6 +414,7 @@ export default function HeroServices() {
           .hs-tag-title { font-size: clamp(1.1rem, 5.2vw, 1.5rem); }
           .hs-side      { position: static; margin-top: auto; gap: 0; }
           .hs-side nav  { display: none; }
+          .hs-lang-desktop { display: none; }
 
           .hs-mob-menu {
             display: flex; position: fixed; inset: 0; z-index: 999; background: #fff;
@@ -411,49 +442,53 @@ export default function HeroServices() {
         <div ref={heroContentRef} className="hs-full hs-content" style={{ position: 'absolute', top: 0, left: 0, width: '100%', zIndex: 5, willChange: 'transform' }}>
           {/* Top bar — hanya mobile */}
           <div className="hs-topbar">
-            <Link href="/" aria-label="Creaut Bali — beranda">
-              <img src="/image/logo/logo.webp" alt="Creaut Bali" width={44} height={44} style={{ display: 'block', width: 44, height: 44, objectFit: 'contain', mixBlendMode: 'multiply' }} />
+            <Link href="/" aria-label="Creaut Bali">
+              <img src="/image/logo/logo.png" alt="Creaut Bali" width={44} height={44} style={{ display: 'block', width: 44, height: 44, objectFit: 'contain', mixBlendMode: 'multiply' }} />
             </Link>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <LanguageSwitcher />
             <button
               onClick={() => setMenuOpen(true)}
-              aria-label="Buka menu"
+              aria-label={t('nav.openMenu')}
               style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 5, padding: 4 }}
             >
               {[0, 1, 2].map((i) => (
                 <span key={i} style={{ display: 'block', width: 22, height: 2, background: '#000', borderRadius: 2 }} />
               ))}
             </button>
+            </div>
           </div>
 
           <Wordmark as="h1" className="hs-wordmark" priority />
 
           <div className="hs-loc">
             <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: '0.82rem', letterSpacing: '0.07em', color: '#000', margin: 0, textTransform: 'uppercase' }}>
-              BALI, INDONESIA
+              {t('hero.location')}
             </p>
             <div style={{ width: 28, height: 2, borderRadius: 2, marginTop: '0.5rem', background: 'linear-gradient(90deg, #5de0e6, #004aad)' }} />
           </div>
 
           <div className="hs-tag">
             <h2 className="hs-tag-title">
-              CRAFTING IMPACTFUL<br />DIGITAL INNOVATIONS.
+              {dict.hero.tagline[0]}<br />{dict.hero.tagline[1]}
             </h2>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', cursor: 'pointer' }}>
               <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#5de0e6', boxShadow: '0 0 8px #5de0e6', animation: 'hs-pulse 2s ease-in-out infinite' }} />
-              <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: '0.75rem', letterSpacing: '0.1em', color: '#000' }}>SHOWREEL</span>
+              <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: '0.75rem', letterSpacing: '0.1em', color: '#000' }}>{t('hero.showreel')}</span>
             </div>
           </div>
 
           <div className="hs-side">
+            <div className="hs-lang-desktop"><LanguageSwitcher /></div>
             <nav>
               <ul style={{ listStyle: 'none', margin: 0, padding: 0, textAlign: 'right', display: 'flex', flexDirection: 'column', gap: '0.52rem' }}>
-                {NAV_LINKS.map(({ label, href }) => (
-                  <li key={label}><a href={href} className="hs-nav-link">{label}</a></li>
+                {NAV_LINKS.map(({ key, href }) => (
+                  <li key={key}><a href={href} className="hs-nav-link">{t(`nav.${key}`)}</a></li>
                 ))}
               </ul>
             </nav>
             <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.1em', color: 'rgba(0,0,0,0.38)', margin: 0 }}>
-              SCROLL FOR MORE ↓
+              {t('hero.scroll')}
             </p>
           </div>
         </div>
@@ -462,7 +497,7 @@ export default function HeroServices() {
           <div
             key={service.id}
             ref={(el) => { cardWrappers.current[i] = el }}
-            style={{ position: 'absolute', zIndex: 10, opacity: 0 }}
+            style={{ position: 'absolute', zIndex: 10, opacity: 0, contain: 'layout paint style' }}
           >
             <ServiceCard service={service} compact={isMobile} />
           </div>
@@ -473,19 +508,19 @@ export default function HeroServices() {
       <div className="hs-mob-menu" style={{ transform: menuOpen ? 'translateX(0)' : 'translateX(100%)' }} aria-hidden={!menuOpen}>
         <button
           onClick={() => setMenuOpen(false)}
-          aria-label="Tutup menu"
+          aria-label={t('nav.closeMenu')}
           style={{ position: 'absolute', top: '1rem', right: '5vw', background: 'none', border: 'none', cursor: 'pointer', fontSize: '2rem', lineHeight: 1, padding: 8, color: '#000' }}
         >
           ×
         </button>
         {NAV_LINKS.map((link) => (
           <a
-            key={link.label}
+            key={link.key}
             href={link.href}
             onClick={() => setMenuOpen(false)}
             style={{ fontFamily: 'var(--font-sans)', fontSize: '2rem', fontWeight: 700, color: '#000', textDecoration: 'none' }}
           >
-            {link.label}
+            {t(`nav.${link.key}`)}
           </a>
         ))}
         <a
@@ -495,8 +530,9 @@ export default function HeroServices() {
             color: '#fff', textDecoration: 'none', fontSize: '0.9rem', fontFamily: 'var(--font-sans)', fontWeight: 600, borderRadius: 8,
           }}
         >
-          Let&apos;s Talk
+          {t('nav.letsTalk')}
         </a>
+        <LanguageSwitcher />
       </div>
     </div>
   )

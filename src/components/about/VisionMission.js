@@ -1,16 +1,26 @@
 'use client'
 
 import { forwardRef } from 'react'
-import { vision, missions } from '@/data/about'
+import { useTranslation } from '@/i18n/LanguageProvider'
 
 const GRADIENT = 'linear-gradient(90deg, #5de0e6, #004aad)'
 
+const eyebrowStyle = {
+  fontSize: '0.68rem',
+  fontWeight: 700,
+  letterSpacing: '0.18em',
+  textTransform: 'uppercase',
+}
+
 /**
  * Section Visi & Misi untuk halaman About.
- * Konten diambil dari `src/data/about.js` (vision, missions).
+ * Teks diambil dari kamus i18n (about.vision.*) sehingga ikut berganti bahasa.
  * Elemen `.vm-reveal` dianimasikan oleh halaman About (GSAP).
  */
 const VisionMission = forwardRef(function VisionMission(_, ref) {
+  const { dict } = useTranslation()
+  const c = dict.about.vision
+
   return (
     <section
       id="vision-mission"
@@ -23,9 +33,7 @@ const VisionMission = forwardRef(function VisionMission(_, ref) {
       }}
     >
       <style>{`
-        .vm-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: clamp(1.5rem, 3vw, 2.5rem); align-items: stretch; }
-        .vm-mission-item { transition: background 0.3s ease; }
-        .vm-mission-item:hover { background: rgba(93,224,230,0.04); }
+        .vm-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1rem, 2.5vw, 2rem); align-items: stretch; }
         @media (max-width: 860px) { .vm-grid { grid-template-columns: 1fr; } }
       `}</style>
 
@@ -33,70 +41,63 @@ const VisionMission = forwardRef(function VisionMission(_, ref) {
         <div className="vm-reveal" style={{ marginBottom: '3rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
             <div style={{ width: 28, height: 2, borderRadius: 2, background: GRADIENT }} />
-            <span style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#004aad' }}>
-              Vision &amp; Mission
-            </span>
+            <span style={{ ...eyebrowStyle, color: '#004aad' }}>{c.eyebrow}</span>
           </div>
           <h2 style={{ fontWeight: 700, fontSize: 'clamp(1.8rem, 3.5vw, 2.8rem)', color: '#0a0a0a', letterSpacing: '-0.04em', margin: 0 }}>
-            Where We&apos;re Heading
+            {c.heading}
           </h2>
         </div>
 
         <div className="vm-grid">
           {/* Vision */}
-          <div
+          <article
             className="vm-reveal"
             style={{
               position: 'relative',
               overflow: 'hidden',
-              borderRadius: 12,
-              padding: 'clamp(2rem, 4vw, 3rem)',
+              borderRadius: 14,
+              padding: 'clamp(1.75rem, 3.5vw, 2.75rem)',
               background: 'linear-gradient(145deg, #004aad 0%, #0a1f4d 100%)',
               color: '#fff',
               display: 'flex',
               flexDirection: 'column',
-              justifyContent: 'space-between',
-              gap: '2rem',
-              minHeight: 320,
+              gap: '1.5rem',
+              minHeight: 300,
             }}
           >
             <div
               aria-hidden
-              style={{ position: 'absolute', top: -80, right: -80, width: 260, height: 260, borderRadius: '50%', background: 'radial-gradient(circle, rgba(93,224,230,0.35) 0%, transparent 70%)' }}
+              style={{ position: 'absolute', top: -90, right: -90, width: 280, height: 280, borderRadius: '50%', background: 'radial-gradient(circle, rgba(93,224,230,0.35) 0%, transparent 70%)' }}
             />
-            <span style={{ position: 'relative', fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#5de0e6' }}>
-              {vision.label}
-            </span>
-            <p style={{ position: 'relative', margin: 0, fontWeight: 700, fontSize: 'clamp(1.35rem, 2.4vw, 1.9rem)', lineHeight: 1.35, letterSpacing: '-0.02em' }}>
-              {vision.statement}
+            <span style={{ ...eyebrowStyle, position: 'relative', color: '#5de0e6' }}>{c.visionLabel}</span>
+            <p style={{ position: 'relative', margin: 'auto 0 0', fontWeight: 600, fontSize: 'clamp(1.05rem, 1.7vw, 1.4rem)', lineHeight: 1.55, letterSpacing: '-0.01em' }}>
+              {c.visionText}
             </p>
-          </div>
+          </article>
 
           {/* Mission */}
-          <div
+          <article
             className="vm-reveal"
-            style={{ borderRadius: 12, overflow: 'hidden', background: 'rgba(0,0,0,0.06)', display: 'grid', gap: 1 }}
+            style={{
+              position: 'relative',
+              overflow: 'hidden',
+              borderRadius: 14,
+              padding: 'clamp(1.75rem, 3.5vw, 2.75rem)',
+              background: '#fff',
+              border: '1px solid rgba(0,0,0,0.1)',
+              boxShadow: '0 12px 40px rgba(0,74,173,0.06)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1.5rem',
+              minHeight: 300,
+            }}
           >
-            {missions.map((m, i) => (
-              <div key={m.title} className="vm-mission-item" style={{ background: '#fff', padding: 'clamp(1.25rem, 2.2vw, 1.75rem)', display: 'flex', gap: '1.25rem' }}>
-                <div
-                  style={{
-                    fontWeight: 800, fontSize: '1.5rem', letterSpacing: '-0.05em', lineHeight: 1,
-                    background: GRADIENT, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-                    minWidth: 36,
-                  }}
-                >
-                  {String(i + 1).padStart(2, '0')}
-                </div>
-                <div>
-                  <h4 style={{ margin: '0 0 0.4rem 0', fontWeight: 700, fontSize: '0.95rem', textTransform: 'uppercase', letterSpacing: '0.04em', color: '#0a0a0a' }}>
-                    {m.title}
-                  </h4>
-                  <p style={{ margin: 0, fontSize: '0.875rem', lineHeight: 1.7, color: 'rgba(0,0,0,0.5)' }}>{m.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+            <div aria-hidden style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 4, background: 'linear-gradient(180deg, #5de0e6, #004aad)' }} />
+            <span style={{ ...eyebrowStyle, color: '#004aad' }}>{c.missionLabel}</span>
+            <p style={{ margin: 'auto 0 0', fontWeight: 500, fontSize: 'clamp(1rem, 1.55vw, 1.25rem)', lineHeight: 1.65, color: '#0a0a0a', letterSpacing: '-0.01em' }}>
+              {c.missionText}
+            </p>
+          </article>
         </div>
       </div>
     </section>

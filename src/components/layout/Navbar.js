@@ -3,8 +3,11 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { navLinks } from '@/config/site'
+import { useTranslation } from '@/i18n/LanguageProvider'
+import LanguageSwitcher from '@/components/ui/LanguageSwitcher'
 
 export default function Navbar() {
+  const { t } = useTranslation()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [showNavbar, setShowNavbar] = useState(true)
 
@@ -57,6 +60,7 @@ export default function Navbar() {
           border-radius: 6px; white-space: nowrap; 
         }
 
+        .desktop-cta { display: flex; align-items: center; gap: 1rem; }
         .hamburger-btn { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; z-index: 1001; padding: 4px; }
         .hamburger-line { width: 22px; height: 2px; background: #000; border-radius: 2px; transition: all 0.3s ease; }
 
@@ -82,14 +86,14 @@ export default function Navbar() {
         {/* LOGO (Style disematkan langsung di elemen agar tidak mungkin membesar di detik awal) */}
         <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', flexShrink: 0 }}>
           <img
-            src="/image/logo/logo.webp"
+            src="/image/logo/logo.png"
             alt="Creaut Bali"
             style={{
               height: '56px',
               width: '56px',
               objectFit: 'contain',
               display: 'block',
-              mixBlendMode: 'multiply', // logo.webp berlatar putih → menyatu dengan navbar kaca
+              mixBlendMode: 'multiply',
             }}
           />
         </Link>
@@ -97,21 +101,22 @@ export default function Navbar() {
         {/* MENU DESKTOP */}
         <div className="desktop-nav">
           {navLinks.map((link) => (
-            <Link key={link.label} href={link.href} className="nav-link">
-              {link.label}
+            <Link key={link.key} href={link.href} className="nav-link">
+              {t(`nav.${link.key}`)}
             </Link>
           ))}
         </div>
 
         {/* CTA DESKTOP */}
         <div className="desktop-cta">
+          <LanguageSwitcher />
           <a href="https://wa.me/6287780594231" target="_blank" rel="noreferrer" className="btn-cta">
-            Let's Talk
+            {t('nav.letsTalk')}
           </a>
         </div>
 
         {/* TOMBOL HAMBURGER MOBILE */}
-        <button className="hamburger-btn" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle menu">
+        <button className="hamburger-btn" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label={isMenuOpen ? t('nav.closeMenu') : t('nav.openMenu')}>
           <span className="hamburger-line" style={{ transform: isMenuOpen ? 'rotate(45deg) translate(5px, 5px)' : 'none' }} />
           <span className="hamburger-line" style={{ opacity: isMenuOpen ? 0 : 1 }} />
           <span className="hamburger-line" style={{ transform: isMenuOpen ? 'rotate(-45deg) translate(5px, -5px)' : 'none' }} />
@@ -122,12 +127,12 @@ export default function Navbar() {
       <div className={`mobile-menu ${isMenuOpen ? 'mobile-visible' : 'mobile-hidden'}`}>
         {navLinks.map((link) => (
           <Link 
-            key={link.label} 
-            href={link.href} 
-            onClick={() => setIsMenuOpen(false)} 
+            key={link.key}
+            href={link.href}
+            onClick={() => setIsMenuOpen(false)}
             className="mobile-link"
           >
-            {link.label}
+            {t(`nav.${link.key}`)}
           </Link>
         ))}
 
@@ -138,8 +143,10 @@ export default function Navbar() {
           className="btn-cta" 
           style={{ marginTop: '0.5rem', padding: '0.8rem 2.5rem', fontSize: '0.9rem', borderRadius: '8px' }}
         >
-          Let's Talk
+          {t('nav.letsTalk')}
         </a>
+
+        <LanguageSwitcher />
       </div>
     </>
   )
